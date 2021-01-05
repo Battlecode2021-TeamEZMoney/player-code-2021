@@ -7,6 +7,7 @@ public strictfp class RobotPlayer {
     static int turnCount;
     static int hqID;
     static int storedFlag;
+    static Direction curDir = Direction.NORTH;
 
     /**
      * run() is the method that is called when a robot is instantiated in the
@@ -49,9 +50,17 @@ public strictfp class RobotPlayer {
         rc.setFlag(10);
         RobotType toBuild = RobotType.POLITICIAN;
         int influence = 1;
-        if (rc.canBuildRobot(toBuild, Direction.NORTH, influence)) {
-            rc.buildRobot(toBuild, Direction.NORTH, influence);
+        if (rc.getInfluence() > 69 && rc.canBuildRobot(toBuild, Direction.WEST, rc.getInfluence() - 1)) {
+            rc.buildRobot(toBuild, Direction.WEST, rc.getInfluence() - 1);
         }
+
+        if (rc.getTeamVotes() < 1500 && rc.getInfluence() > 0){
+            rc.bid(1);
+        }
+
+        if (turnCount % 10 == 0){
+            System.out.println(rc.getInfluence());
+        } 
     }
 
     static void runPolitician() throws GameActionException {
@@ -65,8 +74,24 @@ public strictfp class RobotPlayer {
             }
         }
 
+        if (!rc.isReady()) return;
         if (storedFlag == 10) {
-            rc.setIndicatorDot(rc.getLocation(), 100, 0, 0);
+            if (rc.senseNearbyRobots(9, rc.getTeam().opponent()).length != 0){
+                if (rc.canEmpower(9)){
+                    rc.empower(9);
+                    return;
+                }
+            }
+            RobotInfo[] nearbyEnemies = rc.senseNearbyRobots(25, rc.getTeam().opponent());
+            if (nearbyEnemies.length != 0){
+                tryMove(rc.getLocation().directionTo(nearbyEnemies[0].getLocation()));
+                return;
+            }
+            
+            if (!tryMove(curDir)){
+                curDir = clockwiseTurnCardinal(curDir);
+            }
+
         } else {
             Team enemy = rc.getTeam().opponent();
             int actionRadius = rc.getType().actionRadiusSquared;
@@ -108,5 +133,19 @@ public strictfp class RobotPlayer {
             return true;
         } else
             return false;
+    }
+
+    static Direction clockwiseTurnCardinal(Direction dir) {
+        switch (dir) {
+            case WEST: return Direction.NORTH;
+            case NORTHWEST: return Direction.NORTH;
+            case NORTH: return Direction.EAST;
+            case NORTHEAST: return Direction.EAST;
+            case EAST: return Direction.SOUTH;
+            case SOUTHEAST: return Direction.SOUTH;
+            case SOUTH: return Direction.WEST;
+            case SOUTHWEST: return Direction.WEST;
+            default: return Direction.CENTER;
+        }
     }
 }
