@@ -7,6 +7,7 @@ public strictfp class RobotPlayer {
     static int turnCount;
     static int hqID;
     static int storedFlag;
+    static Direction curDir = Direction.NORTH;
 
     /**
      * run() is the method that is called when a robot is instantiated in the
@@ -73,6 +74,7 @@ public strictfp class RobotPlayer {
             }
         }
 
+        if (!rc.isReady()) return;
         if (storedFlag == 10) {
             if (rc.senseNearbyRobots(9, rc.getTeam().opponent()).length != 0){
                 if (rc.canEmpower(9)){
@@ -85,7 +87,7 @@ public strictfp class RobotPlayer {
                 tryMove(rc.getLocation().directionTo(nearbyEnemies[0].getLocation()));
                 return;
             }
-            Direction curDir = Direction.WEST;
+            
             if (!tryMove(curDir)){
                 curDir = clockwiseTurnCardinal(curDir);
             }
