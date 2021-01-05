@@ -9,5 +9,4 @@ public strictfp class RobotPlayer {
             Clock.yield();
         }
     }
-
 }
