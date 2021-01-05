@@ -21,3 +21,38 @@
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
+
+dist/*
+build/*
+src/lectureplayer
+
+/matches
+/deploy/lib
+/deploy/bin
+*.rms
+*.bc17
+/build/
+/bin/
+*.conf
+.DS_Store
+*.log
+*.swp
+*.pyc
+.gradle
+/client/
+*.jar
+*.iml
+*.ipr
+*.iws
+/.idea/
+
+
+# User-specific stuff:
+battlecode-scaffold.iws
+
+# Eclipse user-specific files
+.classpath
+.project
+.settings/
+
+access.txt
