@@ -1,7 +1,7 @@
 package common;
 import battlecode.common.*;
 
-public class enumLists {
+public class Constants {
     public static final RobotType[] units = {
         RobotType.POLITICIAN,
         RobotType.SLANDERER,
@@ -18,4 +18,9 @@ public class enumLists {
         Direction.WEST,
         Direction.NORTHWEST,
     };
+
+    public static final int[][] stageone_wall = {
+        {-3, 3}, {3, 3}, {-3, -3}, {3, -3}, {0, 3}, {-3, 0}, {3, 0}, {0, -3}
+    };
+    
 }

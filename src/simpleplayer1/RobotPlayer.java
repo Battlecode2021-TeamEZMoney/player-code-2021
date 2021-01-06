@@ -8,6 +8,7 @@ public strictfp class RobotPlayer {
     static int turnCount;
     static int hqID;
     static int storedFlag;
+    static MapLocation hqLocation;
     static Direction curDir = Direction.NORTH;
 
     /**
@@ -48,9 +49,27 @@ public strictfp class RobotPlayer {
     }
 
     static void runEnlightenmentCenter() throws GameActionException {
-        rc.setFlag(10);
+        RobotInfo[] nearby_units = rc.senseNearbyRobots();
+        boolean[] filled_spots = new boolean[8];
+        for (RobotInfo unit : nearby_units) {
+            for (int i = 0; i < 8; i++) {
+                int[] dxy = Constants.stageone_wall[i];
+                if (unit.getLocation().isWithinDistanceSquared(rc.getLocation().translate(dxy[0], dxy[1]), 1) && unit.type == RobotType.POLITICIAN) { // should also check this politician is defense mode
+                    filled_spots[i] = true;
+                }
+            }
+        }
+
+        int minimum_not_filled = -1;
+        for (int i = 0; i < 8; i++) {
+            if (filled_spots[i] == false) {
+                minimum_not_filled = i;
+                break;
+            }
+        }
+        rc.setFlag(10 + minimum_not_filled);
+
         RobotType toBuild = RobotType.POLITICIAN;
-        int influence = 1;
         if (rc.getInfluence() > 69 && rc.canBuildRobot(toBuild, Direction.WEST, rc.getInfluence() - 1)) {
             rc.buildRobot(toBuild, Direction.WEST, rc.getInfluence() - 1);
         }
@@ -70,6 +89,7 @@ public strictfp class RobotPlayer {
             for (RobotInfo robot : robots) {
                 if (robot.getType() == RobotType.ENLIGHTENMENT_CENTER) {
                     storedFlag = rc.getFlag(robot.getID());
+                    hqLocation = rc.getLocation();
                     break;
                 }
             }
@@ -77,24 +97,23 @@ public strictfp class RobotPlayer {
 
         if (!rc.isReady())
             return;
-        
-        if (storedFlag == 10) {
+
+        if (storedFlag >= 10 && storedFlag <= 18) { // defense mode
             if (rc.senseNearbyRobots(9, rc.getTeam().opponent()).length != 0) {
                 if (rc.canEmpower(9)) {
                     rc.empower(9);
                     return;
                 }
             }
+
             RobotInfo[] nearbyEnemies = rc.senseNearbyRobots(25, rc.getTeam().opponent());
             if (nearbyEnemies.length != 0) {
                 tryMove(rc.getLocation().directionTo(nearbyEnemies[0].getLocation()));
                 return;
             }
-            PathFind.lazy_path_to(rc, new MapLocation(10005, 23926));
 
-            // if (!tryMove(curDir)) {
-            //     curDir = clockwiseTurnCardinal(curDir);
-            // }
+            int[] dxy = Constants.stageone_wall[storedFlag - 10];
+            tryMove(PathFind.get_path_direction(rc, hqLocation.translate(dxy[0], dxy[1])));
 
         } else {
             Team enemy = rc.getTeam().opponent();
@@ -128,7 +147,7 @@ public strictfp class RobotPlayer {
     }
 
     static Direction randomDirection() {
-        return enumLists.directions[(int) (Math.random() * enumLists.directions.length)];
+        return Constants.directions[(int) (Math.random() * Constants.directions.length)];
     }
 
     static boolean tryMove(Direction dir) throws GameActionException {
