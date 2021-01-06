@@ -5,6 +5,13 @@ import battlecode.common.*;
 import common.*;
 
 public class PathFind {
+    static void lazy_path_to(RobotController rc, MapLocation ml) throws GameActionException {
+        if(tryMove(rc, rc.getLocation().directionTo(ml)));
+        else if(tryMove(rc, rc.getLocation().directionTo(ml).rotateLeft()));
+        else if(tryMove(rc, rc.getLocation().directionTo(ml).rotateRight()));
+        else if(tryMove(rc, rc.getLocation().directionTo(ml).opposite()));
+    }
+
     static void path_to(RobotController rc, MapLocation ml) throws GameActionException {
         if (rc.canSenseLocation(ml)) {
             HashMap<MapLocation, Boolean> visited = new HashMap<MapLocation, Boolean>();

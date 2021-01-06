@@ -1,4 +1,5 @@
 package simpleplayer1;
+
 import battlecode.common.*;
 import common.*;
 
@@ -54,13 +55,13 @@ public strictfp class RobotPlayer {
             rc.buildRobot(toBuild, Direction.WEST, rc.getInfluence() - 1);
         }
 
-        if (rc.getTeamVotes() < 1500 && rc.getInfluence() > 0){
+        if (rc.getTeamVotes() < 1500 && rc.getInfluence() > 0) {
             rc.bid(1);
         }
 
-        if (turnCount % 10 == 0){
+        if (turnCount % 10 == 0) {
             System.out.println(rc.getInfluence());
-        } 
+        }
     }
 
     static void runPolitician() throws GameActionException {
@@ -74,23 +75,26 @@ public strictfp class RobotPlayer {
             }
         }
 
-        if (!rc.isReady()) return;
+        if (!rc.isReady())
+            return;
+        
         if (storedFlag == 10) {
-            if (rc.senseNearbyRobots(9, rc.getTeam().opponent()).length != 0){
-                if (rc.canEmpower(9)){
+            if (rc.senseNearbyRobots(9, rc.getTeam().opponent()).length != 0) {
+                if (rc.canEmpower(9)) {
                     rc.empower(9);
                     return;
                 }
             }
             RobotInfo[] nearbyEnemies = rc.senseNearbyRobots(25, rc.getTeam().opponent());
-            if (nearbyEnemies.length != 0){
+            if (nearbyEnemies.length != 0) {
                 tryMove(rc.getLocation().directionTo(nearbyEnemies[0].getLocation()));
                 return;
             }
-            
-            if (!tryMove(curDir)){
-                curDir = clockwiseTurnCardinal(curDir);
-            }
+            PathFind.lazy_path_to(rc, new MapLocation(10005, 23926));
+
+            // if (!tryMove(curDir)) {
+            //     curDir = clockwiseTurnCardinal(curDir);
+            // }
 
         } else {
             Team enemy = rc.getTeam().opponent();
@@ -137,15 +141,24 @@ public strictfp class RobotPlayer {
 
     static Direction clockwiseTurnCardinal(Direction dir) {
         switch (dir) {
-            case WEST: return Direction.NORTH;
-            case NORTHWEST: return Direction.NORTH;
-            case NORTH: return Direction.EAST;
-            case NORTHEAST: return Direction.EAST;
-            case EAST: return Direction.SOUTH;
-            case SOUTHEAST: return Direction.SOUTH;
-            case SOUTH: return Direction.WEST;
-            case SOUTHWEST: return Direction.WEST;
-            default: return Direction.CENTER;
+            case WEST:
+                return Direction.NORTH;
+            case NORTHWEST:
+                return Direction.NORTH;
+            case NORTH:
+                return Direction.EAST;
+            case NORTHEAST:
+                return Direction.EAST;
+            case EAST:
+                return Direction.SOUTH;
+            case SOUTHEAST:
+                return Direction.SOUTH;
+            case SOUTH:
+                return Direction.WEST;
+            case SOUTHWEST:
+                return Direction.WEST;
+            default:
+                return Direction.CENTER;
         }
     }
 }
