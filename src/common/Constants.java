@@ -22,5 +22,9 @@ public class Constants {
     public static final int[][] stageone_wall = {
         {-3, 3}, {3, 3}, {-3, -3}, {3, -3}, {0, 3}, {-3, 0}, {3, 0}, {0, -3}
     };
+
+    public static final int[][] stageone_slanderers = {
+        {-1, 1}, {1, -1}, {1, 1}, {-1, -1}
+    };
     
 }
