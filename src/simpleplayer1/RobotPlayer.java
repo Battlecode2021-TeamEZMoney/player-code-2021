@@ -49,33 +49,34 @@ public strictfp class RobotPlayer {
     }
 
     static void runEnlightenmentCenter() throws GameActionException {
-        boolean[] filled_spots = new boolean[8];
-        for (int i = 0; i < 8; i++) {
+        RobotType toBuild;
+
+        if (rc.getRoundNum() == 1 && rc.getInfluence() > 20) {
+            rc.buildRobot(RobotType.SLANDERER, Direction.NORTHWEST, rc.getInfluence() - ((rc.getInfluence() - 1) % 20) - 1);
+            return;
+        }
+
+        boolean any_open_pol_spots = false;
+
+        for (int i = 0; i < Constants.stageone_wall.length; i++) {
             int[] dxy = Constants.stageone_wall[i];
             MapLocation pos = rc.getLocation().translate(dxy[0], dxy[1]);
             if (rc.canSenseLocation(pos) && rc.isLocationOccupied(pos)
                     && rc.senseNearbyRobots(pos, 0, rc.getTeam())[0].type == RobotType.POLITICIAN) {
-                filled_spots[i] = true;
+                        rc.setFlag(10 + i);
+                        any_open_pol_spots = true;
+                        break;
             }
         }
 
-        boolean any_open_spots = false;
-        for (int i = 0; i < 8; i++) {
-            if (!filled_spots[i]) {
-                rc.setFlag(10 + i);
-                any_open_spots = true;
-                break;
-            }
-        }
-
-        if (any_open_spots) {
-            RobotType toBuild = RobotType.POLITICIAN;
+        if (any_open_pol_spots) {
+            toBuild = RobotType.POLITICIAN;
             if (rc.getInfluence() > 69 && rc.canBuildRobot(toBuild, Direction.WEST, rc.getInfluence() - 1)) {
                 rc.buildRobot(toBuild, Direction.WEST, rc.getInfluence() - 1);
             }
         }
 
-        if (rc.getTeamVotes() < 1500 && rc.getInfluence() > 0) {
+        if (rc.getTeamVotes() < 1500 && rc.canBid(1)) {
             rc.bid(1);
         }
 
@@ -90,8 +91,7 @@ public strictfp class RobotPlayer {
             for (RobotInfo robot : robots) {
                 if (robot.getType() == RobotType.ENLIGHTENMENT_CENTER) {
                     storedFlag = rc.getFlag(robot.getID());
-                    rc.setFlag(storedFlag);
-                    hqLocation = rc.getLocation();
+                    hqLocation = robot.getLocation();
                     break;
                 }
             }
@@ -113,39 +113,25 @@ public strictfp class RobotPlayer {
 
             int[] dxy = Constants.stageone_wall[storedFlag - 10];
             MapLocation pos = hqLocation.translate(dxy[0]+1, dxy[1]);
-            if (!tryMove(PathFind.get_path_direction(rc, pos)) && rc.canSenseLocation(pos) && rc.isLocationOccupied(pos)){
-                return;
-            }
+            tryMove(PathFind.get_path_direction(rc, pos));
 
         } else {
-            Team enemy = rc.getTeam().opponent();
+            /*Team enemy = rc.getTeam().opponent();
             int actionRadius = rc.getType().actionRadiusSquared;
             RobotInfo[] attackable = rc.senseNearbyRobots(actionRadius, enemy);
             if (attackable.length != 0 && rc.canEmpower(actionRadius)) {
                 rc.empower(actionRadius);
                 return;
             }
-            tryMove(DirectionUtilities.randomDirection());
+            tryMove(DirectionUtilities.randomDirection());*/
+            System.out.println("Error invalid flag" + storedFlag);
         }
     }
 
     static void runSlanderer() throws GameActionException {
-        tryMove(DirectionUtilities.randomDirection());
     }
 
     static void runMuckraker() throws GameActionException {
-        Team enemy = rc.getTeam().opponent();
-        int actionRadius = rc.getType().actionRadiusSquared;
-        for (RobotInfo robot : rc.senseNearbyRobots(actionRadius, enemy)) {
-            if (robot.type.canBeExposed()) {
-                // It's a slanderer... go get them!
-                if (rc.canExpose(robot.location)) {
-                    rc.expose(robot.location);
-                    return;
-                }
-            }
-        }
-        tryMove(DirectionUtilities.randomDirection());
     }
 
     static boolean tryMove(Direction dir) throws GameActionException {
