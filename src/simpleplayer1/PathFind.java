@@ -1,9 +1,6 @@
 package simpleplayer1;
 
-import java.util.*;
-
 import battlecode.common.*;
-import common.*;
 
 public class PathFind {
     static Direction get_path_direction(RobotController rc, MapLocation ml) throws GameActionException {
