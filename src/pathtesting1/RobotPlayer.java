@@ -1,11 +1,7 @@
 package pathtesting1;
 
-import java.util.Map;
-
 import battlecode.common.*;
-import common.*;
-import simpleplayer1.FuzzPathing;
-import simpleplayer1.PathFind;
+import simpleplayer1.*;
 
 public strictfp class RobotPlayer {
     static RobotController rc;

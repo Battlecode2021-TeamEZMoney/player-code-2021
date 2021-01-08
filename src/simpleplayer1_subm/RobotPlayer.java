@@ -1,7 +1,6 @@
-package simpleplayer1;
+package simpleplayer1_subm;
 
 import battlecode.common.*;
-import common.*;
 
 public strictfp class RobotPlayer {
     static RobotController rc;
@@ -125,7 +124,7 @@ public strictfp class RobotPlayer {
                 return;
             }
             tryMove(DirectionUtilities.randomDirection());*/
-            System.out.println("Error invalid flag" + storedFlag);
+            //System.out.println("Error invalid flag" + storedFlag);
         }
     }
 
