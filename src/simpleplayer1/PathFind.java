@@ -3,7 +3,7 @@ package simpleplayer1;
 import battlecode.common.*;
 
 public class PathFind {
-    static Direction get_path_direction(RobotController rc, MapLocation ml) throws GameActionException {
+    public static Direction get_path_direction(RobotController rc, MapLocation ml) throws GameActionException {
         if(rc.getLocation().equals(ml)) return Direction.CENTER;
         for (int i = 0; i < 3; i++) {
             Direction left = rc.getLocation().directionTo(ml);

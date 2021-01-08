@@ -61,8 +61,7 @@ public strictfp class RobotPlayer {
         for (int i = 0; i < Constants.stageone_wall.length; i++) {
             int[] dxy = Constants.stageone_wall[i];
             MapLocation pos = rc.getLocation().translate(dxy[0], dxy[1]);
-            if (rc.canSenseLocation(pos) && rc.isLocationOccupied(pos)
-                    && rc.senseNearbyRobots(pos, 0, rc.getTeam())[0].type == RobotType.POLITICIAN) {
+            if (rc.canSenseLocation(pos) && !rc.isLocationOccupied(pos)) {
                         rc.setFlag(10 + i);
                         any_open_pol_spots = true;
                         break;
@@ -112,8 +111,9 @@ public strictfp class RobotPlayer {
              */
 
             int[] dxy = Constants.stageone_wall[storedFlag - 10];
-            MapLocation pos = hqLocation.translate(dxy[0]+1, dxy[1]);
-            tryMove(PathFind.get_path_direction(rc, pos));
+            MapLocation pos = hqLocation.translate(dxy[0], dxy[1]);
+            //tryMove(PathFind.get_path_direction(rc, pos));
+            tryMove(FuzzPathing.pathTo(rc, pos));
 
         } else {
             /*Team enemy = rc.getTeam().opponent();
