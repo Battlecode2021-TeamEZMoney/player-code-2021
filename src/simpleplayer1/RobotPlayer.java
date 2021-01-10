@@ -114,7 +114,7 @@ public strictfp class RobotPlayer {
             int[] dxy = Constants.stageone_wall[storedFlag - 10];
             MapLocation pos = hqLocation.translate(dxy[0], dxy[1]);
             //tryMove(PathFind.get_path_direction(rc, pos));
-            tryMove(FuzzPathing.pathTo(rc, pos));
+            tryMove(PathFind.pathTo(rc, pos));
 
         } else {
             /*Team enemy = rc.getTeam().opponent();

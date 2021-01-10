@@ -60,9 +60,9 @@ public strictfp class RobotPlayer {
         if (!rc.isReady())
             return;
 
-        MapLocation pos = hqLocation.translate(-6, 20);
+        MapLocation pos = hqLocation.translate(-5, 3);
         //tryMove(PathFind.get_path_direction(rc, pos));
-        tryMove(FuzzPathing.pathTo(rc, pos));
+        tryMove(PathFind.pathTo(rc, pos));
     }
 
     static boolean tryMove(Direction dir) throws GameActionException {
