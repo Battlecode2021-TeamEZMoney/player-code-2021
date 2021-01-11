@@ -8,6 +8,9 @@ public class EnlightenmentPlayer {
             if (rc.getTeamVotes() < 1500 && rc.canBid(1)) {
                 rc.bid(1);
             }
+
+
+            Clock.yield();
         }
     }
 }

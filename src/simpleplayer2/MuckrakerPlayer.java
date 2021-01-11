@@ -6,6 +6,8 @@ public class MuckrakerPlayer {
     static void runMuckraker(RobotController rc) throws GameActionException {
         while(true){
 
+
+            Clock.yield();
         }
     }
 }

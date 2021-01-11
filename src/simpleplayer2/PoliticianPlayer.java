@@ -7,10 +7,14 @@ public class PoliticianPlayer {
         if(wasSlanderer){
             while(true){
 
+
+                Clock.yield();
             }
         } else {
             while(true){
                 
+
+                Clock.yield();
             }
         }
     }
