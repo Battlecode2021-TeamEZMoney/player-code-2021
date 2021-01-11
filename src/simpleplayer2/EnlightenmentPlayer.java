@@ -3,30 +3,33 @@ package simpleplayer2;
 import java.util.ArrayList;
 
 import battlecode.common.*;
-import common.Constants;
-import common.DirectionUtils;
+import common.*;
 
 public class EnlightenmentPlayer {
     private static RobotController rc;
     private static int turnCount = 0;
-    private static int unitCount = 0;
+    private static int unitsBuilt = 0;
     private static int lastVoteCount = 0;
+    private static int unitsIndex = 0;
+    private static RobotType unitToBuild = RobotType.POLITICIAN;
     private static ArrayList<HQData> enemyHQs = new ArrayList<HQData>();
     private static ArrayList<HQData> friendlyHQs = new ArrayList<HQData>();
-    private static ArrayList<HQData> neutralHQs = new ArrayList<HQData>();
+    //private static ArrayList<HQData> neutralHQs = new ArrayList<HQData>();
     private static ArrayList<Integer> units = new ArrayList<Integer>();
     static void runEnlightenmentCenter(RobotController rc) throws GameActionException {
         EnlightenmentPlayer.rc = rc;
         while (true){
             turnCount++;
-            checkHQs();
-            gatherIntel();
+            //TODO: Implement smart handling of other units and other HQ
+            //checkHQs();
+            //gatherIntel();
             
-            RobotType unitToBuild = getUnitType();
+            unitToBuild = getUnitToBuild();
             int infToSpend = getNewUnitInfluence();
             Direction buildDirection = getBuildDirection(unitToBuild, getPreferredDirection(), infToSpend);
             if (canBuild(buildDirection)){
                 rc.buildRobot(unitToBuild, buildDirection, infToSpend);
+                unitsBuilt++;
                 addAllFriendlyBots(rc.senseNearbyRobots(rc.getLocation().add(buildDirection), 0, rc.getTeam()));
                 trySetFlag(getOrdersForUnit(unitToBuild));
             }
@@ -37,6 +40,19 @@ public class EnlightenmentPlayer {
             }
 
             lastVoteCount = rc.getTeamVotes();
+
+            while(Clock.getBytecodesLeft() > 500){
+                int unitID = units.get(unitsIndex);
+                if(rc.canGetFlag(unitID)){
+                    parseFlag(rc.getFlag(unitID));
+                } else {
+                    units.remove(units.get(unitID));
+                }
+                if(++unitsIndex >= units.size()){
+                    unitsIndex = 0;
+                }
+            }
+
             Clock.yield();
         }
     }
@@ -65,26 +81,49 @@ public class EnlightenmentPlayer {
 
         friendlyHQs.removeIf(hq -> IDOutdated(hq, enemyHQs));
 
-        for(HQData hq : neutralHQs){
-            //TODO: Handle Neutral HQs
-        }
+        //TODO: Handle Neutral HQs
+        //for(HQData hq : neutralHQs){}
     }
 
     private static void gatherIntel(){
 
     }
 
+    private static RobotType getUnitToBuild(){
+        if (rc.getInfluence() < Constants.minimumPolInf){
+            return RobotType.MUCKRAKER;
+        } else if (rc.getInfluence() < Constants.optimalSlandInf[0]){
+            return RobotType.POLITICIAN;
+        } else if (rc.getRoundNum() <= 2) {
+            return RobotType.SLANDERER;
+        } else {
 
-    private static RobotType getUnitType(){
-        return RobotType.POLITICIAN; //TODO: Placeholder
+        }
+        return RobotType.MUCKRAKER;
     }
 
     static Direction getPreferredDirection(){
-        return Direction.NORTH; //TODO: Placeholder
+        switch(unitToBuild){
+            case SLANDERER: return Move.getTeamGoDir(rc);
+            case POLITICIAN: return Move.getTeamGoDir(rc).opposite();
+            case MUCKRAKER: return Move.getTeamGoDir(rc).opposite();
+            default: return DirectionUtils.randomDirection();
+        }
     }
 
     static int getNewUnitInfluence(){
-        return 0; //TODO: Placeholder
+        switch(unitToBuild){
+            case SLANDERER: 
+            for(int i = 1; i < Constants.optimalSlandInf.length; i++){
+                if(Constants.optimalSlandInf[i] > rc.getInfluence()){
+                    return Constants.optimalSlandInf[i-1];
+                }
+            } 
+            return Constants.optimalSlandInf[0];
+            case POLITICIAN: return Math.max(12, (int) rc.getInfluence()/2);
+            case MUCKRAKER: return 1;
+            default: return 1;
+        }
     }
 
     private static Direction getBuildDirection(RobotType type, Direction prefDir, int inf){
@@ -131,13 +170,17 @@ public class EnlightenmentPlayer {
     }
     
     private static int getBidAmount(){
-        return 0; //TODO: Placeholder
+        return 1; //TODO: Placeholder
     }
 
     private static void tryBid(int bidAmount) throws GameActionException{
         if (rc.canBid(bidAmount)){
             rc.bid(bidAmount);
         }
+    }
+
+    private static void parseFlag(int flag){
+        //TODO: Flag parsing
     }
     
 }
