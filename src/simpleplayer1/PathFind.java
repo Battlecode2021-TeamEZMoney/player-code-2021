@@ -3,7 +3,6 @@ package simpleplayer1;
 import java.util.*;
 
 import battlecode.common.*;
-import common.Constants;
 import common.DS.HashTable;
 
 class Node implements Comparator<Node> {

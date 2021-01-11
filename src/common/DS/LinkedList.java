@@ -9,13 +9,13 @@ public class LinkedList<T> {
     }
     public void add(T obj) {
         if (end != null) {
-            LinkedNode<T> newNode = new LinkedNode(obj);
+            LinkedNode<T> newNode = new LinkedNode<T>(obj);
             newNode.prev = end;
             end.next = newNode;
             end = newNode;
         }
         else {
-            head = new LinkedNode(obj);
+            head = new LinkedNode<T>(obj);
             end = head;
         }
         size++;
