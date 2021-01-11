@@ -9,9 +9,11 @@ public class PoliticianPlayer {
     private static RobotController rc;
     private static MapLocation enemyHQ = null;
     private static MapLocation hqLocation;
+    private static MapLocation neutralTar;
     private static int hqID;
     private static int turnCount = 0;
     private static int mode = 1;
+    private static Direction dirTarget = Move.getTeamGoDir(rc).opposite();
     static void runPolitician(RobotController rcin, boolean wasSlanderer) throws GameActionException {
         PoliticianPlayer.rc = rcin;
         if (turnCount == 0) {
@@ -32,9 +34,9 @@ public class PoliticianPlayer {
                 mode = 1;
             }
             switch(mode){
-                case 2:
-                case 4:
-                case 5:
+                case 2: runAttackCode();
+                case 4: runNeutralCode();
+                case 5: runDefendCode();
                 default: runSimple();
             }
             
@@ -66,12 +68,87 @@ public class PoliticianPlayer {
                     enemyHQ = tempLocation;
                     break;
             case 4: mode = 4;
-                    enemyHQ = tempLocation;
+                    neutralTar = tempLocation;
                     break;
             case 5: mode = 5;
                     break;
             default: mode = 1;
                     break;
+        }
+    }
+
+    private static void runDefendCode() throws GameActionException{
+        RobotInfo[] tempEnemies = rc.senseNearbyRobots(999, rc.getTeam().opponent());
+        for (RobotInfo enemy : tempEnemies){
+            if(enemy.getType().equals(RobotType.MUCKRAKER)){
+                if(enemy.getLocation().distanceSquaredTo(rc.getLocation()) > 9){
+                    Move.tryMove(rc, Move.dirForward180(rc, rc.getLocation().directionTo(enemy.getLocation())));
+                } else {
+                    if(rc.canEmpower(9)){
+                        rc.empower(9);
+                    }
+                }
+                return;
+            }
+        }
+        if (rc.getLocation().distanceSquaredTo(hqLocation) > 11){
+            Move.tryMove(rc, Move.dirForward180(rc, rc.getLocation().directionTo(hqLocation)));
+        }
+    }
+
+    private static void runNeutralCode() throws GameActionException{
+        if (rc.getRoundNum() > Constants.totalRounds - 25){
+            rc.empower(RobotType.POLITICIAN.actionRadiusSquared);
+        } 
+        RobotInfo[] tempEnemies = rc.senseNearbyRobots(5, rc.getTeam().opponent());
+        if ((tempEnemies.length > 4 || (tempEnemies.length > 1 && rc.getLocation().distanceSquaredTo(hqLocation) <= 10)) && rc.canEmpower(5)){
+            rc.empower(5);
+        }
+        
+        RobotInfo[] nearbyAllies = rc.senseNearbyRobots(999, rc.getTeam());
+        for(RobotInfo ally : nearbyAllies){
+            if (ally.type.equals(RobotType.ENLIGHTENMENT_CENTER)) {
+                Encoding.trySetFlag(rc, Encoding.encode(ally.getLocation(), Codes.friendlyHQ));
+            }
+        }
+
+        if(neutralTar.isAdjacentTo(rc.getLocation())){
+            if(Arrays.asList(Direction.cardinalDirections()).contains(rc.getLocation().directionTo(neutralTar))){
+                rc.empower(0);
+            } else {
+                Move.tryMove(rc, Move.dirForward90(rc, rc.getLocation().directionTo(neutralTar)));
+            }
+        } else {
+            Move.tryMove(rc, Move.dirForward180(rc, rc.getLocation().directionTo(neutralTar)));
+        }
+    }
+
+    private static void runAttackCode() throws GameActionException{
+        if (rc.getRoundNum() > Constants.totalRounds - 25){
+            rc.empower(RobotType.POLITICIAN.actionRadiusSquared);
+        } 
+        RobotInfo[] tempEnemies = rc.senseNearbyRobots(5, rc.getTeam().opponent());
+        if ((tempEnemies.length > 4 || (tempEnemies.length > 1 && rc.getLocation().distanceSquaredTo(hqLocation) <= 10)) && rc.canEmpower(5)){
+            rc.empower(5);
+        }
+        
+        RobotInfo[] nearbyAllies = rc.senseNearbyRobots(999, rc.getTeam());
+        for(RobotInfo ally : nearbyAllies){
+            if (ally.type.equals(RobotType.ENLIGHTENMENT_CENTER)) {
+                Encoding.trySetFlag(rc, Encoding.encode(ally.getLocation(), Codes.friendlyHQ));
+            }
+        }
+
+        if(rc.getLocation().distanceSquaredTo(enemyHQ) <= RobotType.POLITICIAN.actionRadiusSquared){
+            if(rc.isLocationOccupied(rc.getLocation().add(rc.getLocation().directionTo(enemyHQ))) && rc.canEmpower(RobotType.POLITICIAN.actionRadiusSquared)){
+                rc.empower(rc.getLocation().distanceSquaredTo(enemyHQ));
+                return;
+            }
+        }
+        if(enemyHQ.isAdjacentTo(rc.getLocation())){
+            Move.tryMove(rc, Move.dirForward90(rc, rc.getLocation().directionTo(enemyHQ)));
+        } else {
+            Move.tryMove(rc, Move.dirForward180(rc, rc.getLocation().directionTo(enemyHQ)));
         }
     }
 
@@ -101,22 +178,12 @@ public class PoliticianPlayer {
             }
             RobotInfo[] nearbyEnemies = rc.senseNearbyRobots(999, rc.getTeam().opponent());
             if (nearbyEnemies.length > 0) {
-                //RobotInfo tempTarget = null;
                 for (RobotInfo robot : nearbyEnemies) {
                     if ((enemyHQ == null || Math.random() < 0.05)
                             && robot.type.equals(RobotType.ENLIGHTENMENT_CENTER)) {
                         enemyHQ = robot.getLocation();
-                    }/* else if (robot.type.equals(RobotType.SLANDERER)) {
-                        if ((tempTarget == null || tempTarget.getInfluence() < robot.getInfluence())
-                                && rc.canExpose(robot.getID())) {
-                            tempTarget = robot;
-                        }
-                    }*/
-                }/*
-                if (tempTarget != null && rc.canExpose(tempTarget.getID())) {
-                    rc.expose(tempTarget.getID());
-                    break currentRound;
-                }*/
+                    }
+                }
             }
             if (enemyHQ != null) {
                 if(rc.getLocation().distanceSquaredTo(enemyHQ) <= RobotType.POLITICIAN.actionRadiusSquared){
@@ -131,7 +198,10 @@ public class PoliticianPlayer {
                     Move.tryMove(rc, Move.dirForward180(rc, rc.getLocation().directionTo(enemyHQ)));
                 }
             } else {
-                Move.tryMove(rc, Move.dirForward180(rc, Move.getTeamGoDir(rc).opposite()));
+                if(!rc.onTheMap(rc.getLocation().add(dirTarget))){
+                    dirTarget = dirTarget.opposite();
+                }
+                Move.tryMove(rc, Move.dirForward180(rc, dirTarget));
             }
         }
     }
