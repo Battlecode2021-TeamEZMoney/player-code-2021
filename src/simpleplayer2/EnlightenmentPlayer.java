@@ -39,9 +39,8 @@ public class EnlightenmentPlayer {
                 }
             }
             
-            if (shouldBid()) {
-                tryBid(getBidAmount());
-            }
+            int bidAmount = Bidding.bidAmount(rc);
+            if (rc.canBid(bidAmount)) rc.bid(bidAmount);
 
             lastVoteCount = rc.getTeamVotes();
 
