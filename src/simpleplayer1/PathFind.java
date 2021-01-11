@@ -3,6 +3,7 @@ package simpleplayer1;
 import java.util.*;
 
 import battlecode.common.*;
+import common.DirectionUtils;
 import common.DS.HashTable;
 
 class Node implements Comparator<Node> {
@@ -49,7 +50,7 @@ public class PathFind {
 
             for (int i = 0; i < 8; i++) {
                 t = Clock.getBytecodeNum();
-                Node nc = new Node(c.node.add(Direction.values()[i]), 0.0);
+                Node nc = new Node(c.node.add(DirectionUtils.nonCenterDirections[i]), 0.0);
                 if(nc.node.equals(rc.getLocation())) {
                     return rc.getLocation().directionTo(c.node);
                 }
@@ -82,9 +83,9 @@ public class PathFind {
         Direction rtn = Direction.NORTH;
         double mindist = 999999999;
         for (int i = 0; i < 8; i++) {
-            if (dist.get(rc.getLocation().add(Direction.values()[i])) < mindist) {
+            if (dist.get(rc.getLocation().add(DirectionUtils.nonCenterDirections[i])) < mindist) {
                 mindist = dist.get(rc.getLocation().add(rtn));
-                rtn = Direction.values()[i];
+                rtn = DirectionUtils.nonCenterDirections[i];
             }
         }
 
