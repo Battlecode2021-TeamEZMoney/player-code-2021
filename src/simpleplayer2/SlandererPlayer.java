@@ -4,9 +4,19 @@ import battlecode.common.*;
 
 public class SlandererPlayer {
     private static RobotController rc;
+    private static MapLocation hqLocation;
     private static int turnCount = 0;
     static void runSlanderer(RobotController rcin) throws GameActionException {
         SlandererPlayer.rc = rcin;
+        if (turnCount == 0) {
+            RobotInfo[] robots = rc.senseNearbyRobots(2, rc.getTeam());
+            for (RobotInfo robot : robots) {
+                if (robot.getType() == RobotType.ENLIGHTENMENT_CENTER) {
+                    hqLocation = robot.getLocation();
+                    break;
+                }
+            }
+        }
         while(rc.getType().equals(RobotType.SLANDERER)){
             turnCount++;
             if (rc.isReady()){

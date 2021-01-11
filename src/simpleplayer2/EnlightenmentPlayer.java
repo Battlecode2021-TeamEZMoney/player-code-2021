@@ -1,6 +1,8 @@
 package simpleplayer2;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 import battlecode.common.*;
 import common.*;
@@ -13,16 +15,15 @@ public class EnlightenmentPlayer {
     private static int unitsIndex = 0;
     private static int spawnIndex = 0;
     private static RobotType unitToBuild = RobotType.POLITICIAN;
-    private static ArrayList<HQData> enemyHQs = new ArrayList<HQData>();
-    private static ArrayList<HQData> friendlyHQs = new ArrayList<HQData>();
-    //private static ArrayList<HQData> neutralHQs = new ArrayList<HQData>();
+    private static Set<MapLocation> enemyHQs = new HashSet<MapLocation>();
+    private static Set<MapLocation> friendlyHQs = new HashSet<MapLocation>();
+    private static Set<MapLocation> neutralHQs = new HashSet<MapLocation>();
     private static ArrayList<Integer> units = new ArrayList<Integer>();
     static void runEnlightenmentCenter(RobotController rcin) throws GameActionException {
         EnlightenmentPlayer.rc = rcin;
         while (true){
             turnCount++;
             //TODO: Implement smart handling of other units and other HQ
-            //checkHQs();
             //gatherIntel();
             
             if(rc.isReady()){
@@ -32,8 +33,7 @@ public class EnlightenmentPlayer {
                 if (buildableDir(buildDirection)){
                     rc.buildRobot(unitToBuild, buildDirection, infToSpend);
                     unitsBuilt++;
-                    //TODO: Implement uses for friendly bot tracking
-                    //addAllFriendlyBots(rc.senseNearbyRobots(rc.getLocation().add(buildDirection), 0, rc.getTeam()));
+                    addAllFriendlyBots(rc.senseNearbyRobots(rc.getLocation().add(buildDirection), 0, rc.getTeam()));
                     //TODO: Implement flag based orders
                     //trySetFlag(getOrdersForUnit(unitToBuild));
                 }
@@ -45,50 +45,25 @@ public class EnlightenmentPlayer {
 
             lastVoteCount = rc.getTeamVotes();
 
-            //TODO: Implement flag handling
-            /*while(Clock.getBytecodesLeft() > 500){
+            while(Clock.getBytecodesLeft() > 500){
                 int unitID = units.get(unitsIndex);
                 if(rc.canGetFlag(unitID)){
-                    parseFlag(rc.getFlag(unitID));
+                    parseUnitFlag(rc.getFlag(unitID));
+                    if(++unitsIndex >= units.size()){
+                        unitsIndex = 0;
+                    }
                 } else {
                     units.remove(units.get(unitID));
                 }
-                if(++unitsIndex >= units.size()){
+                if(unitsIndex >= units.size()){
                     unitsIndex = 0;
                 }
-            }*/
-
+            }
+            Encoding.trySetFlag(rc, getTarget());
             Clock.yield();
         }
     }
 
-    private static boolean IDOutdated(HQData hq, ArrayList<HQData> moveTo){
-        if(hq.hasID() && !hq.isIDCurrent(rc)){
-            if(hq.hasTeam()){
-                hq.setTeam(newTeam(hq.getTeam()));
-            }
-            moveTo.add(hq);
-            return true;
-        }
-        return false;
-    }
-
-    private static Team newTeam(Team team){
-        switch(team){
-            case A: return Team.B;
-            case B: return Team.A;
-            default: return null;
-        }
-    }
-
-    private static void checkHQs(){
-        enemyHQs.removeIf(hq -> IDOutdated(hq, friendlyHQs));
-
-        friendlyHQs.removeIf(hq -> IDOutdated(hq, enemyHQs));
-
-        //TODO: Handle Neutral HQs
-        //for(HQData hq : neutralHQs){}
-    }
 
     private static void gatherIntel(){
 
@@ -168,14 +143,15 @@ public class EnlightenmentPlayer {
         return 0; //TODO: Placeholder
     }
 
-    private static boolean trySetFlag(int newFlag) throws GameActionException{
-        if (rc.canSetFlag(newFlag)){
-            rc.setFlag(newFlag);
-            return true;
-        } else if (rc.canSetFlag(0)){
-            rc.setFlag(0);
-        } 
-        return false;
+    private static int getTarget(){
+        if(enemyHQs.size() > 0){
+            return Encoding.encode((MapLocation) enemyHQs.toArray()[0], Codes.enemyHQ);
+        } else if (neutralHQs.size() > 0) {
+            return Encoding.encode((MapLocation) neutralHQs.toArray()[0], Codes.neutralHQ);
+        } else if (rc.senseNearbyRobots(999, rc.getTeam().opponent()).length > 1){
+            return Encoding.encode(rc.getLocation(), Codes.patrol);
+        }
+        return Encoding.encode(rc.getLocation(), Codes.simple);
     }
 
     private static boolean shouldBid(){
@@ -192,8 +168,20 @@ public class EnlightenmentPlayer {
         }
     }
 
-    private static void parseFlag(int flag){
-        //TODO: Flag parsing
+    private static void parseUnitFlag(int flag){
+        MapLocation tempLocation = Encoding.decodeLocation(rc, flag);
+        switch(Encoding.decodeInfo(flag)){
+            case 2:enemyHQs.add(tempLocation); 
+                   friendlyHQs.remove(tempLocation);
+                   neutralHQs.remove(tempLocation);
+                   return;
+            case 3:enemyHQs.remove(tempLocation); 
+                   friendlyHQs.add(tempLocation);
+                   neutralHQs.remove(tempLocation);
+                   return;
+            case 4:neutralHQs.add(tempLocation);
+                   return;
+        }
     }
     
 }

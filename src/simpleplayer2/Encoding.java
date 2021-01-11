@@ -6,7 +6,7 @@ public class Encoding {
 	private static final int LOC_BITMASK = (1 << LOC_BITS) - 1;
 	private static final int INFO_BITS = 5;
 	private static final int INFO_BITMASK = (1 << INFO_BITS) - 1;
-	static int encode(RobotController rc, MapLocation loc, int info) {
+	static int encode(MapLocation loc, int info) {
 		int x = loc.x, y = loc.y;
 		int xEnc = x & LOC_BITMASK, yEnc = y & LOC_BITMASK;
 		return (info << (2*LOC_BITS)) + (xEnc << LOC_BITS) + yEnc;
@@ -25,7 +25,17 @@ public class Encoding {
 		return new MapLocation(loc[0], loc[1]);
 	}
 	
-	static int decodeInfo (RobotController rc, int encoded) {
+	static int decodeInfo (int encoded) {
 		return (encoded >> 2*LOC_BITS) & INFO_BITMASK;
 	}
+
+	public static boolean trySetFlag(RobotController rc, int newFlag) throws GameActionException{
+        if (rc.canSetFlag(newFlag)){
+            rc.setFlag(newFlag);
+            return true;
+        } else if (rc.canSetFlag(0)){
+            rc.setFlag(0);
+        } 
+        return false;
+    }
 }
