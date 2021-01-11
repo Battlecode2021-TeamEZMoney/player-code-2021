@@ -66,7 +66,7 @@ public class Bidding {
 			}
 		}
 		System.out.println(bid + " " + rc.getInfluence());
-		bid = Math.min(bid + (int) (Math.random() * 0), rc.getInfluence()/2);
+		bid = Math.min(bid + (int) (Math.random() * 0), rc.getInfluence()/20);
 		
 		prevBid = bid;
 		prevTeamVotes = curTeamVotes;
