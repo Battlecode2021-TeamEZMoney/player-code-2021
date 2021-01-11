@@ -2,14 +2,14 @@ package common.DS;
 
 public class LinkedList<T> {
     public int size = 0;
-    public LinkedNode head;
-    public LinkedNode end;
+    public LinkedNode<T> head;
+    public LinkedNode<T> end;
     public LinkedList() {
 
     }
     public void add(T obj) {
         if (end != null) {
-            LinkedNode newNode = new LinkedNode(obj);
+            LinkedNode<T> newNode = new LinkedNode(obj);
             newNode.prev = end;
             end.next = newNode;
             end = newNode;
@@ -20,9 +20,9 @@ public class LinkedList<T> {
         }
         size++;
     }
-    public LinkedNode dequeue() {
+    public LinkedNode<T> dequeue() {
         if (this.size > 0) {
-            LinkedNode removed = head;
+            LinkedNode<T> removed = head;
             remove(head);
             this.size--;
             return removed;
@@ -30,7 +30,7 @@ public class LinkedList<T> {
         return null;
     }
     public boolean contains(T obj) {
-        LinkedNode node = head;
+        LinkedNode<T> node = head;
         while (node != null) {
             if (node.val.equals(obj)) {
                 return true;
@@ -39,7 +39,7 @@ public class LinkedList<T> {
         }
         return false;
     }
-    public void remove(LinkedNode node) {
+    public void remove(LinkedNode<T> node) {
         if (node.prev != null) {
             node.prev.next = node.next;
         }
@@ -57,7 +57,7 @@ public class LinkedList<T> {
         size--;
     }
     public boolean remove(T obj) {
-        LinkedNode node = head;
+        LinkedNode<T> node = head;
         while (node != null) {
             if (node.val.equals(obj)) {
                 remove(node);
