@@ -83,6 +83,20 @@ public class PoliticianPlayer {
                     }
                 }
             }
+            
+            // Testing encoding
+            /*
+            int info = (int) (Math.random() * 32);
+            int encoded = Encoding.encode(rc, rc.getLocation(), info);
+            MapLocation decodedLoc = Encoding.decodeLocation(rc, encoded);
+            int decodedInfo = Encoding.decodeInfo(rc, encoded);
+            if (!decodedLoc.equals(rc.getLocation()) || decodedInfo != info) {
+                System.out.println("Encoded " + encoded);
+                System.out.println("Actual Loc: (" + rc.getLocation().x + ", " + rc.getLocation().y
+    					+ ") : Decoded Loc: (" + decodedLoc.x + ", " + decodedLoc.y + ")");
+                System.out.println("Actual Info: " + info + " ; Decoded Info: " + decodedInfo);
+            }
+            */
             Clock.yield();
         }
 
