@@ -69,9 +69,11 @@ public strictfp class RobotPlayer {
                 rc.buildRobot(toBuild, Direction.WEST, rc.getInfluence() - 1);
             }
         }
-
-        if (rc.getTeamVotes() < 1500 && rc.canBid(2)) {
-            rc.bid(2);
+        
+        int bidAmount = Bidding.bidAmount(rc);
+        if (rc.canBid(bidAmount)) {
+        	System.out.println("Bidding " + bidAmount);
+            rc.bid(bidAmount);
         }
 
         if (turnCount % 10 == 0) {
