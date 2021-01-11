@@ -1,6 +1,5 @@
 package common.DS;
 
-
 // code stolen from chow10
 // todo: don't steal code
 
