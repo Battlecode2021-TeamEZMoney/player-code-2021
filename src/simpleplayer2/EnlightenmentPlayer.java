@@ -96,8 +96,14 @@ public class EnlightenmentPlayer {
 
     private static RobotType getUnitToBuild(){
         if (rc.getInfluence() < Constants.minimumPolInf){
+            if(Constants.spawnOrder[spawnIndex].equals(RobotType.MUCKRAKER)){
+                spawnIndex++;
+            }
             return RobotType.MUCKRAKER;
         } else if (rc.getInfluence() < Constants.optimalSlandInf[0]){
+            if(Constants.spawnOrder[spawnIndex].equals(RobotType.POLITICIAN)){
+                spawnIndex++;
+            }
             return RobotType.POLITICIAN;
         } else if (rc.getRoundNum() <= 2) {
             return RobotType.SLANDERER;
