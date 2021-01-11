@@ -3,9 +3,10 @@ package simpleplayer2;
 import battlecode.common.*;
 
 public class SlandererPlayer {
+    static int turnCount = 0;
     static void runSlanderer(RobotController rc) throws GameActionException {
-        while(rc.getType() == RobotType.SLANDERER){
-
+        while(rc.getType().equals(RobotType.SLANDERER)){
+            turnCount++;
 
             Clock.yield();
         }

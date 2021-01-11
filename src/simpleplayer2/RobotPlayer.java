@@ -22,9 +22,6 @@ public strictfp class RobotPlayer {
                         MuckrakerPlayer.runMuckraker(rc);
                         break;
                 }
-
-                Clock.yield();
-
             } catch (Exception e) {
                 e.printStackTrace();
             }
