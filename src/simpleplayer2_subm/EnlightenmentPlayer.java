@@ -1,9 +1,8 @@
-package simpleplayer2;
+package simpleplayer2_subm;
 
 import java.util.ArrayList;
 
 import battlecode.common.*;
-import common.*;
 
 public class EnlightenmentPlayer {
     private static RobotController rc;
