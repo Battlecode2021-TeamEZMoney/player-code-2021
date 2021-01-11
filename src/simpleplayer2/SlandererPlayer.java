@@ -20,14 +20,14 @@ public class SlandererPlayer {
         while(rc.getType().equals(RobotType.SLANDERER)){
             turnCount++;
             if (rc.isReady()){
-                //TODO: Handle detecting enemies
-                /*RobotInfo[] nearbyEnemies = rc.senseNearbyRobots(999, rc.getTeam().opponent());
-                if (nearbyEnemies.length > 0){
-                    MapLocation target = runAwayTo(nearbyEnemies);
+                // Handle detecting enemies
+            	int sensorRadius = rc.getType().sensorRadiusSquared;
+                RobotInfo[] nearbyEnemies = rc.senseNearbyRobots(sensorRadius, rc.getTeam().opponent());
+                if (nearbyEnemies.length > 0) {
+                	Move.tryMove(rc, RunAway.runAwayDirection(rc, nearbyEnemies));
                 } else {
-                    Move.tryMove(rc, dirForward180(getTeamGoDir()));
-                }*/
-                Move.tryMove(rc, Move.dirForward180(rc, getTeamGoDir()));
+                    Move.tryMove(rc, Move.dirForward180(rc, getTeamGoDir()));
+                }
             }
             Clock.yield();
         }
