@@ -5,8 +5,8 @@ import battlecode.common.*;
 public class SlandererPlayer {
     private static RobotController rc;
     private static int turnCount = 0;
-    static void runSlanderer(RobotController rc) throws GameActionException {
-        SlandererPlayer.rc = rc;
+    static void runSlanderer(RobotController rcin) throws GameActionException {
+        SlandererPlayer.rc = rcin;
         while(rc.getType().equals(RobotType.SLANDERER)){
             turnCount++;
             if (rc.isReady()){

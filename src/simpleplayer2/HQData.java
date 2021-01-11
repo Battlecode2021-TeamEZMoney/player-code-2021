@@ -67,7 +67,7 @@ public class HQData {
     }
 
     public boolean hasTeam(){
-        return !team.equals(null);
+        return team != null;
     }
 
     public boolean isNeutral(){

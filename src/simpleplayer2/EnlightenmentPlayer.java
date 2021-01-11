@@ -11,29 +11,33 @@ public class EnlightenmentPlayer {
     private static int unitsBuilt = 0;
     private static int lastVoteCount = 0;
     private static int unitsIndex = 0;
+    private static int spawnIndex = 0;
     private static RobotType unitToBuild = RobotType.POLITICIAN;
     private static ArrayList<HQData> enemyHQs = new ArrayList<HQData>();
     private static ArrayList<HQData> friendlyHQs = new ArrayList<HQData>();
     //private static ArrayList<HQData> neutralHQs = new ArrayList<HQData>();
     private static ArrayList<Integer> units = new ArrayList<Integer>();
-    static void runEnlightenmentCenter(RobotController rc) throws GameActionException {
-        EnlightenmentPlayer.rc = rc;
+    static void runEnlightenmentCenter(RobotController rcin) throws GameActionException {
+        EnlightenmentPlayer.rc = rcin;
         while (true){
             turnCount++;
             //TODO: Implement smart handling of other units and other HQ
             //checkHQs();
             //gatherIntel();
             
-            unitToBuild = getUnitToBuild();
-            int infToSpend = getNewUnitInfluence();
-            Direction buildDirection = getBuildDirection(unitToBuild, getPreferredDirection(), infToSpend);
-            if (canBuild(buildDirection)){
-                rc.buildRobot(unitToBuild, buildDirection, infToSpend);
-                unitsBuilt++;
-                addAllFriendlyBots(rc.senseNearbyRobots(rc.getLocation().add(buildDirection), 0, rc.getTeam()));
-                trySetFlag(getOrdersForUnit(unitToBuild));
+            if(rc.isReady()){
+                unitToBuild = getUnitToBuild();
+                int infToSpend = getNewUnitInfluence();
+                Direction buildDirection = getBuildDirection(unitToBuild, getPreferredDirection(), infToSpend);
+                if (buildableDir(buildDirection)){
+                    rc.buildRobot(unitToBuild, buildDirection, infToSpend);
+                    unitsBuilt++;
+                    //TODO: Implement uses for friendly bot tracking
+                    //addAllFriendlyBots(rc.senseNearbyRobots(rc.getLocation().add(buildDirection), 0, rc.getTeam()));
+                    //TODO: Implement flag based orders
+                    //trySetFlag(getOrdersForUnit(unitToBuild));
+                }
             }
-            
             
             if (shouldBid()) {
                 tryBid(getBidAmount());
@@ -41,7 +45,8 @@ public class EnlightenmentPlayer {
 
             lastVoteCount = rc.getTeamVotes();
 
-            while(Clock.getBytecodesLeft() > 500){
+            //TODO: Implement flag handling
+            /*while(Clock.getBytecodesLeft() > 500){
                 int unitID = units.get(unitsIndex);
                 if(rc.canGetFlag(unitID)){
                     parseFlag(rc.getFlag(unitID));
@@ -51,7 +56,7 @@ public class EnlightenmentPlayer {
                 if(++unitsIndex >= units.size()){
                     unitsIndex = 0;
                 }
-            }
+            }*/
 
             Clock.yield();
         }
@@ -97,9 +102,11 @@ public class EnlightenmentPlayer {
         } else if (rc.getRoundNum() <= 2) {
             return RobotType.SLANDERER;
         } else {
-
+            if(spawnIndex >= Constants.spawnOrder.length){
+                spawnIndex = 0;
+            }
+            return Constants.spawnOrder[spawnIndex++];
         }
-        return RobotType.MUCKRAKER;
     }
 
     static Direction getPreferredDirection(){
@@ -139,7 +146,7 @@ public class EnlightenmentPlayer {
         return Direction.CENTER;
     }
 
-    private static boolean canBuild(Direction dir){
+    private static boolean buildableDir(Direction dir){
         return !dir.equals(Direction.CENTER);
     }
 
@@ -166,11 +173,11 @@ public class EnlightenmentPlayer {
     }
 
     private static boolean shouldBid(){
-        return rc.getTeamVotes() < Constants.votesToWin;
+        return rc.getTeamVotes() < Constants.votesToWin && rc.getRoundNum() > 500;
     }
     
     private static int getBidAmount(){
-        return 1; //TODO: Placeholder
+        return 4; //TODO: Placeholder
     }
 
     private static void tryBid(int bidAmount) throws GameActionException{
