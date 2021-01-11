@@ -3,7 +3,6 @@ package simpleplayer2_subm;
 import java.util.Arrays;
 
 import battlecode.common.*;
-import common.Constants;
 
 public class PoliticianPlayer {
     private static RobotController rc;
@@ -29,7 +28,7 @@ public class PoliticianPlayer {
                         rc.empower(RobotType.POLITICIAN.actionRadiusSquared);
                     } 
                     RobotInfo[] tempEnemies = rc.senseNearbyRobots(5, rc.getTeam().opponent());
-                    if ((tempEnemies.length > 4 || (tempEnemies.length > 2 && rc.getLocation().distanceSquaredTo(hqLocation) <= 10)) && rc.canEmpower(5)){
+                    if ((tempEnemies.length > 4 || (tempEnemies.length > 1 && rc.getLocation().distanceSquaredTo(hqLocation) <= 10)) && rc.canEmpower(5)){
                         rc.empower(5);
                     }
                     MapLocation neutralTarget;

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import battlecode.common.*;
 
-
 public class EnlightenmentPlayer {
     private static RobotController rc;
     private static int turnCount = 0;
@@ -96,8 +95,14 @@ public class EnlightenmentPlayer {
 
     private static RobotType getUnitToBuild(){
         if (rc.getInfluence() < Constants.minimumPolInf){
+            if(Constants.spawnOrder[spawnIndex].equals(RobotType.MUCKRAKER)){
+                spawnIndex++;
+            }
             return RobotType.MUCKRAKER;
         } else if (rc.getInfluence() < Constants.optimalSlandInf[0]){
+            if(Constants.spawnOrder[spawnIndex].equals(RobotType.POLITICIAN)){
+                spawnIndex++;
+            }
             return RobotType.POLITICIAN;
         } else if (rc.getRoundNum() <= 2) {
             return RobotType.SLANDERER;
@@ -127,7 +132,7 @@ public class EnlightenmentPlayer {
                 }
             } 
             return Constants.optimalSlandInf[0];
-            case POLITICIAN: return Math.min(100, Math.max(12, (int) rc.getInfluence()/2));
+            case POLITICIAN: return Math.min(100, Math.max(Constants.minimumPolInf, (int) rc.getInfluence()/4));
             case MUCKRAKER: return 1;
             default: return 1;
         }
