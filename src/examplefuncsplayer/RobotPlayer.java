@@ -1,6 +1,5 @@
 package examplefuncsplayer;
 import battlecode.common.*;
-import simpleplayer1.Bidding;
 
 public strictfp class RobotPlayer {
     static RobotController rc;
@@ -67,11 +66,6 @@ public strictfp class RobotPlayer {
             } else {
                 break;
             }
-        }
-        int bidAmount = Bidding.bidAmount(rc);
-        if (rc.canBid(bidAmount)) {
-        	System.out.println("Bidding " + bidAmount);
-            rc.bid(bidAmount);
         }
     }
 
