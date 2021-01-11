@@ -47,7 +47,7 @@ public class HashTable<T> {
     public LinkedNode<T> next() {
         if (size != 0) {
             if (curr == null) {
-                for (int i = table.length; --tabIndex >= 0; ) {
+                for (tabIndex = table.length; --tabIndex >= 0; ) {
                     if (table[tabIndex].size != 0) {
                         curr = table[tabIndex].head;
                         return curr;
