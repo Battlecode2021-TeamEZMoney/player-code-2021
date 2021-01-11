@@ -7,7 +7,7 @@ public class Move {
         if (rc.canMove(dir)) {
             rc.move(dir);
             return true;
-        } else
-            return false;
+        }
+        return false;
     }
 }
