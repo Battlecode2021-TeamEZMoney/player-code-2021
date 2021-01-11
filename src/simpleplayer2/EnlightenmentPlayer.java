@@ -127,7 +127,7 @@ public class EnlightenmentPlayer {
                 }
             } 
             return Constants.optimalSlandInf[0];
-            case POLITICIAN: return Math.max(12, (int) rc.getInfluence()/2);
+            case POLITICIAN: return Math.min(100, Math.max(12, (int) rc.getInfluence()/2));
             case MUCKRAKER: return 1;
             default: return 1;
         }
@@ -177,7 +177,7 @@ public class EnlightenmentPlayer {
     }
     
     private static int getBidAmount(){
-        return 4; //TODO: Placeholder
+        return (int) Math.max(4, rc.getInfluence()*.01); //TODO: Placeholder
     }
 
     private static void tryBid(int bidAmount) throws GameActionException{
