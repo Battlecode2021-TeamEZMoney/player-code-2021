@@ -33,9 +33,6 @@ public class PathFind {
         if (rc.getLocation().equals(ml))
             return Direction.CENTER;
 
-        if (!rc.canSenseLocation(ml))
-            FuzzPathing.pathTo(rc, ml);
-
         HashMap<MapLocation, Double> dist = new HashMap<MapLocation, Double>();
         HashTable<MapLocation> visited = new HashTable<MapLocation>(100);
         PriorityQueue<Node> pq = new PriorityQueue<Node>(100, new Node());
@@ -53,7 +50,7 @@ public class PathFind {
 
             for (int i = 0; i < 8; i++) {
                 t = Clock.getBytecodeNum();
-                Node nc = new Node(c.node.add(Constants.directions[i]), 0.0);
+                Node nc = new Node(c.node.add(Direction.values()[i]), 0.0);
                 if(nc.node.equals(rc.getLocation())) {
                     return rc.getLocation().directionTo(c.node);
                 }
@@ -86,9 +83,9 @@ public class PathFind {
         Direction rtn = Direction.NORTH;
         double mindist = 999999999;
         for (int i = 0; i < 8; i++) {
-            if (dist.get(rc.getLocation().add(Constants.directions[i])) < mindist) {
+            if (dist.get(rc.getLocation().add(Direction.values()[i])) < mindist) {
                 mindist = dist.get(rc.getLocation().add(rtn));
-                rtn = Constants.directions[i];
+                rtn = Direction.values()[i];
             }
         }
 
