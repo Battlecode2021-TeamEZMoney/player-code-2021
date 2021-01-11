@@ -1,4 +1,4 @@
-package simpleplayer1;
+package simpleplayer1_subm;
 import battlecode.common.*;
 
 public class Bidding {
@@ -26,6 +26,7 @@ public class Bidding {
 		}
 		bid = Math.max(bid, 1) + (int) (Math.random() * 2);
 		bid = Math.min(bid, rc.getInfluence());
+		
 		prevBid = bid;
 		prevTeamVotes = curTeamVotes;
 		return bid;
@@ -61,11 +62,11 @@ public class Bidding {
 			} else {
 				// lost previous round
 				accum = DECAY_RATE * accum + curVoteValue;
-				System.out.println("Accum: " + accum);
+				//System.out.println("Accum: " + accum);
 				bid = (int) ((GROWTH_RATE+accum/10) * Math.max(1, prevBid));
 			}
 		}
-		System.out.println(bid + " " + rc.getInfluence());
+		//System.out.println(bid + " " + rc.getInfluence());
 		bid = Math.min(bid + (int) (Math.random() * 0), rc.getInfluence()/2);
 		
 		prevBid = bid;

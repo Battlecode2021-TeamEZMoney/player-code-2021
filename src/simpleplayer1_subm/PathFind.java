@@ -1,10 +1,7 @@
-package simpleplayer1;
+package simpleplayer1_subm;
 
 import java.util.*;
-
 import battlecode.common.*;
-import common.DirectionUtils;
-import common.DS.HashTable;
 
 class Node implements Comparator<Node> {
     public MapLocation node;
@@ -44,9 +41,9 @@ public class PathFind {
             Node c = pq.poll();
             int t = Clock.getBytecodeNum();
             Double current_dist = dist.get(c.node);
-            System.out.println("Getting cdist:\t" + (Clock.getBytecodeNum()-t));
+            //System.out.println("Getting cdist:\t" + (Clock.getBytecodeNum()-t));
             rc.setIndicatorDot(c.node, 255, 0, 0);
-            System.out.println(Clock.getBytecodeNum());
+            //System.out.println(Clock.getBytecodeNum());
 
             for (int i = 0; i < 8; i++) {
                 t = Clock.getBytecodeNum();
@@ -55,12 +52,12 @@ public class PathFind {
                     return rc.getLocation().directionTo(c.node);
                 }
 
-                System.out.println("Init next node:\t" + (Clock.getBytecodeNum()-t));
+                //System.out.println("Init next node:\t" + (Clock.getBytecodeNum()-t));
                 if (rc.canSenseLocation(nc.node)) {
                     nc.cost = 1/rc.sensePassability(nc.node);
                     t = Clock.getBytecodeNum();
                     if (!visited.contains(nc.node)) {
-                        System.out.println("Visited Check:\t" + (Clock.getBytecodeNum() - t));
+                        //System.out.println("Visited Check:\t" + (Clock.getBytecodeNum() - t));
                         visited.add(nc.node);
                         Double ndist = 999999999.0;
 
@@ -72,11 +69,11 @@ public class PathFind {
                             dist.put(nc.node, current_dist + nc.cost);
                         }
                         pq.add(new Node(nc.node, current_dist + nc.cost));
-                        System.out.println("PLAYER1 Update and Add:\t" + (Clock.getBytecodeNum() - t));
+                        //System.out.println("PLAYER2 Update and Add:\t" + (Clock.getBytecodeNum() - t));
                     }
                 }
             }
-            System.out.println("TOTAL LOOP:\t" + (Clock.getBytecodeNum()-tt));
+            //System.out.println("TOTAL LOOP:\t" + (Clock.getBytecodeNum()-tt));
 
         }
 
@@ -89,9 +86,9 @@ public class PathFind {
             }
         }
 
-        System.out.println(dist.get(rc.getLocation()));
+        //System.out.println(dist.get(rc.getLocation()));
 
-        System.out.println(Clock.getBytecodeNum());
+        //System.out.println(Clock.getBytecodeNum());
 
         return rtn;
     }
@@ -138,7 +135,7 @@ public class PathFind {
     // while (!queue.isEmpty()) {
     // t = Clock.getBytecodeNum();
     // MapLocation c = queue.poll();
-    // System.out.println(c);
+    // //System.out.println(c);
     // rc.setIndicatorDot(c, 0, 0, 255);
 
     // for (Direction d : enumLists.directions) {
@@ -165,7 +162,7 @@ public class PathFind {
 
     // if (Clock.getBytecodeNum() > 2000)
     // break;
-    // // System.out.println("Used:\t" + (Clock.getBytecodeNum() - t));
+    // // //System.out.println("Used:\t" + (Clock.getBytecodeNum() - t));
     // }
 
     // rc.setIndicatorDot(closest_possible, 255, 0, 0);
@@ -176,9 +173,9 @@ public class PathFind {
     // }
 
     // if (!tryMove(rc, rc.getLocation().directionTo(curr))) {
-    // System.out.println("Failed to move");
+    // //System.out.println("Failed to move");
     // } else {
-    // System.out.println("Moved!");
+    // //System.out.println("Moved!");
     // }
     // } else {
     // Direction target_direction = rc.getLocation().directionTo(ml);
