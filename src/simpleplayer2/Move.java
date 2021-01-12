@@ -39,34 +39,43 @@ public class Move {
     }
     
     /*
-    static Direction dirForward90(RobotController rc, Direction dir) throws GameActionException{
-        double[] movenesses = [trySenseMoveness(dir.rotateLeft()), trySenseMoveness(dir), trySenseMoveness(dir.rotateRight())]
+    static boolean pathfindTo(RobotController rc, MapLocation destination) throws GameActionException{
+        dir = rc.getLocation().directionTo(destination)
+        if destination.isWithinDistanceSquared(rc.getLocation(), 2)
+            tryMove(rc, dir);
+        double[] movenesses = [trySenseMoveness(rc, dir.rotateLeft()), trySenseMoveness(rc, dir), trySenseMoveness(rc, dir.rotateRight())]
         switch (dir){
             case NORTH:
             case EAST:
             case SOUTH:
             case WEST:
                 if ( (movenesses[1] > movenesses[0]) && (movenesses[1] > movenesses[2]) )
-                    return dir;
+                    rc.move(dir);
+                    return true;
                 else if (movenesses[0] > movenesses[2])
-                    return dir.rotateLeft();
+                    rc.move(dir.rotateLeft());
+                    return true;
                 else if (movenesses[2] > 0.0)
-                    return dir.rotateRight();
-                return Direction.CENTER;
+                    rc.move(dir.rotateRight());
+                    return true;
+                return false;
             default:
                 if ( (movenesses[1] > movenesses[0] * 0.5) && (movenesses[1] > movenesses[2] * 0.5) )
-                    return dir;
+                    rc.move(dir);
+                    return true;
                 else if (movenesses[0] > movenesses[2])
-                    return dir.rotateLeft();
+                    rc.move(dir.rotateLeft());
+                    return true;
                 else if (movenesses[2] > 0.0)
-                    return dir.rotateRight();
-                return Direction.CENTER;
+                    rc.move(dir.rotateRight());
+                    return true;
+                return false;
         }
     }
     
-    double trySenseMoveness(Direction dir){
-        if canMove(dir)
-            return this.sensePassability(this.adjacentLocation(dir));
+    static double trySenseMoveness(RobotController rc, Direction dir){
+        if rc.canMove(dir)
+            return rc.sensePassability(rc.adjacentLocation(dir));
         else return 0.0;
     }
     */
