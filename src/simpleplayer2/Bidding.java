@@ -61,11 +61,11 @@ public class Bidding {
 			} else {
 				// lost previous round
 				accum = DECAY_RATE * accum + curVoteValue;
-				System.out.println("Accum: " + accum);
+				//System.out.println("Accum: " + accum);
 				bid = (int) ((GROWTH_RATE+accum/10) * Math.max(1, prevBid));
 			}
 		}
-		System.out.println(bid + " " + rc.getInfluence());
+		//System.out.println(bid + " " + rc.getInfluence());
 		bid = Math.min(bid + (int) (Math.random() * 0), rc.getInfluence()/20);
 		
 		prevBid = bid;

@@ -72,7 +72,7 @@ public strictfp class RobotPlayer {
         
         int bidAmount = Bidding.bidAmount(rc);
         if (rc.canBid(bidAmount)) {
-        	System.out.println("Bidding " + bidAmount);
+        	//System.out.println("Bidding " + bidAmount);
             rc.bid(bidAmount);
         }
 

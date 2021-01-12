@@ -45,7 +45,7 @@ public class EnlightenmentPlayer {
 
             lastVoteCount = rc.getTeamVotes();
 
-            while(Clock.getBytecodesLeft() > 500){
+            while(Clock.getBytecodesLeft() > 1000){
                 int unitID = units.get(unitsIndex);
                 if(rc.canGetFlag(unitID)){
                     parseUnitFlag(rc.getFlag(unitID));
