@@ -9,9 +9,11 @@ public class MuckrakerPlayer {
     private static int hqID;
     private static int turnCount = 0;
     private static int mode = 1;
+    private static Direction dirTarget;
 
     static void runMuckraker(RobotController rcin) throws GameActionException {
         MuckrakerPlayer.rc = rcin;
+        dirTarget = Move.getTeamGoDir(rc).opposite();
         if (turnCount == 0) {
             RobotInfo[] robots = rc.senseNearbyRobots(2, rc.getTeam());
             for (RobotInfo robot : robots) {
@@ -113,7 +115,10 @@ public class MuckrakerPlayer {
                 }
                 
             } else {
-                Move.tryMove(rc, Move.dirForward180(rc, Move.getTeamGoDir(rc).opposite()));
+                if(!rc.onTheMap(rc.getLocation().add(dirTarget))){
+                    dirTarget = dirTarget.opposite();
+                }
+                Move.tryMove(rc, Move.dirForward180(rc, dirTarget));
             }
         }
     }

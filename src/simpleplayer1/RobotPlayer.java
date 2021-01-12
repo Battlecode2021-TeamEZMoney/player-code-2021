@@ -77,7 +77,7 @@ public strictfp class RobotPlayer {
         }
 
         if (turnCount % 10 == 0) {
-            System.out.println(rc.getInfluence());
+            //System.out.println(rc.getInfluence());
         }
     }
 

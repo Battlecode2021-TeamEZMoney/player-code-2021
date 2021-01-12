@@ -1,10 +1,14 @@
 package simpleplayer2;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import battlecode.common.*;
 
 public class SlandererPlayer {
     private static RobotController rc;
     private static MapLocation hqLocation;
+    private static int hqID;
     private static int turnCount = 0;
     static void runSlanderer(RobotController rcin) throws GameActionException {
         SlandererPlayer.rc = rcin;
@@ -13,6 +17,7 @@ public class SlandererPlayer {
             for (RobotInfo robot : robots) {
                 if (robot.getType() == RobotType.ENLIGHTENMENT_CENTER) {
                     hqLocation = robot.getLocation();
+                    hqID = robot.getID();
                     break;
                 }
             }
@@ -22,8 +27,9 @@ public class SlandererPlayer {
             if (rc.isReady()){
                 // Handle detecting enemies
             	int sensorRadius = rc.getType().sensorRadiusSquared;
-                RobotInfo[] nearbyEnemies = rc.senseNearbyRobots(sensorRadius, rc.getTeam().opponent());
-                if (nearbyEnemies.length > 0) {
+                ArrayList<RobotInfo> nearbyEnemies = new ArrayList<RobotInfo>(Arrays.asList(rc.senseNearbyRobots(sensorRadius, rc.getTeam().opponent())));
+                nearbyEnemies.removeIf(e -> (!e.getType().equals(RobotType.MUCKRAKER)));
+                if (nearbyEnemies.size() > 0) {
                 	Move.tryMove(rc, RunAway.runAwayDirection(rc, nearbyEnemies));
                 } else {
                     Move.tryMove(rc, Move.dirForward180(rc, getTeamGoDir()));
@@ -31,6 +37,8 @@ public class SlandererPlayer {
             }
             Clock.yield();
         }
+        PoliticianPlayer.hqID = hqID;
+        PoliticianPlayer.hqLocation = hqLocation;
         PoliticianPlayer.runPolitician(rc, true);
     }
 

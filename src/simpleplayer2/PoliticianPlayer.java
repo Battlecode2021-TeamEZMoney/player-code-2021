@@ -8,23 +8,25 @@ import common.Constants;
 public class PoliticianPlayer {
     private static RobotController rc;
     private static MapLocation enemyHQ = null;
-    private static MapLocation hqLocation;
+    static MapLocation hqLocation;
     private static MapLocation neutralTar;
-    private static int hqID;
+    static int hqID;
     private static int turnCount = 0;
     private static int mode = 1;
-    private static Direction dirTarget = Move.getTeamGoDir(rc).opposite();
+    private static Direction dirTarget;
     static void runPolitician(RobotController rcin, boolean wasSlanderer) throws GameActionException {
         PoliticianPlayer.rc = rcin;
-        if (turnCount == 0) {
-            RobotInfo[] robots = rc.senseNearbyRobots(2, rc.getTeam());
-            for (RobotInfo robot : robots) {
-                if (robot.getType() == RobotType.ENLIGHTENMENT_CENTER) {
-                    hqLocation = robot.getLocation();
-                    hqID = robot.getID();
-                    break;
-                }
+        dirTarget = Move.getTeamGoDir(rc).opposite();
+        RobotInfo[] robots = rc.senseNearbyRobots(2, rc.getTeam());
+        for (RobotInfo robot : robots) {
+            if (robot.getType() == RobotType.ENLIGHTENMENT_CENTER) {
+                hqLocation = robot.getLocation();
+                hqID = robot.getID();
+                break;
             }
+        }
+        if (hqLocation == null){
+            rc.empower(1);
         }
         while (true) {
             turnCount++;
@@ -34,10 +36,10 @@ public class PoliticianPlayer {
                 mode = 1;
             }
             switch(mode){
-                case 2: runAttackCode();
-                case 4: runNeutralCode();
-                case 5: runDefendCode();
-                default: runSimple();
+                case 2: runAttackCode(); break;
+                case 4: runNeutralCode(); break;
+                case 5: runDefendCode(); break;
+                default: runSimple(); break;
             }
             
             Clock.yield();
