@@ -20,6 +20,9 @@ public class PoliticianPlayer {
                 }
             }
         }
+        if (hqLocation == null){
+            rc.empower(1); 
+        }
         while (true) {
             turnCount++;
             currentRound: {

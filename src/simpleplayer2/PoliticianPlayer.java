@@ -8,7 +8,7 @@ import common.Constants;
 public class PoliticianPlayer {
     private static RobotController rc;
     private static MapLocation enemyHQ = null;
-    static MapLocation hqLocation;
+    static MapLocation hqLocation = null;
     private static MapLocation neutralTar;
     static int hqID;
     private static int turnCount = 0;
@@ -26,7 +26,7 @@ public class PoliticianPlayer {
             }
         }
         if (hqLocation == null){
-            rc.empower(1);
+            rc.empower(1); 
         }
         while (true) {
             turnCount++;
@@ -111,14 +111,17 @@ public class PoliticianPlayer {
         for(RobotInfo ally : nearbyAllies){
             if (ally.type.equals(RobotType.ENLIGHTENMENT_CENTER)) {
                 Encoding.trySetFlag(rc, Encoding.encode(ally.getLocation(), Codes.friendlyHQ));
+                break;
             }
         }
 
         if(neutralTar.isAdjacentTo(rc.getLocation())){
             if(Arrays.asList(Direction.cardinalDirections()).contains(rc.getLocation().directionTo(neutralTar))){
-                rc.empower(0);
+                rc.empower(1);
             } else {
-                Move.tryMove(rc, Move.dirForward90(rc, rc.getLocation().directionTo(neutralTar)));
+                if(!Move.tryMove(rc, Move.dirForward90(rc, rc.getLocation().directionTo(neutralTar)))){
+                    rc.empower(2);
+                };
             }
         } else {
             Move.tryMove(rc, Move.dirForward180(rc, rc.getLocation().directionTo(neutralTar)));
@@ -138,6 +141,7 @@ public class PoliticianPlayer {
         for(RobotInfo ally : nearbyAllies){
             if (ally.type.equals(RobotType.ENLIGHTENMENT_CENTER)) {
                 Encoding.trySetFlag(rc, Encoding.encode(ally.getLocation(), Codes.friendlyHQ));
+                break;
             }
         }
 
@@ -169,9 +173,11 @@ public class PoliticianPlayer {
                 neutralTarget = neutralECs[0].getLocation();
                 if(neutralTarget.isAdjacentTo(rc.getLocation())){
                     if(Arrays.asList(Direction.cardinalDirections()).contains(rc.getLocation().directionTo(neutralTarget))){
-                        rc.empower(0);
+                        rc.empower(1);
                     } else {
-                        Move.tryMove(rc, Move.dirForward90(rc, rc.getLocation().directionTo(neutralTarget)));
+                        if(!Move.tryMove(rc, Move.dirForward90(rc, rc.getLocation().directionTo(neutralTarget)))){
+                            rc.empower(2);
+                        };
                     }
                 } else {
                     Move.tryMove(rc, Move.dirForward180(rc, rc.getLocation().directionTo(neutralTarget)));
