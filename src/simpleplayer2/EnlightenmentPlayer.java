@@ -39,8 +39,9 @@ public class EnlightenmentPlayer {
                 }
             }
             
-            int bidAmount = Bidding.bidAmount(rc);
-            if (rc.canBid(bidAmount)) rc.bid(bidAmount);
+            if(shouldBid()){
+                tryBid(Bidding.bidAmount(rc));
+            }
 
             lastVoteCount = rc.getTeamVotes();
 
@@ -52,7 +53,7 @@ public class EnlightenmentPlayer {
                         unitsIndex = 0;
                     }
                 } else {
-                    units.remove(unitID);
+                    units.remove(unitsIndex);
                 }
                 if(unitsIndex >= units.size()){
                     unitsIndex = 0;
