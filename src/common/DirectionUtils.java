@@ -95,4 +95,14 @@ public class DirectionUtils {
             default: return dir;
         }
     }
+
+    public static boolean isCardinal(Direction dir){
+        switch(dir){
+            case NORTH:
+            case EAST:
+            case SOUTH:
+            case WEST: return true;
+            default: return false;
+        }
+    }
 }

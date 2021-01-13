@@ -1,4 +1,4 @@
-package simpleplayer2;
+package simpleplayer3;
 
 import battlecode.common.*;
 import common.DirectionUtils;

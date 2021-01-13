@@ -1,4 +1,4 @@
-package simpleplayer2;
+package simpleplayer3;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -155,7 +155,7 @@ public class EnlightenmentPlayer {
     }
 
     private static boolean shouldBid(){
-        return rc.getTeamVotes() < Constants.votesToWin && rc.getRoundNum() > 500;
+        return rc.getTeamVotes() < Constants.votesToWin && rc.getRoundNum() > (GameConstants.GAME_MAX_NUMBER_OF_ROUNDS / 6);
     }
     
     private static int getBidAmount(){

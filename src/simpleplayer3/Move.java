@@ -12,6 +12,21 @@ public class Move {
         return false;
     }
 
+    static Direction dirForward90(RobotController rc, Direction dir) throws GameActionException{
+        if(rc.canMove(dir) || !rc.onTheMap(rc.getLocation().add(dir))){
+            return dir;
+        } else if (rc.canMove(dir.rotateLeft())){
+            return dir.rotateLeft();
+        } else if (rc.canMove(dir.rotateRight())){
+            return dir.rotateRight();
+        }
+        return dir;
+    }
+
+    static boolean tryDirForward90(RobotController rc, Direction dir) throws GameActionException{
+        return tryMove(rc, dirForward90(rc, dir));
+    }
+
     static Direction dirForward180(RobotController rc, Direction dir) throws GameActionException{
         if(rc.canMove(dir) || !rc.onTheMap(rc.getLocation().add(dir))){
             return dir;
@@ -27,17 +42,14 @@ public class Move {
         return dir;
     }
 
-    static Direction dirForward90(RobotController rc, Direction dir) throws GameActionException{
-        if(rc.canMove(dir) || !rc.onTheMap(rc.getLocation().add(dir))){
-            return dir;
-        } else if (rc.canMove(dir.rotateLeft())){
-            return dir.rotateLeft();
-        } else if (rc.canMove(dir.rotateRight())){
-            return dir.rotateRight();
-        }
-        return dir;
+    static boolean tryDirForward180(RobotController rc, Direction dir) throws GameActionException{
+        return tryMove(rc, dirForward180(rc, dir));
     }
     
+    static Direction getTeamGoDir(RobotController robot){
+        return robot.getTeam().equals(Team.A) ? Direction.WEST : Direction.EAST; //TODO: make this smarter than assuming team a is on the left side
+    }
+
     /*
     static boolean pathfindTo(RobotController rc, MapLocation destination) throws GameActionException{
         dir = rc.getLocation().directionTo(destination)
@@ -79,8 +91,4 @@ public class Move {
         else return 0.0;
     }
     */
-    
-    static Direction getTeamGoDir(RobotController robot){
-        return robot.getTeam().equals(Team.A) ? Direction.WEST : Direction.EAST; //TODO: make this smarter than assuming team a is on the left side
-    }
 }

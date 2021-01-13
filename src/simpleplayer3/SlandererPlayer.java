@@ -1,4 +1,4 @@
-package simpleplayer2;
+package simpleplayer3;
 
 import java.util.ArrayList;
 import java.util.Arrays;
