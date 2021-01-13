@@ -15,52 +15,47 @@ public class MuckrakerPlayer {
     static void runMuckraker(RobotController rcin) throws GameActionException {
         MuckrakerPlayer.rc = rcin;
         dirTarget = Move.getTeamGoDir(rc).opposite();
-        if (turnCount == 0) {
-            RobotInfo[] robots = rc.senseNearbyRobots(2, rc.getTeam());
-            for (RobotInfo robot : robots) {
-                if (robot.getType() == RobotType.ENLIGHTENMENT_CENTER) {
-                    hqLocation = robot.getLocation();
-                    hqID = robot.getID();
-                    break;
-                }
-            }
-        }
+        getHomeHQ();
         while (true) {
             turnCount++;
-            if(rc.canGetFlag(hqID)){
+            if (rc.canGetFlag(hqID)) {
                 parseHQFlag(rc.getFlag(hqID));
             } else {
                 mode = 1;
             }
 
             switch (mode) {
-                case 2: runAttackCode();
-                default: runSimpleCode();
+                case 2:
+                    runAttackCode();
+                default:
+                    runSimpleCode();
             }
 
             Clock.yield();
         }
     }
 
-    private static void parseHQFlag(int flag){
+    private static void parseHQFlag(int flag) {
         MapLocation tempLocation = Encoding.decodeLocation(rc, flag);
-        switch(Encoding.decodeInfo(flag)){
-            case 2: mode = 2;
-                    enemyHQ = tempLocation;
-                    break;
-            default: mode = 1;
-                    break;
+        switch (Encoding.decodeInfo(flag)) {
+            case 2:
+                mode = 2;
+                enemyHQ = tempLocation;
+                break;
+            default:
+                mode = 1;
+                break;
         }
     }
 
-    private static void runAttackCode() throws GameActionException{
+    private static void runAttackCode() throws GameActionException {
         RobotInfo[] nearbyAllies = rc.senseNearbyRobots(999, rc.getTeam());
-        for(RobotInfo ally : nearbyAllies){
+        for (RobotInfo ally : nearbyAllies) {
             if (ally.type.equals(RobotType.ENLIGHTENMENT_CENTER)) {
                 Encoding.trySetFlag(rc, Encoding.encode(ally.getLocation(), Codes.friendlyHQ));
             }
         }
-        
+
         RobotInfo[] nearbyEnemies = rc.senseNearbyRobots(999, rc.getTeam().opponent());
         if (nearbyEnemies.length > 0) {
             RobotInfo tempTarget = null;
@@ -77,8 +72,8 @@ public class MuckrakerPlayer {
                 return;
             }
         }
-        
-        if(enemyHQ.isAdjacentTo(rc.getLocation())){
+
+        if (enemyHQ.isAdjacentTo(rc.getLocation())) {
             Move.tryMove(rc, Move.dirForward90(rc, rc.getLocation().directionTo(enemyHQ)));
         } else {
             Move.tryMove(rc, Move.dirForward180(rc, rc.getLocation().directionTo(enemyHQ)));
@@ -86,7 +81,7 @@ public class MuckrakerPlayer {
 
     }
 
-    private static void runSimpleCode() throws GameActionException{
+    private static void runSimpleCode() throws GameActionException {
         if (rc.isReady()) {
             RobotInfo[] nearbyEnemies = rc.senseNearbyRobots(999, rc.getTeam().opponent());
             if (nearbyEnemies.length > 0) {
@@ -109,18 +104,30 @@ public class MuckrakerPlayer {
                 }
             }
             if (enemyHQ != null) {
-                if(enemyHQ.isAdjacentTo(rc.getLocation())){
+                if (enemyHQ.isAdjacentTo(rc.getLocation())) {
                     Move.tryMove(rc, Move.dirForward90(rc, rc.getLocation().directionTo(enemyHQ)));
                 } else {
                     Move.tryMove(rc, Move.dirForward180(rc, rc.getLocation().directionTo(enemyHQ)));
                 }
-                
+
             } else {
-                if(!rc.onTheMap(rc.getLocation().add(dirTarget))){
+                if (!rc.onTheMap(rc.getLocation().add(dirTarget))) {
                     dirTarget = DirectionUtils.random180BiasMiddle(dirTarget.opposite());
                 }
                 Move.tryMove(rc, Move.dirForward180(rc, dirTarget));
             }
         }
+    }
+
+    private static boolean getHomeHQ() {
+        RobotInfo[] robots = rc.senseNearbyRobots(2, rc.getTeam());
+        for (RobotInfo robot : robots) {
+            if (robot.getType() == RobotType.ENLIGHTENMENT_CENTER) {
+                hqLocation = robot.getLocation();
+                hqID = robot.getID();
+                return true;
+            }
+        }
+        return false;
     }
 }

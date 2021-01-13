@@ -19,19 +19,9 @@ public class PoliticianPlayer {
     static void runPolitician(RobotController rcin, boolean wasSlanderer) throws GameActionException {
         PoliticianPlayer.rc = rcin;
         dirTarget = Move.getTeamGoDir(rc).opposite();
-        RobotInfo[] robots = rc.senseNearbyRobots(2, rc.getTeam());
-        for (RobotInfo robot : robots) {
-            if (robot.getType() == RobotType.ENLIGHTENMENT_CENTER) {
-                hqLocation = robot.getLocation();
-                hqID = robot.getID();
-                break;
-            }
-        }
-        if (hqLocation == null) {
-            while (!tryEmpower(1)) {
-                Clock.yield();
-            }
-
+        getHomeHQ();
+        while (hqLocation == null && !tryEmpower(1)) {
+            Clock.yield();
         }
         while (true) {
             turnCount++;
@@ -59,7 +49,8 @@ public class PoliticianPlayer {
             Clock.yield();
         }
 
-        // TODO: Implement differentiation for formerly slanderer units as well as converted units.
+        // TODO: Implement differentiation for formerly slanderer units as well as
+        // converted units.
     }
 
     private static void parseHQFlag(int flag) {
@@ -103,7 +94,6 @@ public class PoliticianPlayer {
         FlagUtils.signalAnyNearbyAlliedHQ(rc);
         densityDestruct();
 
-
         if (neutralTarget.isAdjacentTo(rc.getLocation())) {
             if (DirectionUtils.isCardinal(rc.getLocation().directionTo(neutralTarget))) {
                 tryEmpower(1);
@@ -131,7 +121,6 @@ public class PoliticianPlayer {
         if (rc.isReady()) {
             densityDestruct();
 
-            
             RobotInfo[] neutralECs = rc.senseNearbyRobots(999, Team.NEUTRAL);
             if (neutralECs.length > 0) {
                 neutralTarget = neutralECs[0].getLocation();
@@ -184,7 +173,7 @@ public class PoliticianPlayer {
         return true;
     }
 
-    private static boolean tryEmpower(int radius) throws GameActionException{
+    private static boolean tryEmpower(int radius) throws GameActionException {
         if (rc.canEmpower(radius)) {
             rc.empower(radius);
             return true;
@@ -192,13 +181,13 @@ public class PoliticianPlayer {
         return false;
     }
 
-    private static void endOfMatchDestruct() throws GameActionException{
-        while(rc.getRoundNum() > GameConstants.GAME_MAX_NUMBER_OF_ROUNDS - 25){
+    private static void endOfMatchDestruct() throws GameActionException {
+        while (rc.getRoundNum() > GameConstants.GAME_MAX_NUMBER_OF_ROUNDS - 25) {
             tryEmpower(RobotType.POLITICIAN.actionRadiusSquared);
         }
     }
 
-    private static void densityDestruct() throws GameActionException{
+    private static void densityDestruct() throws GameActionException {
         int range = 5;
         int nearHQThresh = 1;
         int hqMaxDist = 10;
@@ -209,5 +198,17 @@ public class PoliticianPlayer {
                 || (tempEnemies.length > nearHQThresh && rc.getLocation().distanceSquaredTo(hqLocation) <= hqMaxDist)) {
             tryEmpower(range);
         }
+    }
+
+    private static boolean getHomeHQ() {
+        RobotInfo[] robots = rc.senseNearbyRobots(2, rc.getTeam());
+        for (RobotInfo robot : robots) {
+            if (robot.getType() == RobotType.ENLIGHTENMENT_CENTER) {
+                hqLocation = robot.getLocation();
+                hqID = robot.getID();
+                return true;
+            }
+        }
+        return false;
     }
 }
