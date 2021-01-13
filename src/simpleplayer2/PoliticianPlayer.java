@@ -26,6 +26,9 @@ public class PoliticianPlayer {
             }
         }
         if (hqLocation == null){
+            while(!rc.isReady()){
+                Clock.yield();
+            }
             rc.empower(1); 
         }
         while (true) {

@@ -1,6 +1,7 @@
 package simpleplayer2;
 
 import battlecode.common.*;
+import common.DirectionUtils;
 
 public class MuckrakerPlayer {
     private static RobotController rc;
@@ -116,7 +117,7 @@ public class MuckrakerPlayer {
                 
             } else {
                 if(!rc.onTheMap(rc.getLocation().add(dirTarget))){
-                    dirTarget = dirTarget.opposite();
+                    dirTarget = DirectionUtils.random180BiasMiddle(dirTarget.opposite());
                 }
                 Move.tryMove(rc, Move.dirForward180(rc, dirTarget));
             }

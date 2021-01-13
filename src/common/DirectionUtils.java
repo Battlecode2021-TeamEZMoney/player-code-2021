@@ -80,4 +80,19 @@ public class DirectionUtils {
             default: return Direction.CENTER;
         }
     }
+
+    public static Direction random180BiasMiddle(Direction dir){
+        switch((int) (Math.random()*9 + 1)){
+            case 1: return rotateLeft90(dir);
+            case 2:
+            case 3: return dir.rotateLeft();
+            case 4:
+            case 5:
+            case 6: return dir;
+            case 7:
+            case 8: return dir.rotateRight();
+            case 9: return rotateRight90(dir);
+            default: return dir;
+        }
+    }
 }
