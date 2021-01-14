@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import battlecode.common.*;
 
-public class RunAway {
+class RunAway {
 	static Direction runAwayDirection(RobotController rc, ArrayList<RobotInfo> robots) {
 		MapLocation location = new MapLocation(0, 0);
 		for (RobotInfo robot : robots) {

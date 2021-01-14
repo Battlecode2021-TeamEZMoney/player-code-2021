@@ -2,7 +2,7 @@ package simpleplayer3;
 
 import battlecode.common.*;
 
-public class Encoding {
+class Encoding {
 	private static final int LOC_BITS = 7;
 	private static final int LOC_BITMASK = (1 << LOC_BITS) - 1;
 	private static final int INFO_BITS = 5;

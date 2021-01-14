@@ -2,7 +2,7 @@ package simpleplayer3;
 
 import battlecode.common.*;
 
-public class FlagUtils {
+class FlagUtils {
     static boolean signalAnyNearbyAlliedHQ(RobotController rc) throws GameActionException {
         RobotInfo[] nearbyAllies = rc.senseNearbyRobots(rc.getType().detectionRadiusSquared, rc.getTeam());
         for (RobotInfo ally : nearbyAllies) {
@@ -13,4 +13,11 @@ public class FlagUtils {
         return false;
     }
 
+    static class Codes {
+        public static int simple = 1;
+        public static int enemyHQ = 2;
+        public static int friendlyHQ = 3;
+        public static int neutralHQ = 4;
+        public static int patrol = 5;
+    }
 }

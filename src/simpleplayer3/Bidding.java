@@ -2,7 +2,7 @@ package simpleplayer3;
 
 import battlecode.common.*;
 
-public class Bidding {
+class Bidding {
 	private static final int MAX_ROUNDS = GameConstants.GAME_MAX_NUMBER_OF_ROUNDS;
 	private static final int VOTES_TO_WIN = MAX_ROUNDS / 2 + 1, OFFSET = 100;
 	private static final double GROWTH_RATE = 1.15, DECAY_RATE = 0.9;

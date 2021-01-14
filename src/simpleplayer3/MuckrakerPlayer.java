@@ -3,17 +3,16 @@ package simpleplayer3;
 import battlecode.common.*;
 import common.DirectionUtils;
 
-public class MuckrakerPlayer {
-    private static RobotController rc;
-    private static MapLocation enemyHQ = null;
-    private static MapLocation hqLocation;
-    private static int hqID;
-    private static int turnCount = 0;
-    private static int mode = 1;
-    private static Direction dirTarget;
+class MuckrakerPlayer extends Pawn{
+    private MapLocation enemyHQ = null;
+    private int mode = 1;
+    private Direction dirTarget;
 
-    static void runMuckraker(RobotController rcin) throws GameActionException {
-        MuckrakerPlayer.rc = rcin;
+    MuckrakerPlayer(RobotController rcin){
+        this.rc = rcin;
+    }
+
+    void run() throws GameActionException {
         dirTarget = Move.getTeamGoDir(rc).opposite();
         getHomeHQ();
         while (true) {
@@ -35,7 +34,7 @@ public class MuckrakerPlayer {
         }
     }
 
-    private static void parseHQFlag(int flag) {
+    private void parseHQFlag(int flag) {
         MapLocation tempLocation = Encoding.decodeLocation(rc, flag);
         switch (Encoding.decodeInfo(flag)) {
             case 2:
@@ -48,11 +47,11 @@ public class MuckrakerPlayer {
         }
     }
 
-    private static void runAttackCode() throws GameActionException {
+    private void runAttackCode() throws GameActionException {
         RobotInfo[] nearbyAllies = rc.senseNearbyRobots(999, rc.getTeam());
         for (RobotInfo ally : nearbyAllies) {
             if (ally.type.equals(RobotType.ENLIGHTENMENT_CENTER)) {
-                Encoding.trySetFlag(rc, Encoding.encode(ally.getLocation(), Codes.friendlyHQ));
+                Encoding.trySetFlag(rc, Encoding.encode(ally.getLocation(), FlagUtils.Codes.friendlyHQ));
             }
         }
 
@@ -81,7 +80,7 @@ public class MuckrakerPlayer {
 
     }
 
-    private static void runSimpleCode() throws GameActionException {
+    private void runSimpleCode() throws GameActionException {
         if (rc.isReady()) {
             RobotInfo[] nearbyEnemies = rc.senseNearbyRobots(999, rc.getTeam().opponent());
             if (nearbyEnemies.length > 0) {
@@ -89,7 +88,7 @@ public class MuckrakerPlayer {
                 for (RobotInfo robot : nearbyEnemies) {
                     if (robot.type.equals(RobotType.ENLIGHTENMENT_CENTER)) {
                         enemyHQ = robot.getLocation();
-                        Encoding.trySetFlag(rc, Encoding.encode(enemyHQ, Codes.enemyHQ));
+                        Encoding.trySetFlag(rc, Encoding.encode(enemyHQ, FlagUtils.Codes.enemyHQ));
                         break;
                     } else if (robot.type.equals(RobotType.SLANDERER)) {
                         if ((tempTarget == null || tempTarget.getInfluence() < robot.getInfluence())
@@ -119,15 +118,4 @@ public class MuckrakerPlayer {
         }
     }
 
-    private static boolean getHomeHQ() {
-        RobotInfo[] robots = rc.senseNearbyRobots(2, rc.getTeam());
-        for (RobotInfo robot : robots) {
-            if (robot.getType() == RobotType.ENLIGHTENMENT_CENTER) {
-                hqLocation = robot.getLocation();
-                hqID = robot.getID();
-                return true;
-            }
-        }
-        return false;
-    }
 }

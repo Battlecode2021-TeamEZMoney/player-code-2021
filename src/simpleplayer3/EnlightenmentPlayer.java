@@ -7,24 +7,24 @@ import java.util.Set;
 import battlecode.common.*;
 import common.*;
 
-public class EnlightenmentPlayer {
-    private static RobotController rc;
-    private static int turnCount = 0;
-    private static int unitsBuilt = 0;
-    private static int lastVoteCount = 0;
-    private static int unitsIndex = 0;
-    private static int spawnIndex = 0;
-    private static RobotType unitToBuild = RobotType.POLITICIAN;
-    private static Set<MapLocation> enemyHQs = new HashSet<MapLocation>();
-    private static Set<MapLocation> friendlyHQs = new HashSet<MapLocation>();
-    private static Set<MapLocation> neutralHQs = new HashSet<MapLocation>();
-    private static ArrayList<Integer> units = new ArrayList<Integer>();
+class EnlightenmentPlayer extends Robot{
+    private RobotController rc;
+    private int turnCount = 0;
+    private int unitsBuilt = 0;
+    private int lastVoteCount = 0;
+    private int unitsIndex = 0;
+    private int spawnIndex = 0;
+    private RobotType unitToBuild = RobotType.POLITICIAN;
+    private Set<MapLocation> enemyHQs = new HashSet<MapLocation>();
+    private Set<MapLocation> friendlyHQs = new HashSet<MapLocation>();
+    private Set<MapLocation> neutralHQs = new HashSet<MapLocation>();
+    private ArrayList<Integer> units = new ArrayList<Integer>();
 
-    static void runEnlightenmentCenter(RobotController rcin) throws GameActionException {
-        EnlightenmentPlayer.rc = rcin;
+    void runEnlightenmentCenter(RobotController rcin) throws GameActionException {
+        rc = rcin;
         while (true) {
             turnCount++;
-            // TODO: Implement smart handling of other units and other HQ
+            // TODO: Implement smart handling of other units and other HQs
             // gatherIntel();
 
             if (rc.isReady()) {
@@ -65,11 +65,11 @@ public class EnlightenmentPlayer {
         }
     }
 
-    private static void gatherIntel() {
+    private void gatherIntel() {
 
     }
 
-    private static RobotType getUnitToBuild() {
+    private RobotType getUnitToBuild() {
         if (spawnIndex >= Constants.spawnOrder.length) {
             spawnIndex = 0;
         }
@@ -90,7 +90,7 @@ public class EnlightenmentPlayer {
         }
     }
 
-    static Direction getPreferredDirection() {
+    Direction getPreferredDirection() {
         switch (unitToBuild) {
             case SLANDERER:
                 return Move.getTeamGoDir(rc);
@@ -103,7 +103,7 @@ public class EnlightenmentPlayer {
         }
     }
 
-    static int getNewUnitInfluence() {
+    int getNewUnitInfluence() {
         switch (unitToBuild) {
             case SLANDERER:
                 for (int i = 1; i < Constants.optimalSlandInf.length; i++) {
@@ -121,7 +121,7 @@ public class EnlightenmentPlayer {
         }
     }
 
-    private static Direction getBuildDirection(RobotType type, Direction prefDir, int inf) {
+    private Direction getBuildDirection(RobotType type, Direction prefDir, int inf) {
         if (rc.getInfluence() < inf || prefDir.equals(Direction.CENTER)) {
             return Direction.CENTER;
         }
@@ -136,11 +136,11 @@ public class EnlightenmentPlayer {
         return Direction.CENTER;
     }
 
-    private static boolean buildableDir(Direction dir) {
+    private boolean buildableDir(Direction dir) {
         return !dir.equals(Direction.CENTER);
     }
 
-    private static void addAllFriendlyBots(RobotInfo[] bots) {
+    private void addAllFriendlyBots(RobotInfo[] bots) {
         for (RobotInfo bot : bots) {
             if (bot.getTeam().equals(rc.getTeam())) {
                 units.add(bot.getID());
@@ -148,37 +148,37 @@ public class EnlightenmentPlayer {
         }
     }
 
-    private static int getOrdersForUnit(RobotType unit) {
+    private int getOrdersForUnit(RobotType unit) {
         return 0; // TODO: Placeholder
     }
 
-    private static int getTarget() {
+    private int getTarget() {
         if (enemyHQs.size() > 0) {
-            return Encoding.encode((MapLocation) enemyHQs.toArray()[0], Codes.enemyHQ);
+            return Encoding.encode((MapLocation) enemyHQs.toArray()[0], FlagUtils.Codes.enemyHQ);
         } else if (neutralHQs.size() > 0) {
-            return Encoding.encode((MapLocation) neutralHQs.toArray()[0], Codes.neutralHQ);
+            return Encoding.encode((MapLocation) neutralHQs.toArray()[0], FlagUtils.Codes.neutralHQ);
         } else if (rc.senseNearbyRobots(999, rc.getTeam().opponent()).length > 0) {
-            return Encoding.encode(rc.getLocation(), Codes.patrol);
+            return Encoding.encode(rc.getLocation(), FlagUtils.Codes.patrol);
         }
-        return Encoding.encode(rc.getLocation(), Codes.simple);
+        return Encoding.encode(rc.getLocation(), FlagUtils.Codes.simple);
     }
 
-    private static boolean shouldBid() {
+    private boolean shouldBid() {
         return rc.getTeamVotes() < Constants.votesToWin
                 && rc.getRoundNum() > (GameConstants.GAME_MAX_NUMBER_OF_ROUNDS / 6);
     }
 
-    private static int getBidAmount() {
+    private int getBidAmount() {
         return (int) Math.max(4, rc.getInfluence() * .01); // TODO: Placeholder
     }
 
-    private static void tryBid(int bidAmount) throws GameActionException {
+    private void tryBid(int bidAmount) throws GameActionException {
         if (rc.canBid(bidAmount)) {
             rc.bid(bidAmount);
         }
     }
 
-    private static void parseUnitFlag(int flag) {
+    private void parseUnitFlag(int flag) {
         MapLocation tempLocation = Encoding.decodeLocation(rc, flag);
         switch (Encoding.decodeInfo(flag)) {
             case 2:

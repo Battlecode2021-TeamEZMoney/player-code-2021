@@ -5,14 +5,12 @@ import java.util.Arrays;
 
 import battlecode.common.*;
 
-public class SlandererPlayer {
-    private static RobotController rc;
-    private static MapLocation hqLocation;
-    private static int hqID;
-    private static int turnCount = 0;
+class SlandererPlayer extends Pawn{
+    SlandererPlayer(RobotController rcin){
+        this.rc = rcin;
+    }
 
-    static void runSlanderer(RobotController rcin) throws GameActionException {
-        SlandererPlayer.rc = rcin;
+    void run() throws GameActionException {
         getHomeHQ();
         while (rc.getType().equals(RobotType.SLANDERER)) {
             turnCount++;
@@ -35,23 +33,12 @@ public class SlandererPlayer {
         PoliticianPlayer.runPolitician(rc, true);
     }
 
-    private static MapLocation runAwayTo(RobotInfo[] runAwayFrom) {
+    private MapLocation runAwayTo(RobotInfo[] runAwayFrom) {
         return rc.getLocation(); // TODO: Implement running away
     }
 
-    private static Direction getTeamGoDir() {
+    private Direction getTeamGoDir() {
         return Move.getTeamGoDir(rc);
     }
 
-    private static boolean getHomeHQ() {
-        RobotInfo[] robots = rc.senseNearbyRobots(2, rc.getTeam());
-        for (RobotInfo robot : robots) {
-            if (robot.getType() == RobotType.ENLIGHTENMENT_CENTER) {
-                hqLocation = robot.getLocation();
-                hqID = robot.getID();
-                return true;
-            }
-        }
-        return false;
-    }
 }

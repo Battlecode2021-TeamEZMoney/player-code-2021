@@ -3,7 +3,7 @@ package simpleplayer3;
 import battlecode.common.*;
 import common.*;
 
-public class Move {
+class Move {
     static boolean tryMove(RobotController rc, Direction dir) throws GameActionException {
         if (rc.canMove(dir)) {
             rc.move(dir);
