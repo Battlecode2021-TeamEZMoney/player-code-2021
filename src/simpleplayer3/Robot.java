@@ -3,8 +3,8 @@ package simpleplayer3;
 import battlecode.common.*;
 
 abstract class Robot {
-    RobotController rc;
-    int turnCount = 0;
+    protected RobotController rc;
+    protected int turnCount = 0;
 
     abstract void run() throws GameActionException;
 

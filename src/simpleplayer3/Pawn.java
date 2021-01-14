@@ -3,8 +3,8 @@ package simpleplayer3;
 import battlecode.common.*;
 
 abstract class Pawn extends Robot{
-    MapLocation hqLocation;
-    int hqID;
+    protected MapLocation hqLocation;
+    protected int hqID;
 
     static Pawn unitFromRobotController(RobotController rc) throws Exception{
         switch(rc.getType()){
@@ -16,7 +16,7 @@ abstract class Pawn extends Robot{
         }
     }
 
-    boolean getHomeHQ() {
+    protected boolean getHomeHQ() {
         RobotInfo[] robots = rc.senseNearbyRobots(2, rc.getTeam());
         for (RobotInfo robot : robots) {
             if (robot.getType() == RobotType.ENLIGHTENMENT_CENTER) {
