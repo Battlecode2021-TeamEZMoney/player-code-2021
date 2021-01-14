@@ -3,14 +3,10 @@ package simpleplayer3;
 import battlecode.common.*;
 
 abstract class Pawn extends Robot{
-    RobotController rc;
     MapLocation hqLocation;
     int hqID;
-    int turnCount = 0;
 
-    abstract void run() throws GameActionException;
-
-    static Pawn unitFromType(RobotController rc) throws Exception{
+    static Pawn unitFromRobotController(RobotController rc) throws Exception{
         switch(rc.getType()){
             case POLITICIAN: return new PoliticianPlayer(rc);
             case MUCKRAKER: return new MuckrakerPlayer(rc);

@@ -6,6 +6,8 @@ import java.util.Arrays;
 import battlecode.common.*;
 
 class SlandererPlayer extends Pawn{
+    PoliticianPlayer successor;
+
     SlandererPlayer(RobotController rcin){
         this.rc = rcin;
     }
@@ -28,13 +30,11 @@ class SlandererPlayer extends Pawn{
             }
             Clock.yield();
         }
-        PoliticianPlayer.hqID = hqID;
-        PoliticianPlayer.hqLocation = hqLocation;
-        PoliticianPlayer.runPolitician(rc, true);
-    }
-
-    private MapLocation runAwayTo(RobotInfo[] runAwayFrom) {
-        return rc.getLocation(); // TODO: Implement running away
+        if (successor == null){
+            successor = new PoliticianPlayer(this);
+        }
+        successor.run();
+        
     }
 
     private Direction getTeamGoDir() {

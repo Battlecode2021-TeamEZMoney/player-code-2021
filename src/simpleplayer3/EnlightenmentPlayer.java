@@ -20,8 +20,11 @@ class EnlightenmentPlayer extends Robot{
     private Set<MapLocation> neutralHQs = new HashSet<MapLocation>();
     private ArrayList<Integer> units = new ArrayList<Integer>();
 
-    void runEnlightenmentCenter(RobotController rcin) throws GameActionException {
-        rc = rcin;
+    EnlightenmentPlayer(RobotController rcin){
+        this.rc = rcin;
+    }
+
+    void run() throws GameActionException {
         while (true) {
             turnCount++;
             // TODO: Implement smart handling of other units and other HQs

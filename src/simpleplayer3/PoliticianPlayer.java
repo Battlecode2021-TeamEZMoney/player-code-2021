@@ -15,6 +15,14 @@ class PoliticianPlayer extends Pawn{
         this.rc = rcin;
     }
 
+    PoliticianPlayer(SlandererPlayer sland){
+        //TODO: Remember to update these when new common fields are added in the Pawn and Robot classes.
+        this.hqLocation = sland.hqLocation;
+        this.hqID = sland.hqID;
+        this.rc = sland.rc;
+        this.turnCount = sland.turnCount;
+    }
+
     void run() throws GameActionException {
         dirTarget = Move.getTeamGoDir(rc).opposite();
         getHomeHQ();
