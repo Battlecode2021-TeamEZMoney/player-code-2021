@@ -23,9 +23,9 @@ class SlandererPlayer extends Pawn{
                         Arrays.asList(rc.senseNearbyRobots(sensorRadius, rc.getTeam().opponent())));
                 nearbyEnemies.removeIf(e -> (!e.getType().equals(RobotType.MUCKRAKER)));
                 if (nearbyEnemies.size() > 0) {
-                    Move.tryMove(rc, RunAway.runAwayDirection(rc, nearbyEnemies));
+                    tryMove(RunAway.runAwayDirection(rc, nearbyEnemies));
                 } else {
-                    Move.tryDirForward180(rc, getTeamGoDir());
+                    tryDirForward180(getTeamGoDir());
                 }
             }
             Clock.yield();
@@ -36,9 +36,4 @@ class SlandererPlayer extends Pawn{
         successor.run();
         
     }
-
-    private Direction getTeamGoDir() {
-        return Move.getTeamGoDir(rc);
-    }
-
 }

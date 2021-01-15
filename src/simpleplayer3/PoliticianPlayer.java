@@ -24,7 +24,7 @@ class PoliticianPlayer extends Pawn{
     }
 
     void run() throws GameActionException {
-        dirTarget = Move.getTeamGoDir(rc).opposite();
+        dirTarget = getTeamGoDir().opposite();
         getHomeHQ();
         while (hqLocation == null && !tryEmpower(1)) {
             Clock.yield();

@@ -13,7 +13,7 @@ class MuckrakerPlayer extends Pawn{
     }
 
     void run() throws GameActionException {
-        dirTarget = Move.getTeamGoDir(rc).opposite();
+        dirTarget = getTeamGoDir().opposite();
         getHomeHQ();
         while (true) {
             turnCount++;

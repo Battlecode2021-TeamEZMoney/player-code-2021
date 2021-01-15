@@ -46,4 +46,9 @@ abstract class Robot {
         public static int neutralHQ = 4;
         public static int patrol = 5;
     }
+
+    Direction getTeamGoDir() {
+        // TODO: make this smarter than assuming team a is on the left side
+        return rc.getTeam().equals(Team.A) ? Direction.WEST : Direction.EAST; 
+    }
 }

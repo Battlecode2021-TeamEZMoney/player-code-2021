@@ -92,11 +92,10 @@ class EnlightenmentPlayer extends Robot{
     Direction getPreferredDirection() {
         switch (unitToBuild) {
             case SLANDERER:
-                return Move.getTeamGoDir(rc);
+                return getTeamGoDir();
             case POLITICIAN:
-                return Move.getTeamGoDir(rc).opposite();
             case MUCKRAKER:
-                return Move.getTeamGoDir(rc).opposite();
+                return getTeamGoDir().opposite();
             default:
                 return DirectionUtils.randomDirection();
         }
