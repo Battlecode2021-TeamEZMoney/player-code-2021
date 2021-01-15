@@ -8,10 +8,8 @@ import battlecode.common.*;
 import common.*;
 
 class EnlightenmentPlayer extends Robot{
-    private RobotController rc;
     private int turnCount = 0;
     private int unitsBuilt = 0;
-    private int lastVoteCount = 0;
     private int unitsIndex = 0;
     private int spawnIndex = 0;
     private RobotType unitToBuild = RobotType.POLITICIAN;
@@ -47,8 +45,6 @@ class EnlightenmentPlayer extends Robot{
                 tryBid(Bidding.bidAmount(rc));
             }
 
-            lastVoteCount = rc.getTeamVotes();
-
             while (Clock.getBytecodesLeft() > 1000 && units.size() > 0) {
                 int unitID = units.get(unitsIndex);
                 if (rc.canGetFlag(unitID)) {
@@ -63,14 +59,14 @@ class EnlightenmentPlayer extends Robot{
                     unitsIndex = 0;
                 }
             }
-            Encoding.trySetFlag(rc, getTarget());
+            trySetFlag(getTarget());
             Clock.yield();
         }
     }
 
-    private void gatherIntel() {
+    /*private void gatherIntel() {
 
-    }
+    }*/
 
     private RobotType getUnitToBuild() {
         if (spawnIndex >= Constants.spawnOrder.length) {
@@ -151,19 +147,19 @@ class EnlightenmentPlayer extends Robot{
         }
     }
 
-    private int getOrdersForUnit(RobotType unit) {
+    /*private int getOrdersForUnit(RobotType unit) {
         return 0; // TODO: Placeholder
-    }
+    }*/
 
     private int getTarget() {
         if (enemyHQs.size() > 0) {
-            return Encoding.encode((MapLocation) enemyHQs.toArray()[0], FlagUtils.Codes.enemyHQ);
+            return Encoding.encode((MapLocation) enemyHQs.toArray()[0], FlagCodes.enemyHQ);
         } else if (neutralHQs.size() > 0) {
-            return Encoding.encode((MapLocation) neutralHQs.toArray()[0], FlagUtils.Codes.neutralHQ);
+            return Encoding.encode((MapLocation) neutralHQs.toArray()[0], FlagCodes.neutralHQ);
         } else if (rc.senseNearbyRobots(999, rc.getTeam().opponent()).length > 0) {
-            return Encoding.encode(rc.getLocation(), FlagUtils.Codes.patrol);
+            return Encoding.encode(rc.getLocation(), FlagCodes.patrol);
         }
-        return Encoding.encode(rc.getLocation(), FlagUtils.Codes.simple);
+        return Encoding.encode(rc.getLocation(), FlagCodes.simple);
     }
 
     private boolean shouldBid() {
@@ -182,8 +178,8 @@ class EnlightenmentPlayer extends Robot{
     }
 
     private void parseUnitFlag(int flag) {
-        MapLocation tempLocation = Encoding.decodeLocation(rc, flag);
-        switch (Encoding.decodeInfo(flag)) {
+        MapLocation tempLocation = Encoding.getLocationFromFlag(rc, flag);
+        switch (Encoding.getInfoFromFlag(flag)) {
             case 2:
                 enemyHQs.add(tempLocation);
                 friendlyHQs.remove(tempLocation);

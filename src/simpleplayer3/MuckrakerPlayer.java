@@ -35,8 +35,8 @@ class MuckrakerPlayer extends Pawn{
     }
 
     private void parseHQFlag(int flag) {
-        MapLocation tempLocation = Encoding.decodeLocation(rc, flag);
-        switch (Encoding.decodeInfo(flag)) {
+        MapLocation tempLocation = Encoding.getLocationFromFlag(rc, flag);
+        switch (Encoding.getInfoFromFlag(flag)) {
             case 2:
                 mode = 2;
                 enemyHQ = tempLocation;
@@ -51,7 +51,7 @@ class MuckrakerPlayer extends Pawn{
         RobotInfo[] nearbyAllies = rc.senseNearbyRobots(999, rc.getTeam());
         for (RobotInfo ally : nearbyAllies) {
             if (ally.type.equals(RobotType.ENLIGHTENMENT_CENTER)) {
-                Encoding.trySetFlag(rc, Encoding.encode(ally.getLocation(), FlagUtils.Codes.friendlyHQ));
+                trySetFlag(Encoding.encode(ally.getLocation(), FlagCodes.friendlyHQ));
             }
         }
 
@@ -88,7 +88,7 @@ class MuckrakerPlayer extends Pawn{
                 for (RobotInfo robot : nearbyEnemies) {
                     if (robot.type.equals(RobotType.ENLIGHTENMENT_CENTER)) {
                         enemyHQ = robot.getLocation();
-                        Encoding.trySetFlag(rc, Encoding.encode(enemyHQ, FlagUtils.Codes.enemyHQ));
+                        trySetFlag(Encoding.encode(enemyHQ, FlagCodes.enemyHQ));
                         break;
                     } else if (robot.type.equals(RobotType.SLANDERER)) {
                         if ((tempTarget == null || tempTarget.getInfluence() < robot.getInfluence())

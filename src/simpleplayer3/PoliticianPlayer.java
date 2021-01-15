@@ -60,8 +60,8 @@ class PoliticianPlayer extends Pawn{
     }
 
     private void parseHQFlag(int flag) {
-        MapLocation tempLocation = Encoding.decodeLocation(rc, flag);
-        switch (Encoding.decodeInfo(flag)) {
+        MapLocation tempLocation = Encoding.getLocationFromFlag(rc, flag);
+        switch (Encoding.getInfoFromFlag(flag)) {
             case 2:
                 mode = 2;
                 enemyHQ = tempLocation;
@@ -97,7 +97,7 @@ class PoliticianPlayer extends Pawn{
     }
 
     private void runNeutralCode() throws GameActionException {
-        FlagUtils.signalAnyNearbyAlliedHQ(rc);
+        showAnyNearbyAlliedHQOnFlag();
         densityDestruct();
 
         if (neutralTarget.isAdjacentTo(rc.getLocation())) {
@@ -115,7 +115,7 @@ class PoliticianPlayer extends Pawn{
     }
 
     private void runAttackCode() throws GameActionException {
-        FlagUtils.signalAnyNearbyAlliedHQ(rc);
+        showAnyNearbyAlliedHQOnFlag();
 
         densityDestruct();
 

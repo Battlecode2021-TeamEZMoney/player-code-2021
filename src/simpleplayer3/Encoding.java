@@ -14,7 +14,7 @@ class Encoding {
 		return (info << (2 * LOC_BITS)) + (xEnc << LOC_BITS) + yEnc;
 	}
 
-	static MapLocation decodeLocation(RobotController rc, int encoded) {
+	static MapLocation getLocationFromFlag(RobotController rc, int encoded) {
 		int[] enc = new int[] { (encoded >> LOC_BITS) & LOC_BITMASK, encoded & LOC_BITMASK };
 		MapLocation curLoc = rc.getLocation();
 		int[] cur = new int[] { curLoc.x, curLoc.y };
@@ -28,17 +28,7 @@ class Encoding {
 		return new MapLocation(loc[0], loc[1]);
 	}
 
-	static int decodeInfo(int encoded) {
+	static int getInfoFromFlag(int encoded) {
 		return (encoded >> 2 * LOC_BITS) & INFO_BITMASK;
-	}
-
-	public static boolean trySetFlag(RobotController rc, int newFlag) throws GameActionException {
-		if (rc.canSetFlag(newFlag)) {
-			rc.setFlag(newFlag);
-			return true;
-		} else if (rc.canSetFlag(0)) {
-			rc.setFlag(0);
-		}
-		return false;
 	}
 }
