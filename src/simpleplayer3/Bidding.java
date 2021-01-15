@@ -10,7 +10,7 @@ class Bidding {
 	private static double accum = 0;
 
 	public static int bidAmount(RobotController rc) throws GameActionException {
-		if (rc.getTeamVotes() >= 1501)
+		if (rc.getTeamVotes() >= VOTES_TO_WIN)
 			return 0; // won bidding
 
 		int bid = 1, curTeamVotes = rc.getTeamVotes();
@@ -51,8 +51,8 @@ class Bidding {
 	}
 
 	// alternate bidding, not used
-	public static int bidAmount2(RobotController rc) throws GameActionException {
-		if (rc.getTeamVotes() >= 1501)
+	/*public static int bidAmount2(RobotController rc) throws GameActionException {
+		if (rc.getTeamVotes() >= VOTES_TO_WIN)
 			return 0; // won bidding
 
 		int bid = 1, curTeamVotes = rc.getTeamVotes();
@@ -75,5 +75,5 @@ class Bidding {
 		prevBid = bid;
 		prevTeamVotes = curTeamVotes;
 		return bid;
-	}
+	}*/
 }
