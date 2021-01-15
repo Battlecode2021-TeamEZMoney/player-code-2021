@@ -3,12 +3,12 @@ package simpleplayer3;
 import battlecode.common.*;
 import common.DirectionUtils;
 
-class MuckrakerPlayer extends Pawn{
+class Muckraker extends Attacker {
     private MapLocation enemyHQ = null;
     private int mode = 1;
     private Direction dirTarget;
 
-    MuckrakerPlayer(RobotController rcin){
+    Muckraker(RobotController rcin) {
         this.rc = rcin;
     }
 
@@ -66,16 +66,15 @@ class MuckrakerPlayer extends Pawn{
                     }
                 }
             }
-            if (tempTarget != null && rc.canExpose(tempTarget.getID())) {
-                rc.expose(tempTarget.getID());
+            if (tempTarget != null && tryExpose(tempTarget)) {
                 return;
             }
         }
 
         if (enemyHQ.isAdjacentTo(rc.getLocation())) {
-            tryDirForward90( rc.getLocation().directionTo(enemyHQ));
+            tryDirForward90(directionTo(enemyHQ));
         } else {
-            tryDirForward180(rc.getLocation().directionTo(enemyHQ));
+            tryDirForward180(directionTo(enemyHQ));
         }
 
     }
@@ -97,16 +96,15 @@ class MuckrakerPlayer extends Pawn{
                         }
                     }
                 }
-                if (tempTarget != null && rc.canExpose(tempTarget.getID())) {
-                    rc.expose(tempTarget.getID());
+                if (tempTarget != null && tryExpose(tempTarget.getID())) {
                     return;
                 }
             }
             if (enemyHQ != null) {
                 if (enemyHQ.isAdjacentTo(rc.getLocation())) {
-                    tryDirForward90(rc.getLocation().directionTo(enemyHQ));
+                    tryDirForward90(directionTo(enemyHQ));
                 } else {
-                    tryDirForward180(rc.getLocation().directionTo(enemyHQ));
+                    tryDirForward180(directionTo(enemyHQ));
                 }
 
             } else {
@@ -116,6 +114,31 @@ class MuckrakerPlayer extends Pawn{
                 tryDirForward180(dirTarget);
             }
         }
+    }
+
+    private boolean tryExpose(int id) throws GameActionException{
+        if(rc.canExpose(id)){
+            rc.expose(id);
+            return true;
+        }
+        return false;
+    }
+
+    private boolean tryExpose(MapLocation pos) throws GameActionException{
+        if(rc.canExpose(pos)){
+            rc.expose(pos);
+            return true;
+        }
+        return false;
+    }
+
+    private boolean tryExpose(RobotInfo enemy) throws GameActionException{
+        return tryExpose(enemy.getID());
+    }
+
+    protected boolean huntOrKill(RobotInfo enemy) throws GameActionException {
+        return (withinAttackRange(enemy) && tryExpose(enemy))
+                || tryDirForward180(directionTo(enemy.getLocation()));
     }
 
 }

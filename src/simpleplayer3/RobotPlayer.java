@@ -8,7 +8,7 @@ public strictfp class RobotPlayer {
     public static void run(RobotController rc) throws GameActionException {
         while (true) {
             try {
-                    Robot.robotFromRobotController(rc).run();
+                Robot.robotFromRobotController(rc).run();
             } catch (Exception e) {
                 e.printStackTrace();
             }

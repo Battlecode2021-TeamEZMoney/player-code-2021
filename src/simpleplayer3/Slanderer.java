@@ -5,10 +5,10 @@ import java.util.Arrays;
 
 import battlecode.common.*;
 
-class SlandererPlayer extends Pawn{
-    PoliticianPlayer successor;
+class Slanderer extends Pawn {
+    Politician successor;
 
-    SlandererPlayer(RobotController rcin){
+    Slanderer(RobotController rcin) {
         this.rc = rcin;
     }
 
@@ -23,17 +23,26 @@ class SlandererPlayer extends Pawn{
                         Arrays.asList(rc.senseNearbyRobots(sensorRadius, rc.getTeam().opponent())));
                 nearbyEnemies.removeIf(e -> (!e.getType().equals(RobotType.MUCKRAKER)));
                 if (nearbyEnemies.size() > 0) {
-                    tryMove(RunAway.runAwayDirection(rc, nearbyEnemies));
+                    tryMove(runAwayDirection(nearbyEnemies));
                 } else {
                     tryDirForward180(getTeamGoDir());
                 }
             }
             Clock.yield();
         }
-        if (successor == null){
-            successor = new PoliticianPlayer(this);
+        if (successor == null) {
+            successor = new Politician(this);
         }
         successor.run();
-        
+
+    }
+
+    Direction runAwayDirection(ArrayList<RobotInfo> robots) {
+        MapLocation location = new MapLocation(0, 0);
+        for (RobotInfo robot : robots) {
+            location = location.translate(robot.location.x, robot.location.y);
+        }
+        MapLocation avgLocation = new MapLocation(location.x / robots.size(), location.y / robots.size());
+        return directionTo(avgLocation).opposite();
     }
 }

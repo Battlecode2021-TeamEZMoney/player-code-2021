@@ -3,15 +3,18 @@ package simpleplayer3;
 import battlecode.common.*;
 import common.DirectionUtils;
 
-abstract class Pawn extends Robot{
+abstract class Pawn extends Robot {
     protected MapLocation hqLocation;
     protected int hqID;
 
-    static Pawn unitFromRobotController(RobotController rc) throws Exception{
-        switch(rc.getType()){
-            case POLITICIAN: return new PoliticianPlayer(rc);
-            case MUCKRAKER: return new MuckrakerPlayer(rc);
-            case SLANDERER: return new SlandererPlayer(rc);
+    static Pawn unitFromRobotController(RobotController rc) throws Exception {
+        switch (rc.getType()) {
+            case POLITICIAN:
+                return new Politician(rc);
+            case MUCKRAKER:
+                return new Muckraker(rc);
+            case SLANDERER:
+                return new Slanderer(rc);
             default:
                 throw new Exception(rc.getType() + "is not a valid pawn type.");
         }

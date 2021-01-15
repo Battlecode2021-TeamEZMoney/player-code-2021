@@ -5,18 +5,19 @@ import java.util.Arrays;
 import battlecode.common.*;
 import common.DirectionUtils;
 
-class PoliticianPlayer extends Pawn{
+class Politician extends Attacker {
     private MapLocation enemyHQ = null;
     private MapLocation neutralTarget;
     private int mode = 1;
     private Direction dirTarget;
 
-    PoliticianPlayer(RobotController rcin){
+    Politician(RobotController rcin) {
         this.rc = rcin;
     }
 
-    PoliticianPlayer(SlandererPlayer sland){
-        //TODO: Remember to update these when new common fields are added in the Pawn and Robot classes.
+    Politician(Slanderer sland) {
+        // TODO: Remember to update these when new common fields are added in the Pawn
+        // and Robot classes.
         this.hqLocation = sland.hqLocation;
         this.hqID = sland.hqID;
         this.rc = sland.rc;
@@ -83,17 +84,19 @@ class PoliticianPlayer extends Pawn{
         RobotInfo[] tempEnemies = rc.senseNearbyRobots(999, rc.getTeam().opponent());
         for (RobotInfo enemy : tempEnemies) {
             if (enemy.getType().equals(RobotType.MUCKRAKER)) {
-                if (enemy.getLocation().distanceSquaredTo(rc.getLocation()) > 9) {
-                    tryDirForward180(rc.getLocation().directionTo(enemy.getLocation()));
-                } else {
-                    tryEmpower(9);
+                if (huntOrKill(enemy)) {
+                    return;
                 }
-                return;
             }
         }
-        if (rc.getLocation().distanceSquaredTo(hqLocation) > 11) {
-            tryDirForward180(rc.getLocation().directionTo(hqLocation));
+        if (distanceSquaredTo(hqLocation) > 11) {
+            tryDirForward180(directionTo(hqLocation));
         }
+    }
+
+    protected boolean huntOrKill(RobotInfo enemy) throws GameActionException {
+        return (withinAttackRange(enemy) && tryEmpower(distanceSquaredTo(enemy)))
+                || tryDirForward180(directionTo(enemy.getLocation()));
     }
 
     private void runNeutralCode() throws GameActionException {
@@ -101,16 +104,16 @@ class PoliticianPlayer extends Pawn{
         densityDestruct();
 
         if (neutralTarget.isAdjacentTo(rc.getLocation())) {
-            if (DirectionUtils.isCardinal(rc.getLocation().directionTo(neutralTarget))) {
+            if (DirectionUtils.isCardinal(directionTo(neutralTarget))) {
                 tryEmpower(1);
             } else {
-                if (!tryDirForward90(rc.getLocation().directionTo(neutralTarget))) {
+                if (!tryDirForward90(directionTo(neutralTarget))) {
                     tryEmpower(2);
                 }
                 ;
             }
         } else {
-            tryDirForward180(rc.getLocation().directionTo(neutralTarget));
+            tryDirForward180(directionTo(neutralTarget));
         }
     }
 
@@ -131,17 +134,16 @@ class PoliticianPlayer extends Pawn{
             if (neutralECs.length > 0) {
                 neutralTarget = neutralECs[0].getLocation();
                 if (neutralTarget.isAdjacentTo(rc.getLocation())) {
-                    if (Arrays.asList(Direction.cardinalDirections())
-                            .contains(rc.getLocation().directionTo(neutralTarget))) {
+                    if (Arrays.asList(Direction.cardinalDirections()).contains(directionTo(neutralTarget))) {
                         tryEmpower(1);
                     } else {
-                        if (!tryDirForward90(rc.getLocation().directionTo(neutralTarget))) {
+                        if (!tryDirForward90(directionTo(neutralTarget))) {
                             tryEmpower(2);
                         }
                         ;
                     }
                 } else {
-                    tryDirForward180(rc.getLocation().directionTo(neutralTarget));
+                    tryDirForward180(directionTo(neutralTarget));
                 }
                 return;
             }
@@ -167,13 +169,13 @@ class PoliticianPlayer extends Pawn{
     }
 
     private boolean enemyHQAttackRoutine() throws GameActionException {
-        if (rc.getLocation().distanceSquaredTo(enemyHQ) <= RobotType.POLITICIAN.actionRadiusSquared
-                && rc.isLocationOccupied(rc.getLocation().add(rc.getLocation().directionTo(enemyHQ)))
-                && tryEmpower(rc.getLocation().distanceSquaredTo(enemyHQ))) {
+        if (distanceSquaredTo(enemyHQ) <= RobotType.POLITICIAN.actionRadiusSquared
+                && rc.isLocationOccupied(rc.getLocation().add(directionTo(enemyHQ)))
+                && tryEmpower(distanceSquaredTo(enemyHQ))) {
         } else if (enemyHQ.isAdjacentTo(rc.getLocation())) {
-            tryDirForward90(rc.getLocation().directionTo(enemyHQ));
+            tryDirForward90(directionTo(enemyHQ));
         } else {
-            tryDirForward180(rc.getLocation().directionTo(enemyHQ));
+            tryDirForward180(directionTo(enemyHQ));
         }
 
         return true;
@@ -201,7 +203,7 @@ class PoliticianPlayer extends Pawn{
 
         RobotInfo[] tempEnemies = rc.senseNearbyRobots(range, rc.getTeam().opponent());
         if (tempEnemies.length > defaultThresh
-                || (tempEnemies.length > nearHQThresh && rc.getLocation().distanceSquaredTo(hqLocation) <= hqMaxDist)) {
+                || (tempEnemies.length > nearHQThresh && distanceSquaredTo(hqLocation) <= hqMaxDist)) {
             tryEmpower(range);
         }
     }
