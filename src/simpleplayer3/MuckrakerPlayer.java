@@ -73,9 +73,9 @@ class MuckrakerPlayer extends Pawn{
         }
 
         if (enemyHQ.isAdjacentTo(rc.getLocation())) {
-            Move.tryMove(rc, Move.dirForward90(rc, rc.getLocation().directionTo(enemyHQ)));
+            tryDirForward90( rc.getLocation().directionTo(enemyHQ));
         } else {
-            Move.tryMove(rc, Move.dirForward180(rc, rc.getLocation().directionTo(enemyHQ)));
+            tryDirForward180(rc.getLocation().directionTo(enemyHQ));
         }
 
     }
@@ -104,16 +104,16 @@ class MuckrakerPlayer extends Pawn{
             }
             if (enemyHQ != null) {
                 if (enemyHQ.isAdjacentTo(rc.getLocation())) {
-                    Move.tryMove(rc, Move.dirForward90(rc, rc.getLocation().directionTo(enemyHQ)));
+                    tryDirForward90(rc.getLocation().directionTo(enemyHQ));
                 } else {
-                    Move.tryMove(rc, Move.dirForward180(rc, rc.getLocation().directionTo(enemyHQ)));
+                    tryDirForward180(rc.getLocation().directionTo(enemyHQ));
                 }
 
             } else {
                 if (!rc.onTheMap(rc.getLocation().add(dirTarget))) {
                     dirTarget = DirectionUtils.random180BiasMiddle(dirTarget.opposite());
                 }
-                Move.tryMove(rc, Move.dirForward180(rc, dirTarget));
+                tryDirForward180(dirTarget);
             }
         }
     }

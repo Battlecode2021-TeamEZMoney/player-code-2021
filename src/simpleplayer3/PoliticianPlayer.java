@@ -84,7 +84,7 @@ class PoliticianPlayer extends Pawn{
         for (RobotInfo enemy : tempEnemies) {
             if (enemy.getType().equals(RobotType.MUCKRAKER)) {
                 if (enemy.getLocation().distanceSquaredTo(rc.getLocation()) > 9) {
-                    Move.tryDirForward180(rc, rc.getLocation().directionTo(enemy.getLocation()));
+                    tryDirForward180(rc.getLocation().directionTo(enemy.getLocation()));
                 } else {
                     tryEmpower(9);
                 }
@@ -92,7 +92,7 @@ class PoliticianPlayer extends Pawn{
             }
         }
         if (rc.getLocation().distanceSquaredTo(hqLocation) > 11) {
-            Move.tryDirForward180(rc, rc.getLocation().directionTo(hqLocation));
+            tryDirForward180(rc.getLocation().directionTo(hqLocation));
         }
     }
 
@@ -104,13 +104,13 @@ class PoliticianPlayer extends Pawn{
             if (DirectionUtils.isCardinal(rc.getLocation().directionTo(neutralTarget))) {
                 tryEmpower(1);
             } else {
-                if (!Move.tryDirForward90(rc, rc.getLocation().directionTo(neutralTarget))) {
+                if (!tryDirForward90(rc.getLocation().directionTo(neutralTarget))) {
                     tryEmpower(2);
                 }
                 ;
             }
         } else {
-            Move.tryDirForward180(rc, rc.getLocation().directionTo(neutralTarget));
+            tryDirForward180(rc.getLocation().directionTo(neutralTarget));
         }
     }
 
@@ -135,13 +135,13 @@ class PoliticianPlayer extends Pawn{
                             .contains(rc.getLocation().directionTo(neutralTarget))) {
                         tryEmpower(1);
                     } else {
-                        if (!Move.tryDirForward90(rc, rc.getLocation().directionTo(neutralTarget))) {
+                        if (!tryDirForward90(rc.getLocation().directionTo(neutralTarget))) {
                             tryEmpower(2);
                         }
                         ;
                     }
                 } else {
-                    Move.tryDirForward180(rc, rc.getLocation().directionTo(neutralTarget));
+                    tryDirForward180(rc.getLocation().directionTo(neutralTarget));
                 }
                 return;
             }
@@ -161,7 +161,7 @@ class PoliticianPlayer extends Pawn{
                 if (!rc.onTheMap(rc.getLocation().add(dirTarget))) {
                     dirTarget = dirTarget.opposite();
                 }
-                Move.tryDirForward180(rc, dirTarget);
+                tryDirForward180(dirTarget);
             }
         }
     }
@@ -171,9 +171,9 @@ class PoliticianPlayer extends Pawn{
                 && rc.isLocationOccupied(rc.getLocation().add(rc.getLocation().directionTo(enemyHQ)))
                 && tryEmpower(rc.getLocation().distanceSquaredTo(enemyHQ))) {
         } else if (enemyHQ.isAdjacentTo(rc.getLocation())) {
-            Move.tryDirForward90(rc, rc.getLocation().directionTo(enemyHQ));
+            tryDirForward90(rc.getLocation().directionTo(enemyHQ));
         } else {
-            Move.tryDirForward180(rc, rc.getLocation().directionTo(enemyHQ));
+            tryDirForward180(rc.getLocation().directionTo(enemyHQ));
         }
 
         return true;
