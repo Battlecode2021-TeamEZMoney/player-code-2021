@@ -78,7 +78,7 @@ public class EnlightenmentPlayer {
                 spawnIndex++;
             }
             return RobotType.MUCKRAKER;
-        } else if (rc.getInfluence() < Constants.optimalSlandInf[0]){
+        } else if (rc.getInfluence() < Constants.optimalSlandInfArray[0]){
             if(Constants.spawnOrder[spawnIndex].equals(RobotType.POLITICIAN)){
                 spawnIndex++;
             }
@@ -102,12 +102,12 @@ public class EnlightenmentPlayer {
     static int getNewUnitInfluence(){
         switch(unitToBuild){
             case SLANDERER: 
-            for(int i = 1; i < Constants.optimalSlandInf.length; i++){
-                if(Constants.optimalSlandInf[i] > rc.getInfluence()){
-                    return Constants.optimalSlandInf[i-1];
+            for(int i = 1; i < Constants.optimalSlandInfArray.length; i++){
+                if(Constants.optimalSlandInfArray[i] > rc.getInfluence()){
+                    return Constants.optimalSlandInfArray[i-1];
                 }
             } 
-            return Constants.optimalSlandInf[0];
+            return Constants.optimalSlandInfArray[0];
             case POLITICIAN: return Math.min(100, Math.max(Constants.minimumPolInf, (int) rc.getInfluence()/4));
             case MUCKRAKER: return 1;
             default: return 1;
@@ -155,7 +155,7 @@ public class EnlightenmentPlayer {
     }
 
     private static boolean shouldBid(){
-        return rc.getTeamVotes() < Constants.votesToWin && rc.getRoundNum() > 500;
+        return rc.getTeamVotes() < Constants.VOTES_TO_WIN && rc.getRoundNum() > 500;
     }
     
     private static int getBidAmount(){

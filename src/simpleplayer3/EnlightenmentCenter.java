@@ -81,7 +81,7 @@ class EnlightenmentCenter extends Robot {
                 spawnIndex++;
             }
             return RobotType.MUCKRAKER;
-        } else if (rc.getInfluence() < Constants.optimalSlandInf[0]) {
+        } else if (rc.getInfluence() < Constants.optimalSlandInfArray[0]) {
             if (Constants.spawnOrder[spawnIndex].equals(RobotType.POLITICIAN)) {
                 spawnIndex++;
             }
@@ -108,12 +108,12 @@ class EnlightenmentCenter extends Robot {
     int getNewUnitInfluence() {
         switch (unitToBuild) {
             case SLANDERER:
-                for (int i = 1; i < Constants.optimalSlandInf.length; i++) {
-                    if (Constants.optimalSlandInf[i] > rc.getInfluence()) {
-                        return Constants.optimalSlandInf[i - 1];
+                for (int i = 1; i < Constants.optimalSlandInfArray.length; i++) {
+                    if (Constants.optimalSlandInfArray[i] > rc.getInfluence()) {
+                        return Constants.optimalSlandInfArray[i - 1];
                     }
                 }
-                return Constants.optimalSlandInf[0];
+                return Constants.optimalSlandInfArray[0];
             case POLITICIAN:
                 return Math.min(100, Math.max(Constants.minimumPolInf, (int) rc.getInfluence() / 4));
             case MUCKRAKER:
@@ -167,7 +167,7 @@ class EnlightenmentCenter extends Robot {
     }
 
     private boolean shouldBid() {
-        return rc.getTeamVotes() < Constants.votesToWin
+        return rc.getTeamVotes() < Constants.VOTES_TO_WIN
                 && rc.getRoundNum() > (GameConstants.GAME_MAX_NUMBER_OF_ROUNDS / 6);
     }
 

@@ -102,7 +102,7 @@ public class PoliticianPlayer {
     }
 
     private static void runNeutralCode() throws GameActionException{
-        if (rc.getRoundNum() > Constants.totalRounds - 25){
+        if (rc.getRoundNum() > Constants.MAX_ROUNDS - 25){
             rc.empower(RobotType.POLITICIAN.actionRadiusSquared);
         } 
         RobotInfo[] tempEnemies = rc.senseNearbyRobots(5, rc.getTeam().opponent());
@@ -132,7 +132,7 @@ public class PoliticianPlayer {
     }
 
     private static void runAttackCode() throws GameActionException{
-        if (rc.getRoundNum() > Constants.totalRounds - 25){
+        if (rc.getRoundNum() > Constants.MAX_ROUNDS - 25){
             rc.empower(RobotType.POLITICIAN.actionRadiusSquared);
         } 
         RobotInfo[] tempEnemies = rc.senseNearbyRobots(5, rc.getTeam().opponent());
@@ -163,7 +163,7 @@ public class PoliticianPlayer {
 
     private static void runSimple() throws GameActionException{
         if (rc.isReady()) {
-            if (rc.getRoundNum() > Constants.totalRounds - 25){
+            if (rc.getRoundNum() > Constants.MAX_ROUNDS - 25){
                 rc.empower(RobotType.POLITICIAN.actionRadiusSquared);
             } 
             RobotInfo[] tempEnemies = rc.senseNearbyRobots(5, rc.getTeam().opponent());
