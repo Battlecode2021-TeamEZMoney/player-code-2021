@@ -1,7 +1,6 @@
-package simpleplayer4;
+package simpleplayer4_subm;
 
 import battlecode.common.*;
-import common.*;
 //import java.util.*;
 //import simpleplayer4.Robot.FlagCodes;
 
@@ -38,17 +37,21 @@ class Politician extends Attacker {
             	ifOptimalSelfEmpower();
 	            ifOptimalEmpower();
 	            endOfMatchEmpower();
-	            if (explorer) {
-	        		runSimpleCode();
-	        	} else if (!runNeutralCode() && !runAttackCode() && !runDefendCode()) {
-		            if (rc.canGetFlag(hqID)) {
-		                parseHQFlag(rc.getFlag(hqID));
-		            } else {
-		            	runSimpleCode();
+	            //start = Clock.getBytecodesLeft();
+	            if (Clock.getBytecodesLeft() > 6000) {
+		            if (explorer) {
+		        		runSimpleCode();
+		        	} else if (!runNeutralCode() && !runAttackCode() && !runDefendCode()) {
+			            if (rc.canGetFlag(hqID)) {
+			                parseHQFlag(rc.getFlag(hqID));
+			            } else {
+			            	runSimpleCode();
+			            }
 		            }
 	            }
             }
             setNearbyHQFlag();
+            //if (Clock.getBytecodesLeft()-start < -4000) System.out.println("Used " + (Clock.getBytecodesLeft()-start));
             
             Clock.yield();
         }

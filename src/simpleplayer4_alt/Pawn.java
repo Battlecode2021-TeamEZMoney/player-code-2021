@@ -1,4 +1,4 @@
-package simpleplayer4;
+package simpleplayer4_alt;
 
 import battlecode.common.*;
 import common.*;
@@ -39,14 +39,10 @@ abstract class Pawn extends Robot {
     }
 
     protected boolean tryMove(Direction dir) throws GameActionException {
-    	//System.out.println("Trying move");
         if (rc.canMove(dir)) {
-        	//System.out.println("Possible");
             rc.move(dir);
-            //System.out.println("Moved");
             return true;
         }
-        //System.out.println("Can't Move");
         return false;
     }
 

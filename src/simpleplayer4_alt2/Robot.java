@@ -1,4 +1,4 @@
-package simpleplayer4;
+package simpleplayer4_alt2;
 
 import battlecode.common.*;
 import common.Constants;

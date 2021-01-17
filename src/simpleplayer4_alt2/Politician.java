@@ -1,4 +1,4 @@
-package simpleplayer4;
+package simpleplayer4_alt2;
 
 import battlecode.common.*;
 import common.*;
@@ -35,7 +35,6 @@ class Politician extends Attacker {
             turnCount++;
             if (rc.isReady()) {
             	updateHQs();
-            	ifOptimalSelfEmpower();
 	            ifOptimalEmpower();
 	            endOfMatchEmpower();
 	            if (explorer) {
@@ -122,7 +121,7 @@ class Politician extends Attacker {
     	}
     	
         if (distanceSquaredTo(hqLocation) <= rc.getType().actionRadiusSquared && crowdedByEnemy(hqLocation)) {
-    		//System.out.println("Crowded");
+    		System.out.println("Crowded");
     		ifOptimalEmpower(0,0);
     	} else if (distanceSquaredTo(hqLocation) > rc.getType().actionRadiusSquared / 2
     			&& tryDirForward180(directionTo(hqLocation))) {
@@ -194,16 +193,6 @@ class Politician extends Attacker {
 		return new int[] {optimalIncRadius, maxTotalIncrease, optimalDestroyed};
     }
     
-    private boolean ifOptimalSelfEmpower() throws GameActionException {
-    	if (hqLocation == null) {
-    		return false;
-    	}
-    	if (rc.getEmpowerFactor(rc.getTeam(), 0) > 4 && distanceSquaredTo(hqLocation) <= rc.getType().actionRadiusSquared) {
-    		return HQAttackRoutine(hqLocation);
-    	}
-    	return false;
-    }
-    
     private boolean ifOptimalEmpower() throws GameActionException {
     	return ifOptimalEmpower(0.8);
     }
@@ -223,24 +212,24 @@ class Politician extends Attacker {
         int rad = radAndInfo[0], inc = radAndInfo[1], numDest = radAndInfo[2];
         if (rc.getConviction() > 10 && (double) inc / (rc.getConviction() - 10) >= empowerThresh
         		|| numDest >= destThresh) {
-        	//System.out.println(printLoc(rc.getLocation()) + ": " + (double) inc / (rc.getConviction() - 10) + ", " + numDest);
+        	System.out.println(printLoc(rc.getLocation()) + ": " + (double) inc / (rc.getConviction() - 10) + ", " + numDest);
         	return tryEmpower(rad);
         }
         return false;
     }
     
-//    private void ifOptimalEmpower2() throws GameActionException {
-//        int range = 5;
-//        int nearHQThresh = 1;
-//        int hqMaxDist = 10;
-//        int defaultThresh = 4;
-//
-//        RobotInfo[] tempEnemies = rc.senseNearbyRobots(range, rc.getTeam().opponent());
-//        if (tempEnemies.length > defaultThresh
-//                || (tempEnemies.length > nearHQThresh && distanceSquaredTo(hqLocation) <= hqMaxDist)) {
-//            tryEmpower(range);
-//        }
-//    }
+    private void ifOptimalEmpower2() throws GameActionException {
+        int range = 5;
+        int nearHQThresh = 1;
+        int hqMaxDist = 10;
+        int defaultThresh = 4;
+
+        RobotInfo[] tempEnemies = rc.senseNearbyRobots(range, rc.getTeam().opponent());
+        if (tempEnemies.length > defaultThresh
+                || (tempEnemies.length > nearHQThresh && distanceSquaredTo(hqLocation) <= hqMaxDist)) {
+            tryEmpower(range);
+        }
+    }
 
     protected boolean huntOrKill(RobotInfo enemy) throws GameActionException {
         return (withinAttackRange(enemy) && tryEmpower(distanceSquaredTo(enemy)))

@@ -1,4 +1,4 @@
-package simpleplayer4;
+package simpleplayer4_alt2;
 
 import battlecode.common.*;
 import common.*;
@@ -118,7 +118,7 @@ class EnlightenmentCenter extends Robot {
     }
 
     private int getTarget() throws GameActionException {
-    	if (canSenseEnemy() && Math.random() < 0.8) {
+    	if (canSenseEnemy()) {
             return Encoding.encode(rc.getLocation(), FlagCodes.patrol, dirTarget, explorer);
         } else if (neutralHQs.size() > 0) {
             return Encoding.encode(neutralHQs.iterator().next(), FlagCodes.neutralHQ, dirTarget, explorer);
@@ -131,7 +131,7 @@ class EnlightenmentCenter extends Robot {
 
     private RobotType getUnitToBuild() throws GameActionException {
     	double rand = Math.random();
-       	if ((crowdedByEnemy(rc.getLocation()) || rc.getEmpowerFactor(rc.getTeam(), 11) > 4) && rc.getInfluence()-10 >= Constants.minimumPolInf) {
+       	if (crowdedByEnemy(rc.getLocation()) && rc.getInfluence()-10 >= Constants.minimumPolInf) {
     		return RobotType.POLITICIAN;
     	} else if (rand > 0.7 || rc.getInfluence()-10 < Constants.minimumPolInf) {
     		return RobotType.MUCKRAKER;
@@ -148,7 +148,7 @@ class EnlightenmentCenter extends Robot {
             Integer x = Constants.optimalSlandInfSet.floor(rc.getInfluence()-10);
             return x != null ? x : 0;
         case POLITICIAN:
-            return (rc.getEmpowerFactor(rc.getTeam(), 11)) > 4 ? (rc.getInfluence()-10) / 2 : Math.min(300, Math.max(Constants.minimumPolInf, (rc.getInfluence()-10) / 4));
+            return Math.min(300, Math.max(Constants.minimumPolInf, (rc.getInfluence()-10) / 4));
         case MUCKRAKER:
             return 1;
         default:

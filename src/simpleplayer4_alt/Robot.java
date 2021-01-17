@@ -1,4 +1,4 @@
-package simpleplayer4;
+package simpleplayer4_alt;
 
 import battlecode.common.*;
 import common.Constants;
@@ -113,17 +113,4 @@ abstract class Robot {
             return 0;
         }
     }
-    
-    protected boolean crowdedByEnemy(MapLocation loc) {
-    	return rc.senseNearbyRobots(loc, 2, rc.getTeam().opponent()).length >= 5
-    			|| rc.senseNearbyRobots(loc, 5, rc.getTeam().opponent()).length >= 10;
-    }
-    
-    String printLoc(MapLocation loc) throws GameActionException {
-    	return "(" + loc.x + ", " + loc.y + ")";
-    }
-    
-	//protected int actionRadiusSquared = rc.getType().actionRadiusSquared;
-	//protected int sensorRadiusSquared = rc.getType().sensorRadiusSquared;
-	//protected int detectionRadiusSquared = rc.getType().detectionRadiusSquared;
 }
