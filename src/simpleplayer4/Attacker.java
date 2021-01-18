@@ -11,7 +11,7 @@ public abstract class Attacker extends Pawn {
     }
 
     protected boolean withinAttackRange(MapLocation enemyLocation) throws GameActionException {
-        return rc.getLocation().distanceSquaredTo(enemyLocation) <= rc.getType().actionRadiusSquared;
+        return rc.getLocation().distanceSquaredTo(enemyLocation) <= actionRadiusSquared;
     }
 
     protected abstract boolean huntOrKill(RobotInfo enemy) throws GameActionException;

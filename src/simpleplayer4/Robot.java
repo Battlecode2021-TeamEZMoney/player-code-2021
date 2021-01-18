@@ -156,8 +156,4 @@ abstract class Robot {
     String printLoc(MapLocation loc) throws GameActionException {
         return "(" + loc.x + ", " + loc.y + ")";
     }
-
-    // protected int actionRadiusSquared = rc.getType().actionRadiusSquared;
-    // protected int sensorRadiusSquared = rc.getType().sensorRadiusSquared;
-    // protected int detectionRadiusSquared = rc.getType().detectionRadiusSquared;
 }

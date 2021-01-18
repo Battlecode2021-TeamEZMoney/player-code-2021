@@ -322,7 +322,7 @@ class Politician extends Attacker {
 
 	private boolean endOfMatchEmpower() throws GameActionException {
 		if (rc.getRoundNum() > GameConstants.GAME_MAX_NUMBER_OF_ROUNDS - 25) {
-			return tryEmpower(RobotType.POLITICIAN.actionRadiusSquared);
+			return tryEmpower(actionRadiusSquared);
 		}
 		return false;
 	}
