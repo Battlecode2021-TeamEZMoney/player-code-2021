@@ -24,6 +24,10 @@ public class DirectionUtils {
     public static Direction rotateLeft90(Direction dir) {
         return dir.rotateLeft().rotateLeft();
     }
+    
+    public static boolean within45Degrees(Direction dir1, Direction dir2) {
+    	return dir1.equals(dir2) || dir1.rotateLeft().equals(dir2) || dir1.rotateRight().equals(dir2);
+    }
 
     public static Direction rotateRightSnapCardinal(Direction dir){
         switch(dir){

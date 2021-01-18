@@ -66,7 +66,7 @@ class EnlightenmentCenter extends Robot {
                 infToSpend = getNewUnitInfluence();
                 dirTarget = getPreferredDirection();
                 buildDirection = getBuildDirection(unitToBuild, dirTarget, infToSpend);
-                explorer = Math.random() < 0.5 && unitToBuild == RobotType.MUCKRAKER;
+                explorer = Math.random() < 0.8 && unitToBuild == RobotType.MUCKRAKER;
                 if (rc.canBuildRobot(unitToBuild, buildDirection, infToSpend)) {
                     rc.buildRobot(unitToBuild, buildDirection, infToSpend);
                     unitsBuilt++;
@@ -131,11 +131,13 @@ class EnlightenmentCenter extends Robot {
 
     private RobotType getUnitToBuild() throws GameActionException {
     	double rand = Math.random();
-       	if ((crowdedByEnemy(rc.getLocation()) || rc.getEmpowerFactor(rc.getTeam(), 11) > 4) && rc.getInfluence()-10 >= Constants.minimumPolInf) {
-    		return RobotType.POLITICIAN;
-    	} else if (rand > 0.7 || rc.getInfluence()-10 < Constants.minimumPolInf) {
+    	if (rc.getInfluence()-10 < Constants.minimumPolInf) {
     		return RobotType.MUCKRAKER;
-    	} else if (rand > 0 * (1 - rc.getRoundNum() / Constants.MAX_ROUNDS) || canSenseEnemy()){
+    	} else if (rc.getEmpowerFactor(rc.getTeam(), 11) > 4 || crowdedByEnemy(rc.getLocation()) || crowded(rc.getLocation())) {
+    		return RobotType.POLITICIAN;
+    	} else if (rand > (0.4 + 0.2 * rc.getRoundNum() / Constants.MAX_ROUNDS) || canSenseEnemy()) {
+    		return RobotType.MUCKRAKER;
+    	} else if (rand > 0 * (1 - rc.getRoundNum() / Constants.MAX_ROUNDS)){
     		return RobotType.POLITICIAN;
     	} else {
     		return RobotType.SLANDERER;
@@ -148,7 +150,7 @@ class EnlightenmentCenter extends Robot {
             Integer x = Constants.optimalSlandInfSet.floor(rc.getInfluence()-10);
             return x != null ? x : 0;
         case POLITICIAN:
-            return (rc.getEmpowerFactor(rc.getTeam(), 11)) > 4 ? (rc.getInfluence()-10) / 2 : Math.min(300, Math.max(Constants.minimumPolInf, (rc.getInfluence()-10) / 4));
+            return (rc.getEmpowerFactor(rc.getTeam(), 11)) > 4 ? (rc.getInfluence()-10) / 2 : Math.min(511, Math.max(Constants.minimumPolInf, (rc.getInfluence()-10) / 2));
         case MUCKRAKER:
             return 1;
         default:
@@ -228,7 +230,7 @@ class EnlightenmentCenter extends Robot {
                 }
             }
             bid = Math.max(bid, 1) + (int) (Math.random() * 2);
-            bid = Math.min(bid, rc.getInfluence() / 20);
+            bid = (int) Math.min(bid, rc.getInfluence() * (0.1 + 0.2 * rc.getRoundNum() / Constants.MAX_ROUNDS));
             prevBid = bid;
             prevTeamVotes = curTeamVotes;
             return bid;

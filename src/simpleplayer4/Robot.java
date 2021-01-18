@@ -2,6 +2,7 @@ package simpleplayer4;
 
 import battlecode.common.*;
 import common.Constants;
+import java.util.*;
 
 abstract class Robot {
     protected RobotController rc;
@@ -117,6 +118,26 @@ abstract class Robot {
     protected boolean crowdedByEnemy(MapLocation loc) {
     	return rc.senseNearbyRobots(loc, 2, rc.getTeam().opponent()).length >= 5
     			|| rc.senseNearbyRobots(loc, 5, rc.getTeam().opponent()).length >= 10;
+    }
+    
+    protected boolean crowded(MapLocation loc) {
+    	return rc.senseNearbyRobots(loc, 2, null).length >= 7
+    			|| rc.senseNearbyRobots(loc, 5, null).length >= 15;
+    }
+    
+    protected boolean crowdedByAllyMuckrakers(MapLocation loc) {
+    	int numMucks2 = 0, numMucks5 = 0;
+    	for (RobotInfo robot : rc.senseNearbyRobots(loc, 2, rc.getTeam())) {
+    		if (robot.type.equals(RobotType.MUCKRAKER)) {
+    			numMucks2++;
+    		}
+    	}
+    	for (RobotInfo robot : rc.senseNearbyRobots(loc, 5, rc.getTeam())) {
+    		if (robot.type.equals(RobotType.MUCKRAKER)) {
+    			numMucks5++;
+    		}
+    	}
+    	return numMucks2 >= 5 || numMucks5 >= 10;
     }
     
     String printLoc(MapLocation loc) throws GameActionException {

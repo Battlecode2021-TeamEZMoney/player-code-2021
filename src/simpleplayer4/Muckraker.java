@@ -18,7 +18,7 @@ class Muckraker extends Attacker {
                 updateHQs();
             	if (explorer) {
             		runSimpleCode();
-            	} else if (!runAttackCode()) {
+            	} else if (!runAttackCode() && !runDefendCode()) {
 		            if (rc.canGetFlag(hqID)) {
 		                parseHQFlag(rc.getFlag(hqID));
 		            } else {
@@ -55,10 +55,32 @@ class Muckraker extends Attacker {
             enemyHQ = tempLocation;
             runAttackCode();
             break;
+        case 5:
+        	defending = true;
+            runDefendCode();
+            break;
         default:
-            runSimpleCode();
+        	runSimpleCode();
             break;
         }
+    }
+    
+    private boolean runDefendCode() throws GameActionException {
+    	if (hqLocation == null) {
+    		return runSimpleCode();
+    	} else if (!defending) {
+    		return false;
+    	}
+    	
+        if (distanceSquaredTo(hqLocation) > rc.getType().actionRadiusSquared / 2
+    			&& tryDirForward90(directionTo(hqLocation))) {
+    		return true;
+		} else {
+			if (distanceSquaredTo(hqLocation) > rc.getType().actionRadiusSquared) {
+				defending = false;
+			}
+			return tryDirForward180(directionTo(hqLocation).opposite());
+		}
     }
     
     private boolean huntOrExposeSlanderer() throws GameActionException {
@@ -86,15 +108,24 @@ class Muckraker extends Attacker {
     }
     
     private boolean HQAttackRoutine(MapLocation locHQ) throws GameActionException {
+//    	if (huntOrExposeSlanderer()) {
+//    		return true;
+//    	} else if (distanceSquaredTo(locHQ) > rc.getType().actionRadiusSquared) {
+//        	return tryDirForward180(directionTo(locHQ));
+//        }
+////    	else {
+////        	return tryDirForward180(awayFromAllies());
+////        }
+//    	return false;
+    	
     	if (huntOrExposeSlanderer()) {
     		return true;
-    	} else if (distanceSquaredTo(locHQ) > rc.getType().actionRadiusSquared) {
-        	return tryDirForward180(directionTo(locHQ));
-        }
-//    	else {
-//        	return tryDirForward180(awayFromAllies());
-//        }
-    	return false;
+    	} else if (distanceSquaredTo(locHQ) > rc.getType().actionRadiusSquared
+    			&& tryDirForward90(directionTo(locHQ))) {
+    		return true;
+		} else {
+			return tryDirForward180(directionTo(hqLocation).opposite());
+		}
     }
     
     private boolean runAttackCode() throws GameActionException {

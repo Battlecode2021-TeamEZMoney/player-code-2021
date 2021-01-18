@@ -9,7 +9,6 @@ class Politician extends Attacker {
     private MapLocation enemyHQ = null;
     private MapLocation neutralHQ = null;
     private boolean waiting = Math.random() < 0.1;
-    private boolean defending = false;
 
     Politician(RobotController rcin) throws GameActionException {
         this.rc = rcin;
@@ -35,20 +34,26 @@ class Politician extends Attacker {
             turnCount++;
             if (rc.isReady()) {
             	updateHQs();
-            	ifOptimalSelfEmpower();
-	            ifOptimalEmpower();
+            	if (Math.random() < 0.8) {
+	            	ifOptimalSelfEmpower();
+		            ifOptimalEmpower();
+            	}
 	            endOfMatchEmpower();
-	            if (explorer) {
-	        		runSimpleCode();
-	        	} else if (!runNeutralCode() && !runAttackCode() && !runDefendCode()) {
-		            if (rc.canGetFlag(hqID)) {
-		                parseHQFlag(rc.getFlag(hqID));
-		            } else {
-		            	runSimpleCode();
+	            //start = Clock.getBytecodesLeft();
+	            if (Clock.getBytecodesLeft() > 6000) {
+		            if (explorer) {
+		        		runSimpleCode();
+		        	} else if (!runNeutralCode() && !runAttackCode()) { // && !runDefendCode()
+			            if (rc.canGetFlag(hqID)) {
+			                parseHQFlag(rc.getFlag(hqID));
+			            } else {
+			            	runSimpleCode();
+			            }
 		            }
 	            }
             }
             setNearbyHQFlag();
+            //if (Clock.getBytecodesLeft()-start < -4000) System.out.println("Used " + (Clock.getBytecodesLeft()-start));
             
             Clock.yield();
         }
@@ -88,10 +93,10 @@ class Politician extends Attacker {
             neutralHQ = tempLocation;
             runNeutralCode();
             break;
-        case 5:
-        	defending = true;
-            runDefendCode();
-            break;
+//        case 5:
+//        	defending = true;
+//            runDefendCode();
+//            break;
         default:
         	runSimpleCode();
             break;
@@ -123,17 +128,16 @@ class Politician extends Attacker {
     	
         if (distanceSquaredTo(hqLocation) <= rc.getType().actionRadiusSquared && crowdedByEnemy(hqLocation)) {
     		//System.out.println("Crowded");
-    		ifOptimalEmpower(0,0);
+    		return ifOptimalEmpower(0,0);
     	} else if (distanceSquaredTo(hqLocation) > rc.getType().actionRadiusSquared / 2
-    			&& tryDirForward180(directionTo(hqLocation))) {
-    		;
+    			&& tryDirForward90(directionTo(hqLocation))) {
+    		return true;
 		} else {
-			if (distanceSquaredTo(hqLocation) > rc.getType().actionRadiusSquared * 4) {
+			if (distanceSquaredTo(hqLocation) > rc.getType().actionRadiusSquared) {
 				defending = false;
 			}
 			return tryDirForward180(directionTo(hqLocation).opposite());
 		}
-        return true;
         
 //        else if (rc.isLocationOccupied(rc.getLocation().add(directionTo(hqLocation)))) {
 //    		
@@ -205,11 +209,11 @@ class Politician extends Attacker {
     }
     
     private boolean ifOptimalEmpower() throws GameActionException {
-    	return ifOptimalEmpower(0.8);
+    	return ifOptimalEmpower(0.7);
     }
     
     private boolean ifOptimalEmpower(double empowerThresh) throws GameActionException {
-    	return ifOptimalEmpower(empowerThresh, 8);
+    	return ifOptimalEmpower(empowerThresh, 6);
     }
     
     private boolean ifOptimalEmpower(double empowerThresh, int destThresh) throws GameActionException {
@@ -221,7 +225,7 @@ class Politician extends Attacker {
     	//int destThresh = 4;
         int[] radAndInfo = optimalEmpowerRadiusAndInfo();
         int rad = radAndInfo[0], inc = radAndInfo[1], numDest = radAndInfo[2];
-        if (rc.getConviction() > 10 && (double) inc / (rc.getConviction() - 10) >= empowerThresh
+        if (rc.getConviction() > 10 && (double) inc / rc.getConviction() >= empowerThresh
         		|| numDest >= destThresh) {
         	//System.out.println(printLoc(rc.getLocation()) + ": " + (double) inc / (rc.getConviction() - 10) + ", " + numDest);
         	return tryEmpower(rad);
@@ -295,7 +299,7 @@ class Politician extends Attacker {
     }
 
     private boolean runSimpleCode() throws GameActionException {
-    	return tryDirForward180(awayFromAllies());
+    	return tryDirForward180(awayFromAllies()) || tryDirForward180(DirectionUtils.randomDirection());
     }
 
     private boolean tryEmpower(int radius) throws GameActionException {

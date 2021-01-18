@@ -1,6 +1,7 @@
 package simpleplayer4_subm;
 
 import battlecode.common.*;
+import common.Constants;
 
 import java.util.*;
 
@@ -228,7 +229,7 @@ class EnlightenmentCenter extends Robot {
                 }
             }
             bid = Math.max(bid, 1) + (int) (Math.random() * 2);
-            bid = Math.min(bid, rc.getInfluence() / 20);
+            bid = (int) Math.min(bid, rc.getInfluence() * (0.1 + 0.2 * rc.getRoundNum() / Constants.MAX_ROUNDS));
             prevBid = bid;
             prevTeamVotes = curTeamVotes;
             return bid;

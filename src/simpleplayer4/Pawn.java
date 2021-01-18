@@ -9,6 +9,7 @@ abstract class Pawn extends Robot {
     protected int hqID;
     protected Direction dirTarget = Direction.CENTER;
 	protected boolean explorer = false;
+	protected boolean defending = false;
 
     static Pawn unitFromRobotController(RobotController rc) throws Exception {
     	//getHomeHQ();
@@ -96,7 +97,15 @@ abstract class Pawn extends Robot {
         }
         if (numRobots == 0) return dirTarget;
         MapLocation avgLocation = new MapLocation(location.x / numRobots, location.y / numRobots);
-        return directionTo(avgLocation).opposite();
+        Direction away_dir = directionTo(avgLocation).opposite();
+        
+        if (!rc.onTheMap(rc.getLocation().add(away_dir))) {
+        	away_dir = away_dir.opposite();
+        }
+        if (DirectionUtils.within45Degrees(dirTarget, away_dir)) {
+        	return dirTarget;
+        }
+        return away_dir;
     }
     
     protected Direction awayFromAllies() throws GameActionException {
