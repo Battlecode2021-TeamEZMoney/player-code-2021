@@ -1,4 +1,4 @@
-package simpleplayer4_subm2;
+package simpleplayer5;
 
 import battlecode.common.*;
 
