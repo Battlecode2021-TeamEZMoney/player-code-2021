@@ -1,5 +1,8 @@
 package simpleplayer4;
 
+import java.util.Arrays;
+import java.util.List;
+
 import battlecode.common.*;
 //import java.util.*;
 
@@ -7,6 +10,7 @@ class Slanderer extends Pawn {
     Politician successor;
 
     Slanderer(RobotController rcin) throws GameActionException {
+        super();
         this.rc = rcin;
         getHomeHQ();
     }
@@ -25,5 +29,11 @@ class Slanderer extends Pawn {
         }
         successor.run();
 
+    }
+
+    protected Direction awayFromEnemyMuckrakers() throws GameActionException {
+        List<RobotInfo> robots = Arrays.asList(rc.senseNearbyRobots(rc.getLocation(), actionRadiusSquared, rc.getTeam().opponent()));
+        robots.removeIf(r -> (r.type != RobotType.MUCKRAKER));
+        return awayFromRobots(robots);
     }
 }

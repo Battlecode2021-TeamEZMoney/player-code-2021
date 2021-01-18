@@ -2,6 +2,9 @@ package simpleplayer4;
 
 import battlecode.common.*;
 import common.*;
+
+import java.util.Arrays;
+import java.util.List;
 import java.util.function.Function;
 
 abstract class Pawn extends Robot {
@@ -9,7 +12,14 @@ abstract class Pawn extends Robot {
     protected int hqID;
     protected Direction dirTarget = Direction.CENTER;
 	protected boolean explorer = false;
-	protected boolean defending = false;
+    protected boolean defending = false;
+    protected int actionRadiusSquared;
+    protected int detectionRadiusSquared;
+    protected int sensorRadiusSquared;
+    
+    Pawn(){
+
+    }
 
     static Pawn unitFromRobotController(RobotController rc) throws Exception {
     	//getHomeHQ();
@@ -85,19 +95,15 @@ abstract class Pawn extends Robot {
         return tryMove(dirForward180(dir));
     }
     
-    protected Direction awayFromNearby(Function<RobotInfo, Boolean> condition) throws GameActionException {
-    	RobotInfo[] nearby = rc.senseNearbyRobots();
+    protected Direction awayFromRobots(List<RobotInfo> robots) throws GameActionException {
         MapLocation location = new MapLocation(0, 0);
-        int numRobots = 0;
-        for (RobotInfo robot : nearby) {
-        	if (condition.apply(robot)) {
-	            location = location.translate(robot.location.x, robot.location.y);
-	            numRobots++;
-        	}
+        if (robots.size() == 0) return dirTarget;
+        for (RobotInfo robot : robots) {
+	        location = location.translate(robot.location.x, robot.location.y);
         }
-        if (numRobots == 0) return dirTarget;
-        MapLocation avgLocation = new MapLocation(location.x / numRobots, location.y / numRobots);
-        Direction away_dir = directionTo(avgLocation).opposite();
+
+        location = new MapLocation(location.x / robots.size(), location.y / robots.size());
+        Direction away_dir = directionTo(location).opposite();
         
         if (!rc.onTheMap(rc.getLocation().add(away_dir))) {
         	away_dir = away_dir.opposite();
@@ -109,13 +115,7 @@ abstract class Pawn extends Robot {
     }
     
     protected Direction awayFromAllies() throws GameActionException {
-    	Function<RobotInfo, Boolean> allies = robot -> robot.team == rc.getTeam();
-        return awayFromNearby(allies);
-    }
-    
-    protected Direction awayFromEnemyMuckrakers() throws GameActionException {
-    	Function<RobotInfo, Boolean> enemyMuckrakers = robot -> (robot.type == RobotType.MUCKRAKER && robot.team == rc.getTeam().opponent());
-        return awayFromNearby(enemyMuckrakers);
+        return awayFromRobots(Arrays.asList(rc.senseNearbyRobots(rc.getLocation(), rc.getType().sensorRadiusSquared, rc.getTeam())));
     }
     
 //	Direction best_dir = Direction.CENTER;
