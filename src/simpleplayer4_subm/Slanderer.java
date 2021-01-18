@@ -1,4 +1,4 @@
-package simpleplayer4;
+package simpleplayer4_subm;
 
 import java.util.Arrays;
 import java.util.List;

@@ -45,7 +45,6 @@ class EnlightenmentCenter extends Robot {
             if (shouldBid()) {
                 int bidAmount = (int) (bidController.getBidBaseAmount() * bidController.getBidMultiplier());
                 bidLastRound = tryBid(Math.max(bidAmount - (bidAmount % 2), 2));
-                System.out.println(Math.max(bidAmount - (bidAmount % 2), 2));
             } else {
                 bidLastRound = false;
             }

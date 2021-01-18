@@ -1,7 +1,6 @@
-package simpleplayer4;
+package simpleplayer4_subm;
 
 import battlecode.common.*;
-import common.*;
 import java.util.*;
 
 class EnlightenmentCenter extends Robot {
