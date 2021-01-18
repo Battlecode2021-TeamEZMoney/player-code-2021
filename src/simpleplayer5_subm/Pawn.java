@@ -1,26 +1,22 @@
-package simpleplayer4_nosland;
-
-import battlecode.common.*;
-import common.*;
+package simpleplayer5_subm;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.Function;
+
+import battlecode.common.*;
+import common.DirectionUtils;
 
 abstract class Pawn extends Robot {
-    protected MapLocation hqLocation = null;
+    protected MapLocation hqLocation;
     protected int hqID;
-    protected Direction dirTarget = Direction.CENTER;
-    protected boolean explorer = false;
-    protected boolean defending = false;
+    protected Direction dirTarget;
 
-
-    Pawn(RobotController rcin) {
+    Pawn(RobotController rcin) throws GameActionException {
         super(rcin); // Don't remove this.
+        getHomeHQ();
     }
 
     static Pawn unitFromRobotController(RobotController rc) throws Exception {
-        // getHomeHQ();
         switch (rc.getType()) {
             case POLITICIAN:
                 return new Politician(rc);
@@ -33,14 +29,12 @@ abstract class Pawn extends Robot {
         }
     }
 
-    protected boolean getHomeHQ() throws GameActionException {
-        RobotInfo[] robots = rc.senseNearbyRobots(2, allyTeam);
+    protected boolean getHomeHQ() {
+        RobotInfo[] robots = rc.senseNearbyRobots(2, rc.getTeam());
         for (RobotInfo robot : robots) {
             if (robot.getType() == RobotType.ENLIGHTENMENT_CENTER) {
                 hqLocation = robot.getLocation();
                 hqID = robot.getID();
-                dirTarget = Encoding.getDirFromFlag(rc.getFlag(robot.ID));
-                explorer = Encoding.getExplorerFromFlag(rc.getFlag(robot.ID));
                 return true;
             }
         }
@@ -91,18 +85,26 @@ abstract class Pawn extends Robot {
 
     protected Direction awayFromRobots(List<RobotInfo> robots) throws GameActionException {
         MapLocation location = new MapLocation(0, 0);
-        if (robots.size() == 0) {
+        if (robots.size() == 0)
             return dirTarget;
-        }
         for (RobotInfo robot : robots) {
             location = location.translate(robot.location.x, robot.location.y);
         }
 
         location = new MapLocation(location.x / robots.size(), location.y / robots.size());
-        return directionTo(location).opposite();
+        Direction away_dir = directionTo(location).opposite();
+
+        if (!rc.onTheMap(rc.getLocation().add(away_dir))) {
+            away_dir = away_dir.opposite();
+        }
+        if (DirectionUtils.within45Degrees(dirTarget, away_dir)) {
+            return dirTarget;
+        }
+        return away_dir;
     }
 
     protected Direction awayFromAllies() throws GameActionException {
-        return awayFromRobots(Arrays.asList(rc.senseNearbyRobots(-1, allyTeam)));
+        return awayFromRobots(
+                Arrays.asList(rc.senseNearbyRobots(rc.getLocation(), sensorRadiusSquared, allyTeam)));
     }
 }
