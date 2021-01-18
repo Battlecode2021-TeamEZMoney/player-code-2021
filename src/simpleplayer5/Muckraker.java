@@ -8,8 +8,8 @@ class Muckraker extends Attacker {
     private int mode = 1;
     private Direction dirTarget;
 
-    Muckraker(RobotController rcin) {
-        this.rc = rcin;
+    Muckraker(RobotController rcin) throws GameActionException {
+        super(rcin); // Don't remove this.
     }
 
     void run() throws GameActionException {
@@ -34,7 +34,7 @@ class Muckraker extends Attacker {
         }
     }
 
-    private void parseHQFlag(int flag) {
+    private void parseHQFlag(int flag) throws GameActionException {
         MapLocation tempLocation = Encoding.getLocationFromFlag(rc, flag);
         switch (Encoding.getInfoFromFlag(flag)) {
             case 2:

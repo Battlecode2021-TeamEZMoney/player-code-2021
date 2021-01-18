@@ -3,7 +3,7 @@ package simpleplayer4;
 import battlecode.common.*;
 
 public abstract class Attacker extends Pawn {
-    Attacker(RobotController rcin){
+    Attacker(RobotController rcin) throws GameActionException {
         super(rcin); // Don't remove this.
     }
     protected boolean withinAttackRange(RobotInfo enemy) throws GameActionException {

@@ -1,32 +1,27 @@
 package simpleplayer5;
 
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import battlecode.common.*;
 
 class Slanderer extends Pawn {
     Politician successor;
 
-    Slanderer(RobotController rcin) {
-        this.rc = rcin;
+    Slanderer(RobotController rcin) throws GameActionException {
+        super(rcin); // Don't remove this.
     }
 
     void run() throws GameActionException {
-        getHomeHQ();
         while (rc.getType().equals(RobotType.SLANDERER)) {
             turnCount++;
             if (rc.isReady()) {
-                // Handle detecting enemies
-                int sensorRadius = rc.getType().sensorRadiusSquared;
-                ArrayList<RobotInfo> nearbyEnemies = new ArrayList<RobotInfo>(
-                        Arrays.asList(rc.senseNearbyRobots(sensorRadius, rc.getTeam().opponent())));
-                nearbyEnemies.removeIf(e -> (!e.getType().equals(RobotType.MUCKRAKER)));
-                if (nearbyEnemies.size() > 0) {
-                    tryMove(runAwayDirection(nearbyEnemies));
+                if(distanceSquaredTo(hqLocation) < 5){
+                    dirTarget = directionTo(hqLocation).opposite();
                 } else {
-                    tryDirForward180(getTeamGoDir());
+                    dirTarget = Direction.CENTER;
                 }
+                tryDirForward180(awayFromEnemyMuckrakers());
             }
             Clock.yield();
         }
@@ -37,12 +32,10 @@ class Slanderer extends Pawn {
 
     }
 
-    Direction runAwayDirection(ArrayList<RobotInfo> robots) {
-        MapLocation location = new MapLocation(0, 0);
-        for (RobotInfo robot : robots) {
-            location = location.translate(robot.location.x, robot.location.y);
-        }
-        MapLocation avgLocation = new MapLocation(location.x / robots.size(), location.y / robots.size());
-        return directionTo(avgLocation).opposite();
+    protected Direction awayFromEnemyMuckrakers() throws GameActionException {
+        List<RobotInfo> robots = Arrays
+                .asList(rc.senseNearbyRobots(rc.getLocation(), actionRadiusSquared, enemyTeam));
+        robots.removeIf(r -> (r.type != RobotType.MUCKRAKER));
+        return awayFromRobots(robots);
     }
 }

@@ -12,8 +12,6 @@ class Politician extends Attacker {
 
 	Politician(RobotController rcin) throws GameActionException {
 		super(rcin); // Don't remove this.
-		this.rc = rcin;
-		getHomeHQ();
 	}
 
 	Politician(Slanderer sland) throws GameActionException {

@@ -5,7 +5,6 @@ import common.*;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.Function;
 
 abstract class Pawn extends Robot {
     protected MapLocation hqLocation = null;
@@ -15,8 +14,9 @@ abstract class Pawn extends Robot {
     protected boolean defending = false;
 
 
-    Pawn(RobotController rcin) {
+    Pawn(RobotController rcin) throws GameActionException {
         super(rcin); // Don't remove this.
+        getHomeHQ();
     }
 
     static Pawn unitFromRobotController(RobotController rc) throws Exception {

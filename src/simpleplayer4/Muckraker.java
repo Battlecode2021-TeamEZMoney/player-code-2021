@@ -8,7 +8,6 @@ class Muckraker extends Attacker {
 
 	Muckraker(RobotController rcin) throws GameActionException {
 		super(rcin); // Don't remove this.
-		getHomeHQ();
 	}
 
 	void run() throws GameActionException {

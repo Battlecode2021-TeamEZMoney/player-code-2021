@@ -18,9 +18,10 @@ class EnlightenmentCenter extends Robot {
     private Set<MapLocation> neutralHQs = new HashSet<MapLocation>();
     private ArrayList<Integer> units = new ArrayList<Integer>();
     private final Bidding bidController;
+    private boolean bidLastRound;
 
-    EnlightenmentCenter(RobotController rcin) {
-        this.rc = rcin;
+    EnlightenmentCenter(RobotController rcin) throws GameActionException {
+        super(rcin); // Don't remove this.
         bidController = new Bidding();
     }
 
@@ -38,13 +39,15 @@ class EnlightenmentCenter extends Robot {
                     rc.buildRobot(unitToBuild, buildDirection, infToSpend);
                     unitsBuilt++;
                     addAllFriendlyBots(rc.senseNearbyRobots(rc.getLocation().add(buildDirection), 0, rc.getTeam()));
-                    // TODO: Implement flag based orders
-                    // trySetFlag(getOrdersForUnit(unitToBuild));
                 }
             }
 
             if (shouldBid()) {
-                tryBid(bidController.getBidAmount());
+                int bidAmount = (int) (bidController.getBidBaseAmount() * bidController.getBidMultiplier());
+                bidLastRound = tryBid(Math.max(bidAmount - (bidAmount % 2), 2));
+                System.out.println(Math.max(bidAmount - (bidAmount % 2), 2));
+            } else {
+                bidLastRound = false;
             }
 
             while (Clock.getBytecodesLeft() > 1000 && units.size() > 0) {
@@ -115,7 +118,7 @@ class EnlightenmentCenter extends Robot {
                 }
                 return Constants.optimalSlandInfArray[0];
             case POLITICIAN:
-                return Math.min(100, Math.max(Constants.minimumPolInf, (int) rc.getInfluence() / 4));
+                return Math.max(Constants.minimumPolInf, (int) rc.getInfluence() / 200);
             case MUCKRAKER:
                 return 1;
             default:
@@ -155,7 +158,7 @@ class EnlightenmentCenter extends Robot {
      * }
      */
 
-    private int getTarget() {
+    private int getTarget() throws GameActionException {
         if (enemyHQs.size() > 0) {
             return Encoding.encode((MapLocation) enemyHQs.toArray()[0], FlagCodes.enemyHQ);
         } else if (neutralHQs.size() > 0) {
@@ -166,22 +169,7 @@ class EnlightenmentCenter extends Robot {
         return Encoding.encode(rc.getLocation(), FlagCodes.simple);
     }
 
-    private boolean shouldBid() {
-        return rc.getTeamVotes() < Constants.VOTES_TO_WIN
-                && rc.getRoundNum() > (GameConstants.GAME_MAX_NUMBER_OF_ROUNDS / 6);
-    }
-
-    private int getBidAmount() {
-        return (int) Math.max(4, rc.getInfluence() * .01); // TODO: Placeholder
-    }
-
-    private void tryBid(int bidAmount) throws GameActionException {
-        if (rc.canBid(bidAmount)) {
-            rc.bid(bidAmount);
-        }
-    }
-
-    private void parseUnitFlag(int flag) {
+    private void parseUnitFlag(int flag) throws GameActionException {
         MapLocation tempLocation = Encoding.getLocationFromFlag(rc, flag);
         switch (Encoding.getInfoFromFlag(flag)) {
             case 2:
@@ -200,53 +188,60 @@ class EnlightenmentCenter extends Robot {
         }
     }
 
+    private boolean shouldBid() {
+        return rc.getTeamVotes() < Constants.VOTES_TO_WIN && rc.getRoundNum() >= Bidding.START_BIDDING_ROUND;
+    }
+
+    private boolean tryBid(int bidAmount) throws GameActionException {
+        if (rc.canBid(bidAmount)) {
+            rc.bid(bidAmount);
+            return true;
+        }
+        return false;
+    }
+
     private class Bidding {
         private static final int MAX_ROUNDS = GameConstants.GAME_MAX_NUMBER_OF_ROUNDS;
-        private static final int VOTES_TO_WIN = MAX_ROUNDS / 2 + 1, OFFSET = 100;
-        private static final double GROWTH_RATE = 1.15, DECAY_RATE = 0.9;
-        private int prevBid = 1, prevTeamVotes = -1;
-        private double accum = 0;
+        private static final int VOTES_TO_WIN = MAX_ROUNDS / 2 + 1;
+        private static final int START_BIDDING_ROUND = MAX_ROUNDS / 8;
+        private int prevBidBase = 2, prevTeamVotes = -1;
+        private double linGrow = 0.002, multGrow = .02, multDecay = .01;
+        private int decayAccum = 0, growAccum = 0;
 
-        private int getBidAmount() {
+        private int getBidBaseAmount() {
             if (rc.getTeamVotes() >= VOTES_TO_WIN)
                 return 0; // won bidding
 
-            int bid = 1, curTeamVotes = rc.getTeamVotes();
-            double curVoteValue = voteValue();
-            if (prevTeamVotes != -1) {
+            int bidBase = prevBidBase, curTeamVotes = rc.getTeamVotes();
+            if (prevTeamVotes != -1 && bidLastRound) {
                 if (curTeamVotes > prevTeamVotes) {
-                    // won previous round
-                    accum = DECAY_RATE * accum;
-                    bid = (int) (DECAY_RATE * prevBid + accum);
+                    growAccum = 0;
+                    decayAccum += (int) Math.ceil(multDecay * bidBase);
+                    bidBase -= decayAccum;
                 } else {
-                    // lost previous round
-                    accum = DECAY_RATE * accum + curVoteValue;
-                    bid = (int) (GROWTH_RATE * prevBid + accum);
+                    decayAccum = 0;
+                    bidBase += (int) (linGrow * rc.getInfluence());
+                    growAccum += (int) Math.ceil(multGrow * bidBase);
+                    bidBase += growAccum;
                 }
             }
-            bid = Math.max(bid, 1) + (int) (Math.random() * 2);
-            bid = Math.min(bid, rc.getInfluence() / 20);
-            prevBid = bid;
+            bidBase = Math.max(bidBase + (bidBase % 2), 2);
+            prevBidBase = bidBase;
             prevTeamVotes = curTeamVotes;
-            return bid;
+            return bidBase;
         }
 
-        private double logLin(int x) {
-            if (x <= 0)
-                return 0;
-            return x * Math.log((double) x);
+        private double getBidMultiplier() {
+            final int lowerVote = Math.max(VOTES_TO_WIN - MAX_ROUNDS + rc.getRoundNum(), 0);
+            final int upperVote = Math.min(rc.getRoundNum(), VOTES_TO_WIN);
+            if (rc.getTeamVotes() < lowerVote || rc.getTeamVotes() > upperVote) {
+                System.out.println("Error, vote count out of expected bounds.... ????");
+                return 1;
+            }
+            return ((1 + .5 * (.05 * (Math.log(rc.getTeamVotes() + 30 - lowerVote) / Math.log(1.5))))
+                    / (1 + Math.exp(0.03 * (rc.getTeamVotes() - lowerVote)))) + 1 + (1 / (upperVote - lowerVote));
         }
 
-        public double voteValue() {
-            int votes = rc.getTeamVotes(), rounds = rc.getRoundNum() - 1;
-            int votesMin = VOTES_TO_WIN - (MAX_ROUNDS - rounds);
-            double lgProbDiff = (double) (MAX_ROUNDS - rounds - 1) * Math.log(2) + logLin(VOTES_TO_WIN - votes - 1)
-                    + logLin((MAX_ROUNDS - rounds) - (VOTES_TO_WIN - votes)) - logLin(MAX_ROUNDS - rounds - 1);
-            // lgProbDiff: 0 (highest value) - maxRounds * ln(2) (lowest value)
-
-            return (MAX_ROUNDS * Math.log(2) - lgProbDiff) / (votes - votesMin + OFFSET);
-            // returns: 0.6 (lowest value) - 20.7 (highest value)
-        }
     }
 
 }

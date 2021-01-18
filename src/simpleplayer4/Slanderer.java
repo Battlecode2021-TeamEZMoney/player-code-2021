@@ -4,14 +4,12 @@ import java.util.Arrays;
 import java.util.List;
 
 import battlecode.common.*;
-//import java.util.*;
 
 class Slanderer extends Pawn {
     Politician successor;
 
     Slanderer(RobotController rcin) throws GameActionException {
         super(rcin); // Don't remove this.
-        getHomeHQ();
     }
 
     void run() throws GameActionException {

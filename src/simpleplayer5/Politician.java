@@ -2,6 +2,8 @@ package simpleplayer5;
 
 import java.util.Arrays;
 
+import javax.swing.text.html.HTMLWriter;
+
 import battlecode.common.*;
 import common.DirectionUtils;
 
@@ -9,20 +11,23 @@ class Politician extends Attacker {
     private MapLocation enemyHQ = null;
     private MapLocation neutralTarget;
     private int mode = 1;
-    private Direction dirTarget;
+    private final boolean wasSlanderer;
 
-    Politician(RobotController rcin) {
-        this.rc = rcin;
-    }
+	Politician(RobotController rcin) throws GameActionException {
+        super(rcin); // Don't remove this.
+        wasSlanderer = false;
+	}
 
-    Politician(Slanderer sland) {
-        // TODO: Remember to update these when new common fields are added in the Pawn
-        // and Robot classes.
-        this.hqLocation = sland.hqLocation;
-        this.hqID = sland.hqID;
-        this.rc = sland.rc;
-        this.turnCount = sland.turnCount;
-    }
+	Politician(Slanderer sland) throws GameActionException {
+		// TODO: Remember to update these when new common fields are added in the Pawn
+		// and Robot classes.
+		super(sland.rc); // Don't remove this.
+		this.turnCount = sland.turnCount;
+		this.hqLocation = sland.hqLocation;
+		this.hqID = sland.hqID;
+        this.dirTarget = sland.dirTarget;
+        wasSlanderer = true;
+	}
 
     void run() throws GameActionException {
         dirTarget = getTeamGoDir().opposite();
@@ -60,7 +65,7 @@ class Politician extends Attacker {
         // converted units.
     }
 
-    private void parseHQFlag(int flag) {
+    private void parseHQFlag(int flag) throws GameActionException {
         MapLocation tempLocation = Encoding.getLocationFromFlag(rc, flag);
         switch (Encoding.getInfoFromFlag(flag)) {
             case 2:
@@ -160,10 +165,11 @@ class Politician extends Attacker {
                 if (enemyHQAttackRoutine())
                     return;
             } else {
-                if (!rc.onTheMap(rc.getLocation().add(dirTarget))) {
-                    dirTarget = dirTarget.opposite();
+                if (distanceSquaredTo(hqLocation) < 11 && tryDirForward180(directionTo(hqLocation).opposite())) {
+                } else if (distanceSquaredTo(hqLocation) < 45 && rc.isLocationOccupied(rc.getLocation().add(directionTo(hqLocation))) && tryDirForward180(directionTo(hqLocation).opposite())){
+                } else if (!tryDirForward180(DirectionUtils.randomDirection())){
+                    tryDirForward180(DirectionUtils.randomDirection());
                 }
-                tryDirForward180(dirTarget);
             }
         }
     }
