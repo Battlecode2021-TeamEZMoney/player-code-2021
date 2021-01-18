@@ -7,13 +7,15 @@ class Muckraker extends Attacker {
     private MapLocation enemyHQ = null;
     private int mode = 1;
     private Direction dirTarget;
+    private boolean exploreOnly;
 
     Muckraker(RobotController rcin) throws GameActionException {
         super(rcin); // Don't remove this.
     }
 
     void run() throws GameActionException {
-        dirTarget = getTeamGoDir().opposite();
+        dirTarget = DirectionUtils.randomDirectionBiasCardinal();
+        exploreOnly = Math.random() > .4;
         getHomeHQ();
         while (true) {
             turnCount++;
@@ -23,13 +25,16 @@ class Muckraker extends Attacker {
                 mode = 1;
             }
 
-            switch (mode) {
-                case 2:
-                    runAttackCode();
-                default:
-                    runSimpleCode();
+            if (!exploreOnly) {
+                switch (mode) {
+                    case 2:
+                        runAttackCode();
+                    default:
+                        runSimpleCode();
+                }
+            } else {
+                runSimpleCode();
             }
-
             Clock.yield();
         }
     }
@@ -48,14 +53,8 @@ class Muckraker extends Attacker {
     }
 
     private void runAttackCode() throws GameActionException {
-        RobotInfo[] nearbyAllies = rc.senseNearbyRobots(999, rc.getTeam());
-        for (RobotInfo ally : nearbyAllies) {
-            if (ally.type.equals(RobotType.ENLIGHTENMENT_CENTER)) {
-                trySetFlag(Encoding.encode(ally.getLocation(), FlagCodes.friendlyHQ));
-            }
-        }
-
-        RobotInfo[] nearbyEnemies = rc.senseNearbyRobots(999, rc.getTeam().opponent());
+        showAnyNearbyAlliedHQOnFlag();
+        RobotInfo[] nearbyEnemies = rc.senseNearbyRobots(sensorRadiusSquared, rc.getTeam().opponent());
         if (nearbyEnemies.length > 0) {
             RobotInfo tempTarget = null;
             for (RobotInfo robot : nearbyEnemies) {
@@ -80,8 +79,15 @@ class Muckraker extends Attacker {
     }
 
     private void runSimpleCode() throws GameActionException {
+        showAnyNearbyAlliedHQOnFlag();
+
+        RobotInfo[] neutralECs = rc.senseNearbyRobots(sensorRadiusSquared, Team.NEUTRAL);
+        if (neutralECs.length > 0) {
+            trySetFlag(Encoding.encode(neutralECs[0].getLocation(), FlagCodes.neutralHQ));
+        }
+
         if (rc.isReady()) {
-            RobotInfo[] nearbyEnemies = rc.senseNearbyRobots(999, rc.getTeam().opponent());
+            RobotInfo[] nearbyEnemies = rc.senseNearbyRobots(sensorRadiusSquared, rc.getTeam().opponent());
             if (nearbyEnemies.length > 0) {
                 RobotInfo tempTarget = null;
                 for (RobotInfo robot : nearbyEnemies) {
@@ -96,23 +102,16 @@ class Muckraker extends Attacker {
                         }
                     }
                 }
-                if (tempTarget != null && tryExpose(tempTarget.getID())) {
+                if (tempTarget != null && huntOrKill(tempTarget)) {
                     return;
                 }
             }
-            if (enemyHQ != null) {
-                if (enemyHQ.isAdjacentTo(rc.getLocation())) {
-                    tryDirForward90(directionTo(enemyHQ));
-                } else {
-                    tryDirForward180(directionTo(enemyHQ));
-                }
 
-            } else {
-                if (!rc.onTheMap(rc.getLocation().add(dirTarget))) {
-                    dirTarget = DirectionUtils.random180BiasMiddle(dirTarget.opposite());
-                }
-                tryDirForward180(dirTarget);
+            if (!rc.onTheMap(rc.getLocation().add(dirTarget))
+                    || rc.isLocationOccupied(rc.getLocation().add(dirTarget))) {
+                dirTarget = DirectionUtils.random180(dirTarget.opposite());
             }
+            tryDirForward180(dirTarget);
         }
     }
 

@@ -3,6 +3,9 @@ package simpleplayer5;
 import battlecode.common.*;
 
 public abstract class Attacker extends Pawn {
+    protected MapLocation enemyHQ;
+    protected MapLocation neutralTarget;
+    
     Attacker(RobotController rcin) throws GameActionException {
         super(rcin); // Don't remove this.
     }

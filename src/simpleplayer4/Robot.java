@@ -84,7 +84,7 @@ abstract class Robot {
     // }
 
     protected boolean canSenseEnemy() {
-        return rc.senseNearbyRobots(-1, enemyTeam).length > 0;
+        return rc.senseNearbyRobots(sensorRadiusSquared, enemyTeam).length > 0;
     }
 
     protected int distanceSquaredTo(RobotInfo otherRobot) throws GameActionException {

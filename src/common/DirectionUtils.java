@@ -4,10 +4,18 @@ import battlecode.common.Direction;
 
 public class DirectionUtils {
     public static final Direction[] nonCenterDirections = { Direction.NORTH, Direction.NORTHEAST, Direction.EAST,
-            Direction.SOUTHEAST, Direction.SOUTH, Direction.SOUTHWEST, Direction.WEST, Direction.NORTHWEST, };
+            Direction.SOUTHEAST, Direction.SOUTH, Direction.SOUTHWEST, Direction.WEST, Direction.NORTHWEST};
 
     public static Direction randomDirection() {
         return nonCenterDirections[(int) (Math.random() * nonCenterDirections.length)];
+    }
+
+    public static Direction randomCardinalDirection() {
+        return Direction.cardinalDirections()[(int) (Math.random() * Direction.cardinalDirections().length)];
+    }
+
+    public static Direction randomDirectionBiasCardinal(){
+        return Math.random() < .5 ? randomCardinalDirection() : randomDirection();
     }
 
     public static Direction rotateRight90(Direction dir) {
@@ -129,6 +137,23 @@ public class DirectionUtils {
             case 8:
                 return dir.rotateRight();
             case 9:
+                return rotateRight90(dir);
+            default:
+                return dir;
+        }
+    }
+
+    public static Direction random180(Direction dir) {
+        switch ((int) (Math.random() * 5 + 1)) {
+            case 1:
+                return rotateLeft90(dir);
+            case 2:
+                return dir.rotateLeft();
+            case 3:
+                return dir;
+            case 4:
+                return dir.rotateRight();
+            case 5:
                 return rotateRight90(dir);
             default:
                 return dir;

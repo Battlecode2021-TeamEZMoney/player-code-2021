@@ -8,8 +8,6 @@ import battlecode.common.*;
 import common.DirectionUtils;
 
 class Politician extends Attacker {
-    private MapLocation enemyHQ = null;
-    private MapLocation neutralTarget;
     private int mode = 1;
     private final boolean wasSlanderer;
 
@@ -107,22 +105,34 @@ class Politician extends Attacker {
     private void runNeutralCode() throws GameActionException {
         showAnyNearbyAlliedHQOnFlag();
         densityDestruct();
+        if (neutralHQAttackRoutine())
+                return;
+    }
 
+    private boolean neutralHQAttackRoutine() throws GameActionException {
         if (neutralTarget.isAdjacentTo(rc.getLocation())) {
-            if (DirectionUtils.isCardinal(directionTo(neutralTarget))) {
-                tryEmpower(1);
+            if (DirectionUtils.isCardinal(directionTo(neutralTarget)) && tryEmpower(1)) {
+                return true;
             } else {
-                if (!tryDirForward90(directionTo(neutralTarget))) {
-                    tryEmpower(2);
+                if (tryDirForward90(directionTo(neutralTarget)) || tryEmpower(2)) {
+                    return true;
                 }
-                ;
             }
-        } else {
-            tryDirForward180(directionTo(neutralTarget));
+        } else if (tryDirForward180(directionTo(neutralTarget))) {
+            return true;
         }
+        return false;
     }
 
     private void runAttackCode() throws GameActionException {
+        RobotInfo[] neutralECs = rc.senseNearbyRobots(sensorRadiusSquared, Team.NEUTRAL);
+        if (neutralECs.length > 0) {
+            neutralTarget = neutralECs[0].getLocation();
+            trySetFlag(Encoding.encode(neutralTarget, FlagCodes.neutralHQ));
+            if (neutralHQAttackRoutine())
+                return;
+        }
+
         showAnyNearbyAlliedHQOnFlag();
 
         densityDestruct();
@@ -178,13 +188,12 @@ class Politician extends Attacker {
         if (distanceSquaredTo(enemyHQ) <= RobotType.POLITICIAN.actionRadiusSquared
                 && rc.isLocationOccupied(rc.getLocation().add(directionTo(enemyHQ)))
                 && tryEmpower(distanceSquaredTo(enemyHQ))) {
-        } else if (enemyHQ.isAdjacentTo(rc.getLocation())) {
-            tryDirForward90(directionTo(enemyHQ));
-        } else {
-            tryDirForward180(directionTo(enemyHQ));
+            return true;
+        } else if ((enemyHQ.isAdjacentTo(rc.getLocation()) && tryDirForward90(directionTo(enemyHQ))) || tryDirForward180(directionTo(enemyHQ))) {
+            return true;
         }
 
-        return true;
+        return false;
     }
 
     private boolean tryEmpower(int radius) throws GameActionException {
