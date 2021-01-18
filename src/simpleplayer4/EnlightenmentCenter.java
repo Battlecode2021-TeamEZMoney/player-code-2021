@@ -159,13 +159,8 @@ class EnlightenmentCenter extends Robot {
     
     private RobotType getUnitToBuild() throws GameActionException {
         double rand = Math.random();
-<<<<<<< HEAD
         if (rc.getRoundNum() <= 2) {
         	return RobotType.SLANDERER;
-=======
-        if (rc.getRoundNum() <= 6){
-            return RobotType.SLANDERER;
->>>>>>> 01e182063ebffafe1dab4f437b5497029c82224d
         } else if (rc.getInfluence() - 10 < Constants.minimumPolInf) {
             return RobotType.MUCKRAKER;
         } else if (rc.getEmpowerFactor(allyTeam, 11) > 4
@@ -173,12 +168,7 @@ class EnlightenmentCenter extends Robot {
             return RobotType.POLITICIAN;
         } else if (rand > (0.4 + 0.2 * rc.getRoundNum() / Constants.MAX_ROUNDS) || canSenseEnemy()) {
             return RobotType.MUCKRAKER;
-<<<<<<< HEAD
-        } else if (rand > (0.1 - 0.1 * rc.getRoundNum() / Constants.MAX_ROUNDS)
-        		|| rc.getEmpowerFactor(enemyTeam, 0) > 1.1) {
-=======
         } else if (rand > 0.05 * (1 - rc.getRoundNum() / Constants.MAX_ROUNDS)) {
->>>>>>> 01e182063ebffafe1dab4f437b5497029c82224d
             return RobotType.POLITICIAN;
         } else {
             return RobotType.SLANDERER;
@@ -268,19 +258,10 @@ class EnlightenmentCenter extends Robot {
                     bidBase += growAccum;
                 }
             }
-<<<<<<< HEAD
-            bid = Math.max(bid, rc.getInfluence() / 2500 + 1) + (int) (Math.random() * 2);
-            bid = (int) Math.min(bid, rc.getInfluence() * (0.1 + 0.2 * rc.getRoundNum() / Constants.MAX_ROUNDS));
-            prevBid = bid;
-            prevTeamVotes = curTeamVotes;
-            //System.out.println(curVoteValue + " -> " + accum);
-            return bid;
-=======
             bidBase = Math.max(bidBase + (bidBase % 2), 2);
             prevBidBase = bidBase;
             prevTeamVotes = curTeamVotes;
             return bidBase;
->>>>>>> 01e182063ebffafe1dab4f437b5497029c82224d
         }
 
         private double getBidMultiplier() {
@@ -294,21 +275,6 @@ class EnlightenmentCenter extends Robot {
                     / (1 + Math.exp(0.03 * (rc.getTeamVotes() - lowerVote)))) + 1 + (1 / (upperVote - lowerVote));
         }
 
-<<<<<<< HEAD
-        public double voteValue() throws GameActionException {
-            int votes = rc.getTeamVotes(), rounds = rc.getRoundNum() - 1;
-            int votesMin = VOTES_TO_WIN - (MAX_ROUNDS - rounds);
-            double lgProbDiff = (double) (MAX_ROUNDS - rounds - 1) * Math.log(2) + logLin(VOTES_TO_WIN - votes - 1)
-                    + logLin((MAX_ROUNDS - rounds) - (VOTES_TO_WIN - votes)) - logLin(MAX_ROUNDS - rounds - 1);
-            // lgProbDiff: 0 (highest value) - maxRounds * ln(2) (lowest value)
-            if (votes - votesMin < 0) {
-            	return 20; // cannot get majority of votes, but may not need majority to have more than opponent
-            }
-            return (MAX_ROUNDS * Math.log(2) - lgProbDiff) / (votes - votesMin + OFFSET);
-            // returns: 0.6 (lowest value) - 20.7 (highest value)
-        }
-=======
->>>>>>> 01e182063ebffafe1dab4f437b5497029c82224d
     }
 
 }
