@@ -119,4 +119,28 @@ abstract class Robot {
     protected boolean isNeutral(RobotInfo robot) throws GameActionException {
         return robot.team.equals(Team.NEUTRAL);
     }
+
+    protected boolean crowdedByEnemy(MapLocation loc) {
+        return rc.senseNearbyRobots(loc, 2, enemyTeam).length >= 5
+                || rc.senseNearbyRobots(loc, 5, enemyTeam).length >= 10;
+    }
+
+    protected boolean crowded(MapLocation loc) {
+        return rc.senseNearbyRobots(loc, 2, null).length >= 7 || rc.senseNearbyRobots(loc, 5, null).length >= 15;
+    }
+
+    protected boolean crowdedByAllyMuckrakers(MapLocation loc) {
+        int numMucks2 = 0, numMucks5 = 0;
+        for (RobotInfo robot : rc.senseNearbyRobots(loc, 2, allyTeam)) {
+            if (robot.type.equals(RobotType.MUCKRAKER)) {
+                numMucks2++;
+            }
+        }
+        for (RobotInfo robot : rc.senseNearbyRobots(loc, 5, allyTeam)) {
+            if (robot.type.equals(RobotType.MUCKRAKER)) {
+                numMucks5++;
+            }
+        }
+        return numMucks2 >= 5 || numMucks5 >= 10;
+    }
 }

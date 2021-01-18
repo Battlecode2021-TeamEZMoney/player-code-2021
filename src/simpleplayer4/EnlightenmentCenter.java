@@ -168,7 +168,7 @@ class EnlightenmentCenter extends Robot {
             return RobotType.POLITICIAN;
         } else if (rand > (0.4 + 0.2 * rc.getRoundNum() / Constants.MAX_ROUNDS) || canSenseEnemy()) {
             return RobotType.MUCKRAKER;
-        } else if (rand > (0.1 - 0.1 * rc.getRoundNum() / Constants.MAX_ROUNDS)
+        } else if (rand > 0.05 * (1 - (double) rc.getRoundNum() / Constants.MAX_ROUNDS)
         		|| rc.getEmpowerFactor(enemyTeam, 0) > 1.1) {
             return RobotType.POLITICIAN;
         } else {

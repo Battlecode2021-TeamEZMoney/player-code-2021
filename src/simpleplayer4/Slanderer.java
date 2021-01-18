@@ -5,7 +5,7 @@ import java.util.List;
 
 import battlecode.common.*;
 //import java.util.*;
-import common.DirectionUtils;
+import common.*;
 
 class Slanderer extends Pawn {
     Politician successor;

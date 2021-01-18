@@ -2,6 +2,10 @@ package simpleplayer4_nosland;
 
 import battlecode.common.*;
 import common.*;
+<<<<<<< HEAD
+=======
+import simpleplayer4_nosland.DirectionUtils;
+>>>>>>> a33f1fcc96782731a78c1df0f834ee0d8503d011
 
 import java.util.Arrays;
 import java.util.List;

@@ -68,30 +68,28 @@ class EnlightenmentCenter extends Robot {
         }
     }
 
-    /*
-     * private void gatherIntel() {
-     * 
-     * }
-     */
-
     private RobotType getUnitToBuild() {
-        if (spawnIndex >= Constants.spawnOrder.length) {
-            spawnIndex = 0;
-        }
-        if (rc.getInfluence() < Constants.minimumPolInf) {
-            if (Constants.spawnOrder[spawnIndex].equals(RobotType.MUCKRAKER)) {
-                spawnIndex++;
-            }
+        if (rc.getRoundNum() <= 2) {
+            return RobotType.SLANDERER;
+        } else if (rc.getInfluence() - 10 < Constants.minimumPolInf) {
             return RobotType.MUCKRAKER;
+        } else if (rc.getEmpowerFactor(allyTeam, 11) > 4 || crowdedByEnemy(rc.getLocation())
+                || crowded(rc.getLocation())) {
+            return RobotType.POLITICIAN;
         } else if (rc.getInfluence() < Constants.optimalSlandInfArray[0]) {
             if (Constants.spawnOrder[spawnIndex].equals(RobotType.POLITICIAN)) {
                 spawnIndex++;
             }
-            return RobotType.POLITICIAN;
-        } else if (rc.getRoundNum() <= 2) {
-            return RobotType.SLANDERER;
+            return Math.random() > .4 ? RobotType.MUCKRAKER : RobotType.POLITICIAN;
         } else {
-            return Constants.spawnOrder[spawnIndex++];
+            double randTemp = Math.random();
+            if (randTemp < .05){
+                return RobotType.SLANDERER;
+            } else if (randTemp < .5) {
+                return RobotType.MUCKRAKER;
+            } else {
+                return RobotType.POLITICIAN;
+            }
         }
     }
 
@@ -117,6 +115,9 @@ class EnlightenmentCenter extends Robot {
                 }
                 return Constants.optimalSlandInfArray[0];
             case POLITICIAN:
+                if (rc.getEmpowerFactor(allyTeam, 11) > 4){
+                    return (int) Math.max(Constants.minimumPolInf, Math.ceil(rc.getInfluence() * .75));
+                }
                 return Math.max(Constants.minimumPolInf, (int) rc.getInfluence() / 200);
             case MUCKRAKER:
                 return 1;
@@ -233,8 +234,8 @@ class EnlightenmentCenter extends Robot {
         private double getBidMultiplier() {
             final int lowerVote = Math.max(VOTES_TO_WIN - MAX_ROUNDS + rc.getRoundNum(), 0);
             final int upperVote = Math.min(rc.getRoundNum(), VOTES_TO_WIN);
-            if (rc.getTeamVotes() < lowerVote || rc.getTeamVotes() > upperVote) {
-                System.out.println("Error, vote count out of expected bounds.... ????");
+            if (/*rc.getTeamVotes() < lowerVote ||*/ rc.getTeamVotes() > upperVote) {
+                //System.out.println("Error, vote count out of expected bounds.... ????");
                 return 1;
             }
             return ((1 + .5 * (.05 * (Math.log(rc.getTeamVotes() + 30 - lowerVote) / Math.log(1.5))))
