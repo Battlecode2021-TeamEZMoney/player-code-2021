@@ -73,7 +73,7 @@ class EnlightenmentCenter extends Robot {
                     RobotInfo robotBuilt = rc.senseRobotAtLocation(rc.getLocation().add(buildDirection));
                     units.add(robotBuilt.getID());
                     // addAllFriendlyBots(rc.senseNearbyRobots(rc.getLocation().add(buildDirection),
-                    // 0, rc.getTeam()));
+                    // 0, allyTeam));
 
                     // TODO: Implement flag based orders
                     // trySetFlag(getOrdersForUnit(unitToBuild));
@@ -86,7 +86,7 @@ class EnlightenmentCenter extends Robot {
                 tryBid(bidController.getBidAmount());
             }
             // System.out.println(Clock.getBytecodesLeft() - start);
-            // System.out.println(rc.getEmpowerFactor(rc.getTeam(), 0));
+            // System.out.println(rc.getEmpowerFactor(allyTeam, 0));
 
             Clock.yield();
         }
@@ -133,7 +133,7 @@ class EnlightenmentCenter extends Robot {
         double rand = Math.random();
         if (rc.getInfluence() - 10 < Constants.minimumPolInf) {
             return RobotType.MUCKRAKER;
-        } else if (rc.getEmpowerFactor(rc.getTeam(), 11) > 4 || crowdedByEnemy(rc.getLocation())
+        } else if (rc.getEmpowerFactor(allyTeam, 11) > 4 || crowdedByEnemy(rc.getLocation())
                 || crowded(rc.getLocation())) {
             return RobotType.POLITICIAN;
         } else if (rand > (0.4 + 0.2 * rc.getRoundNum() / Constants.MAX_ROUNDS) || canSenseEnemy()) {
@@ -151,7 +151,7 @@ class EnlightenmentCenter extends Robot {
                 Integer x = Constants.optimalSlandInfSet.floor(rc.getInfluence() - 10);
                 return x != null ? x : 0;
             case POLITICIAN:
-                return (rc.getEmpowerFactor(rc.getTeam(), 11)) > 4 ? (rc.getInfluence() - 10) / 2
+                return (rc.getEmpowerFactor(allyTeam, 11)) > 4 ? (rc.getInfluence() - 10) / 2
                         : Math.min(511, Math.max(Constants.minimumPolInf, (rc.getInfluence() - 10) / 2));
             case MUCKRAKER:
                 return 1;
@@ -185,7 +185,7 @@ class EnlightenmentCenter extends Robot {
 
     private void addAllFriendlyBots(RobotInfo[] bots) throws GameActionException {
         for (RobotInfo bot : bots) {
-            if (bot.getTeam().equals(rc.getTeam())) {
+            if (bot.getTeam().equals(allyTeam)) {
                 units.add(bot.getID());
             }
         }

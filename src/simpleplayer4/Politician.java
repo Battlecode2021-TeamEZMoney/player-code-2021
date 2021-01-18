@@ -66,7 +66,7 @@ class Politician extends Attacker {
 
 	private void updateHQs() throws GameActionException {
 		if (enemyHQ != null && rc.canSenseLocation(enemyHQ)
-				&& !rc.senseRobotAtLocation(enemyHQ).team.equals(rc.getTeam().opponent())) {
+				&& !rc.senseRobotAtLocation(enemyHQ).team.equals(enemyTeam)) {
 			enemyHQ = null;
 		}
 		if (neutralHQ != null && rc.canSenseLocation(neutralHQ)
@@ -79,7 +79,7 @@ class Politician extends Attacker {
 			if (robot.type.equals(RobotType.ENLIGHTENMENT_CENTER)) {
 				if (robot.team.equals(Team.NEUTRAL) && neutralHQ == null) {
 					neutralHQ = robot.location;
-				} else if (robot.team.equals(rc.getTeam().opponent()) && enemyHQ == null) {
+				} else if (robot.team.equals(enemyTeam) && enemyHQ == null) {
 					enemyHQ = robot.location;
 				}
 			}
@@ -108,16 +108,15 @@ class Politician extends Attacker {
 	}
 
 	private boolean runDefendCode() throws GameActionException {
-		// if (hqLocation == null || distanceSquaredTo(hqLocation) > 4 *
-		// rc.getType().actionRadiusSquared) {
+		// if (hqLocation == null || distanceSquaredTo(hqLocation) > 4 * actionRadiusSquared) {
 
 		// if (hqLocation == null) {
 		// runSimpleCode();
-		// } else if (distanceSquaredTo(hqLocation) > rc.getType().actionRadiusSquared)
+		// } else if (distanceSquaredTo(hqLocation) > actionRadiusSquared)
 		// {
 		// tryDirForward180(directionTo(hqLocation));
 		// } else {
-		// RobotInfo[] tempEnemies = rc.senseNearbyRobots(-1, rc.getTeam().opponent());
+		// RobotInfo[] tempEnemies = rc.senseNearbyRobots(-1, enemyTeam);
 		// for (RobotInfo enemy : tempEnemies) {
 		// // TODO: Factor in if optimal to empower
 		// if (huntOrKill(enemy)) {
@@ -132,14 +131,14 @@ class Politician extends Attacker {
 			return false;
 		}
 
-		if (distanceSquaredTo(hqLocation) <= rc.getType().actionRadiusSquared && crowdedByEnemy(hqLocation)) {
+		if (distanceSquaredTo(hqLocation) <= actionRadiusSquared && crowdedByEnemy(hqLocation)) {
 			// System.out.println("Crowded");
 			return ifOptimalEmpower(0, 0);
-		} else if (distanceSquaredTo(hqLocation) > rc.getType().actionRadiusSquared / 2
+		} else if (distanceSquaredTo(hqLocation) > actionRadiusSquared / 2
 				&& tryDirForward90(directionTo(hqLocation))) {
 			return true;
 		} else {
-			if (distanceSquaredTo(hqLocation) > rc.getType().actionRadiusSquared) {
+			if (distanceSquaredTo(hqLocation) > actionRadiusSquared) {
 				defending = false;
 			}
 			return tryDirForward180(directionTo(hqLocation).opposite());
@@ -174,8 +173,8 @@ class Politician extends Attacker {
 			return new int[] { 0, 0, 0, 0 };
 		}
 		int maxTotalIncrease = 0, optimalIncRadius = 0, optimalDestroyed = 0;
-		RobotInfo[] nearby = rc.senseNearbyRobots(rc.getType().actionRadiusSquared);
-		for (int empRadius = 1; empRadius <= rc.getType().actionRadiusSquared; empRadius++) {
+		RobotInfo[] nearby = rc.senseNearbyRobots(actionRadiusSquared);
+		for (int empRadius = 1; empRadius <= actionRadiusSquared; empRadius++) {
 			int increase = 0, numAffected = 0, numDestroyed = 0;
 			for (RobotInfo robot : nearby) {
 				if (distanceSquaredTo(robot) <= empRadius) {
@@ -185,7 +184,7 @@ class Politician extends Attacker {
 			if (numAffected == 0) {
 				continue;
 			}
-			int change = (int) (rc.getConviction() * rc.getEmpowerFactor(rc.getTeam(), 0) - 10) / numAffected;
+			int change = (int) (rc.getConviction() * rc.getEmpowerFactor(allyTeam, 0) - 10) / numAffected;
 			// TODO: factor in remaining undivided conviction, given to later creations
 			for (RobotInfo robot : nearby) {
 				if (distanceSquaredTo(robot) <= empRadius) {
@@ -209,8 +208,8 @@ class Politician extends Attacker {
 		if (hqLocation == null) {
 			return false;
 		}
-		if (rc.getEmpowerFactor(rc.getTeam(), 0) > 4
-				&& distanceSquaredTo(hqLocation) <= rc.getType().actionRadiusSquared) {
+		if (rc.getEmpowerFactor(allyTeam, 0) > 4
+				&& distanceSquaredTo(hqLocation) <= actionRadiusSquared) {
 			return HQAttackRoutine(hqLocation);
 		}
 		return false;
@@ -228,7 +227,7 @@ class Politician extends Attacker {
 		// int range = 5;
 		// int nearbyThresh = 4;
 		// RobotInfo[] tempEnemies = rc.senseNearbyRobots(range,
-		// rc.getTeam().opponent());
+		// enemyTeam);
 
 		// double empowerThresh = 0.8;
 		// int destThresh = 4;
@@ -249,7 +248,7 @@ class Politician extends Attacker {
 	// int defaultThresh = 4;
 	//
 	// RobotInfo[] tempEnemies = rc.senseNearbyRobots(range,
-	// rc.getTeam().opponent());
+	// enemyTeam);
 	// if (tempEnemies.length > defaultThresh
 	// || (tempEnemies.length > nearHQThresh && distanceSquaredTo(hqLocation) <=
 	// hqMaxDist)) {

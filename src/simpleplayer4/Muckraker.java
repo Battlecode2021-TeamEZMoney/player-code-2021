@@ -34,14 +34,14 @@ class Muckraker extends Attacker {
 
 	private void updateHQs() throws GameActionException {
 		if (enemyHQ != null && rc.canSenseLocation(enemyHQ)
-				&& !rc.senseRobotAtLocation(enemyHQ).team.equals(rc.getTeam().opponent())) {
+				&& !rc.senseRobotAtLocation(enemyHQ).team.equals(enemyTeam)) {
 			enemyHQ = null;
 		}
 		if (enemyHQ == null) {
 			RobotInfo[] nearby = rc.senseNearbyRobots();
 			for (RobotInfo robot : nearby) {
 				if (robot.type.equals(RobotType.ENLIGHTENMENT_CENTER)) {
-					if (robot.team.equals(rc.getTeam().opponent())) {
+					if (robot.team.equals(enemyTeam)) {
 						enemyHQ = robot.location;
 					}
 				}
@@ -73,11 +73,11 @@ class Muckraker extends Attacker {
 			return false;
 		}
 
-		if (distanceSquaredTo(hqLocation) > rc.getType().actionRadiusSquared / 2
+		if (distanceSquaredTo(hqLocation) > actionRadiusSquared / 2
 				&& tryDirForward90(directionTo(hqLocation))) {
 			return true;
 		} else {
-			if (distanceSquaredTo(hqLocation) > rc.getType().actionRadiusSquared) {
+			if (distanceSquaredTo(hqLocation) > actionRadiusSquared) {
 				defending = false;
 			}
 			return tryDirForward180(directionTo(hqLocation).opposite());
@@ -89,7 +89,7 @@ class Muckraker extends Attacker {
 		int maxExposeInf = 0, maxSenseInf = 0;
 		MapLocation robotExposeLoc = Constants.origin, robotSenseLoc = Constants.origin;
 		for (RobotInfo robot : nearby) {
-			if (robot.type.equals(RobotType.SLANDERER) && robot.team.equals(rc.getTeam().opponent())) {
+			if (robot.type.equals(RobotType.SLANDERER) && robot.team.equals(enemyTeam)) {
 				if (robot.influence > maxSenseInf) {
 					maxSenseInf = robot.influence;
 					robotSenseLoc = robot.location;
@@ -111,7 +111,7 @@ class Muckraker extends Attacker {
 	private boolean HQAttackRoutine(MapLocation locHQ) throws GameActionException {
 		// if (huntOrExposeSlanderer()) {
 		// return true;
-		// } else if (distanceSquaredTo(locHQ) > rc.getType().actionRadiusSquared) {
+		// } else if (distanceSquaredTo(locHQ) > actionRadiusSquared) {
 		// return tryDirForward180(directionTo(locHQ));
 		// }
 		//// else {
@@ -121,7 +121,7 @@ class Muckraker extends Attacker {
 
 		if (huntOrExposeSlanderer()) {
 			return true;
-		} else if (distanceSquaredTo(locHQ) > rc.getType().actionRadiusSquared && tryDirForward90(directionTo(locHQ))) {
+		} else if (distanceSquaredTo(locHQ) > actionRadiusSquared && tryDirForward90(directionTo(locHQ))) {
 			return true;
 		} else {
 			return tryDirForward180(directionTo(hqLocation).opposite());

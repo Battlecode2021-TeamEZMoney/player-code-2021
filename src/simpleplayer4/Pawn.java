@@ -34,7 +34,7 @@ abstract class Pawn extends Robot {
     }
 
     protected boolean getHomeHQ() throws GameActionException {
-        RobotInfo[] robots = rc.senseNearbyRobots(2, rc.getTeam());
+        RobotInfo[] robots = rc.senseNearbyRobots(2, allyTeam);
         for (RobotInfo robot : robots) {
             if (robot.getType() == RobotType.ENLIGHTENMENT_CENTER) {
                 hqLocation = robot.getLocation();
@@ -111,6 +111,6 @@ abstract class Pawn extends Robot {
 
     protected Direction awayFromAllies() throws GameActionException {
         return awayFromRobots(
-                Arrays.asList(rc.senseNearbyRobots(rc.getLocation(), rc.getType().sensorRadiusSquared, rc.getTeam())));
+                Arrays.asList(rc.senseNearbyRobots(rc.getLocation(), rc.getType().sensorRadiusSquared, allyTeam)));
     }
 }

@@ -55,9 +55,9 @@ abstract class Robot {
                 int flagCode = 0;
                 if (robot.team.equals(Team.NEUTRAL)) {
                     flagCode = FlagCodes.neutralHQ;
-                } else if (robot.team.equals(rc.getTeam().opponent())) {
+                } else if (robot.team.equals(enemyTeam)) {
                     flagCode = FlagCodes.enemyHQ;
-                } else if (robot.team.equals(rc.getTeam())) {
+                } else if (robot.team.equals(allyTeam)) {
                     flagCode = FlagCodes.friendlyHQ;
                 }
                 encoded = Encoding.encode(robot.getLocation(), flagCode);
@@ -80,11 +80,11 @@ abstract class Robot {
 
     // Direction getTeamGoDir() {
     // // TODO: make this smarter than assuming team a is on the left side
-    // return rc.getTeam().equals(Team.A) ? Direction.WEST : Direction.EAST;
+    // return allyTeam.equals(Team.A) ? Direction.WEST : Direction.EAST;
     // }
 
     protected boolean canSenseEnemy() {
-        return rc.senseNearbyRobots(-1, rc.getTeam().opponent()).length > 0;
+        return rc.senseNearbyRobots(-1, enemyTeam).length > 0;
     }
 
     protected int distanceSquaredTo(RobotInfo otherRobot) throws GameActionException {
@@ -104,11 +104,11 @@ abstract class Robot {
     }
 
     protected boolean isAlly(RobotInfo robot) throws GameActionException {
-        return robot.team.equals(rc.getTeam());
+        return robot.team.equals(allyTeam);
     }
 
     protected boolean isEnemy(RobotInfo robot) throws GameActionException {
-        return robot.team.equals(rc.getTeam().opponent());
+        return robot.team.equals(enemyTeam);
     }
 
     protected boolean isNeutral(RobotInfo robot) throws GameActionException {
@@ -130,8 +130,8 @@ abstract class Robot {
     }
 
     protected boolean crowdedByEnemy(MapLocation loc) {
-        return rc.senseNearbyRobots(loc, 2, rc.getTeam().opponent()).length >= 5
-                || rc.senseNearbyRobots(loc, 5, rc.getTeam().opponent()).length >= 10;
+        return rc.senseNearbyRobots(loc, 2, enemyTeam).length >= 5
+                || rc.senseNearbyRobots(loc, 5, enemyTeam).length >= 10;
     }
 
     protected boolean crowded(MapLocation loc) {
@@ -140,12 +140,12 @@ abstract class Robot {
 
     protected boolean crowdedByAllyMuckrakers(MapLocation loc) {
         int numMucks2 = 0, numMucks5 = 0;
-        for (RobotInfo robot : rc.senseNearbyRobots(loc, 2, rc.getTeam())) {
+        for (RobotInfo robot : rc.senseNearbyRobots(loc, 2, allyTeam)) {
             if (robot.type.equals(RobotType.MUCKRAKER)) {
                 numMucks2++;
             }
         }
-        for (RobotInfo robot : rc.senseNearbyRobots(loc, 5, rc.getTeam())) {
+        for (RobotInfo robot : rc.senseNearbyRobots(loc, 5, allyTeam)) {
             if (robot.type.equals(RobotType.MUCKRAKER)) {
                 numMucks5++;
             }

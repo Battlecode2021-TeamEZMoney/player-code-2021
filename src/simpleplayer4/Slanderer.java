@@ -32,7 +32,7 @@ class Slanderer extends Pawn {
 
     protected Direction awayFromEnemyMuckrakers() throws GameActionException {
         List<RobotInfo> robots = Arrays
-                .asList(rc.senseNearbyRobots(rc.getLocation(), actionRadiusSquared, rc.getTeam().opponent()));
+                .asList(rc.senseNearbyRobots(rc.getLocation(), actionRadiusSquared, enemyTeam));
         robots.removeIf(r -> (r.type != RobotType.MUCKRAKER));
         return awayFromRobots(robots);
     }
