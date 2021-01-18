@@ -1,4 +1,4 @@
-package simpleplayer5;
+package simpleplayer5_subm;
 
 import battlecode.common.*;
 
@@ -12,7 +12,7 @@ abstract class Robot {
     protected final int detectionRadiusSquared;
     protected final int sensorRadiusSquared;
 
-    Robot(RobotController rcin) {
+    Robot(RobotController rcin){
         this.rc = rcin;
         this.allyTeam = rc.getTeam();
         this.enemyTeam = allyTeam.opponent();

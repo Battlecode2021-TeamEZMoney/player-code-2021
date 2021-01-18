@@ -1,4 +1,4 @@
-package simpleplayer5;
+package simpleplayer5_subm;
 
 import battlecode.common.*;
 import common.DirectionUtils;
@@ -14,7 +14,7 @@ class Muckraker extends Attacker {
     }
 
     void run() throws GameActionException {
-        dirTarget = DirectionUtils.randomDirectionBiasCardinal();
+        dirTarget = DirectionUtils.randomDirectionBiasCardinal(); 
         exploreOnly = Math.random() > .4;
         getHomeHQ();
         while (true) {

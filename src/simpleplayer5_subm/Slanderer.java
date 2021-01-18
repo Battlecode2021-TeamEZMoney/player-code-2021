@@ -1,4 +1,4 @@
-package simpleplayer5;
+package simpleplayer5_subm;
 
 import java.util.Arrays;
 import java.util.List;
@@ -16,7 +16,7 @@ class Slanderer extends Pawn {
         while (rc.getType().equals(RobotType.SLANDERER)) {
             turnCount++;
             if (rc.isReady()) {
-                if (distanceSquaredTo(hqLocation) < 5) {
+                if(distanceSquaredTo(hqLocation) < 5){
                     dirTarget = directionTo(hqLocation).opposite();
                 } else {
                     dirTarget = Direction.CENTER;
@@ -33,7 +33,8 @@ class Slanderer extends Pawn {
     }
 
     protected Direction awayFromEnemyMuckrakers() throws GameActionException {
-        List<RobotInfo> robots = Arrays.asList(rc.senseNearbyRobots(rc.getLocation(), actionRadiusSquared, enemyTeam));
+        List<RobotInfo> robots = Arrays
+                .asList(rc.senseNearbyRobots(rc.getLocation(), actionRadiusSquared, enemyTeam));
         robots.removeIf(r -> (r.type != RobotType.MUCKRAKER));
         return awayFromRobots(robots);
     }

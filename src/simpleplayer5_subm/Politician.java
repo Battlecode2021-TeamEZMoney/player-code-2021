@@ -1,4 +1,4 @@
-package simpleplayer5;
+package simpleplayer5_subm;
 
 import java.util.Arrays;
 
@@ -42,7 +42,7 @@ class Politician extends Attacker {
                     if (ifOptimalSelfEmpower()) {
                         break gotoend;
                     }
-                } else if (ifOptimalEmpower(.7, 3)) {
+                } else if (ifOptimalEmpower(.7, 3)){
                     break gotoend;
                 }
                 if (rc.canGetFlag(hqID)) {
