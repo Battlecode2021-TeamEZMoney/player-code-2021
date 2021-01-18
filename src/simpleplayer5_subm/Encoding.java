@@ -1,7 +1,6 @@
 package simpleplayer5_subm;
 
 import battlecode.common.*;
-import common.*;
 
 class Encoding {
 	private static final int LOC_BITS = 7;

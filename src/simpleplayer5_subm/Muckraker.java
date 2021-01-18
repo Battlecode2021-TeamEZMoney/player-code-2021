@@ -14,7 +14,7 @@ class Muckraker extends Attacker {
     }
 
     void run() throws GameActionException {
-        dirTarget = DirectionUtils.randomDirectionBiasCardinal(); 
+        dirTarget = DirectionUtils.randomDirectionBiasCardinal();
         exploreOnly = Math.random() > .4;
         getHomeHQ();
         while (true) {

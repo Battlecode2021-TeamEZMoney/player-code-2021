@@ -2,11 +2,8 @@ package simpleplayer5;
 
 import java.util.Arrays;
 
-import javax.swing.text.html.HTMLWriter;
-
 import battlecode.common.*;
-import common.Constants;
-import common.DirectionUtils;
+import common.*;
 
 class Politician extends Attacker {
     private int mode = 1;
