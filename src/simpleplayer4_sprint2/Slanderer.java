@@ -1,8 +1,7 @@
-package simpleplayer4;
+package simpleplayer4_sprint2;
 
 import battlecode.common.*;
 import java.util.*;
-import common.*;
 
 class Slanderer extends Pawn {
     Politician successor;
@@ -76,6 +75,9 @@ class Slanderer extends Pawn {
 
     protected Direction awayFromEnemyMuckrakers() throws GameActionException {
         List<RobotInfo> robots = Arrays.asList(rc.senseNearbyRobots(sensorRadiusSquared, enemyTeam));
+        if (robots.size() == 0) {
+        	return dirTarget;
+        }
         robots.removeIf(r -> (r.type != RobotType.MUCKRAKER));
         return awayFromRobots(robots);
     }
