@@ -5,6 +5,9 @@ import common.DirectionUtils;
 
 public abstract strictfp class Pathing {
   
+  /**
+  * One deep pathfinding method
+  */
   public static Direction pathingDirOne( RobotController rc, MapLocation dest ) {
     MapLocation here = rc.getLocation;
     Direction wayTo = here.directionTo( dest );
@@ -35,12 +38,8 @@ public abstract strictfp class Pathing {
     // If the code gets here, speeds == { 0.0, 0.0, 0.0 } and the three spots in front are all blocked.
     
     Direction l90 = left.rotateLeft(), r90 = right.rotateRight;
-    if rc.canMove( l90 ) speeds[0] = sensePassability( here.add( l90 ) );
-    if rc.canMove( r90 ) speeds[1] = sensePassability( here.add( r90 ) );
-    if ( speeds[0] > speeds[1] ) return l90;
-    if ( speeds[1] > 0.0 ) return r90;
-    
-    return center;
+    if rc.canMove( r90 ) return r90;
+    return l90;
     
   }
   
