@@ -3,9 +3,9 @@ package simpleplayer3;
 import battlecode.common.*;
 import common.DirectionUtils;
 
-public abstract strictfp class PathingOne {
+public abstract strictfp class Pathing {
   
-  public static Direction pathingDir( RobotController rc, MapLocation dest ) {
+  public static Direction pathingDirOne( RobotController rc, MapLocation dest ) {
     MapLocation here = rc.getLocation;
     Direction wayTo = here.directionTo( dest );
     
@@ -43,4 +43,5 @@ public abstract strictfp class PathingOne {
     return center;
     
   }
+  
 }
