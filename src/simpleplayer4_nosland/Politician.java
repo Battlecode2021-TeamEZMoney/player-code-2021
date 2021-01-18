@@ -1,4 +1,4 @@
-package simpleplayer4;
+package simpleplayer4_nosland;
 
 import battlecode.common.*;
 import common.*;
@@ -53,7 +53,7 @@ class Politician extends Attacker {
 					}
 				}
 			} else {
-				if (enemyHQ == null && neutralHQ == null && rc.canGetFlag(hqID)) {
+				if (rc.canGetFlag(hqID)) {
 					parseHQFlag(rc.getFlag(hqID));
 				}
 			}

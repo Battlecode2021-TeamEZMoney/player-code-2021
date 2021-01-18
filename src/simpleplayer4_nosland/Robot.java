@@ -1,4 +1,4 @@
-package simpleplayer4;
+package simpleplayer4_nosland;
 
 import battlecode.common.*;
 
@@ -76,7 +76,6 @@ abstract class Robot {
         public static int friendlyHQ = 3;
         public static int neutralHQ = 4;
         public static int patrol = 5;
-        public static int slandCenter = 6;
     }
 
     // Direction getTeamGoDir() {

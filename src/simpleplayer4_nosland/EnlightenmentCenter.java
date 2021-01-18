@@ -1,4 +1,4 @@
-package simpleplayer4;
+package simpleplayer4_nosland;
 
 import battlecode.common.*;
 import common.*;
@@ -13,7 +13,6 @@ class EnlightenmentCenter extends Robot {
     private int infToSpend;
     private Direction dirTarget, buildDirection;
     private boolean explorer;
-    private int slandDistAway = 10;
     private Set<MapLocation> enemyHQs = new HashSet<MapLocation>();
     private Set<MapLocation> friendlyHQs = new HashSet<MapLocation>();
     private Set<MapLocation> neutralHQs = new HashSet<MapLocation>();
@@ -59,7 +58,6 @@ class EnlightenmentCenter extends Robot {
                     units.remove(unitsIndex);
                 }
             }
-            
 
             // int start = Clock.getBytecodesLeft();
 
@@ -119,55 +117,28 @@ class EnlightenmentCenter extends Robot {
         }
     }
     
-    
-    MapLocation avgLoc(Set<MapLocation> locs) {
-    	MapLocation avg = Constants.origin;
-    	if (locs.size() == 0) {
-    		return avg;
-    	}
-    	for (MapLocation loc : locs) {
-    		avg = avg.translate(loc.x, loc.y);
-    	}
-    	return new MapLocation(avg.x / locs.size(), avg.y / locs.size());
-    }
-    
-    MapLocation slandCenter() {
-    	if (enemyHQs.size() == 0) {
-    		return rc.getLocation();
-    	}
-    	MapLocation avgEnemyHQ = avgLoc(enemyHQs);
-		Direction awayFromEnemyHQs = rc.getLocation().directionTo(avgEnemyHQ).opposite();
-		return rc.getLocation().translate(slandDistAway * awayFromEnemyHQs.dx, slandDistAway * awayFromEnemyHQs.dy);
-    }
-    
     private int getTarget() throws GameActionException {
         if (canSenseEnemy() && Math.random() < 0.8) {
             return Encoding.encode(rc.getLocation(), FlagCodes.patrol, dirTarget, explorer);
-        } else if (neutralHQs.size() > 0 && (robotType.equals(RobotType.POLITICIAN) || Math.random() < 0.5)) {
+        } else if (neutralHQs.size() > 0 && !robotType.equals(RobotType.MUCKRAKER)) {
             return Encoding.encode(neutralHQs.iterator().next(), FlagCodes.neutralHQ, dirTarget, explorer);
         } else if (enemyHQs.size() > 0) {
-        	if (robotType.equals(RobotType.SLANDERER) || Math.random() < 0.1) {
-        		return Encoding.encode(slandCenter(), FlagCodes.slandCenter, dirTarget, explorer);
-        	}
             return Encoding.encode(enemyHQs.iterator().next(), FlagCodes.enemyHQ, dirTarget, explorer);
         } else {
             return Encoding.encode(rc.getLocation(), FlagCodes.simple, dirTarget, explorer);
         }
     }
-    
+
     private RobotType getUnitToBuild() throws GameActionException {
         double rand = Math.random();
-        if (rc.getRoundNum() <= 2) {
-        	return RobotType.SLANDERER;
-        } else if (rc.getInfluence() - 10 < Constants.minimumPolInf) {
+        if (rc.getInfluence() - 10 < Constants.minimumPolInf) {
             return RobotType.MUCKRAKER;
-        } else if (rc.getEmpowerFactor(allyTeam, 11) > 4
-        		|| crowdedByEnemy(rc.getLocation()) || crowded(rc.getLocation())) {
+        } else if (rc.getEmpowerFactor(allyTeam, 11) > 4 || crowdedByEnemy(rc.getLocation())
+                || crowded(rc.getLocation())) {
             return RobotType.POLITICIAN;
         } else if (rand > (0.4 + 0.2 * rc.getRoundNum() / Constants.MAX_ROUNDS) || canSenseEnemy()) {
             return RobotType.MUCKRAKER;
-        } else if (rand > (0.1 - 0.1 * rc.getRoundNum() / Constants.MAX_ROUNDS)
-        		|| rc.getEmpowerFactor(enemyTeam, 0) > 1.1) {
+        } else if (rand > 0 * (1 - rc.getRoundNum() / Constants.MAX_ROUNDS)) {
             return RobotType.POLITICIAN;
         } else {
             return RobotType.SLANDERER;
@@ -175,13 +146,14 @@ class EnlightenmentCenter extends Robot {
     }
 
     int getNewUnitInfluence() throws GameActionException {
+    	int maxSpawnInf = rc.getInfluence() - 10;
         switch (unitToBuild) {
             case SLANDERER:
-                Integer x = Constants.optimalSlandInfSet.floor(rc.getInfluence() - 10);
+                Integer x = Constants.optimalSlandInfSet.floor(maxSpawnInf);
                 return x != null ? x : 0;
             case POLITICIAN:
-                return (rc.getEmpowerFactor(allyTeam, 11)) > 4 ? (rc.getInfluence() - 10) / 2
-                        : Math.min(511, Math.max(Constants.minimumPolInf, (rc.getInfluence() - 10) / 2));
+                return rc.getEmpowerFactor(allyTeam, 11) > 4 ? maxSpawnInf
+                        : Math.min(511, Math.max(Constants.minimumPolInf, maxSpawnInf));
             case MUCKRAKER:
                 return 1;
             default:

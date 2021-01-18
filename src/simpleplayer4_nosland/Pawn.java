@@ -1,4 +1,4 @@
-package simpleplayer4;
+package simpleplayer4_nosland;
 
 import battlecode.common.*;
 import common.*;
@@ -37,11 +37,10 @@ abstract class Pawn extends Robot {
     protected boolean getHomeHQ() throws GameActionException {
         RobotInfo[] robots = rc.senseNearbyRobots(2, allyTeam);
         for (RobotInfo robot : robots) {
-            if (robot.type.equals(RobotType.ENLIGHTENMENT_CENTER)) {
+            if (robot.getType() == RobotType.ENLIGHTENMENT_CENTER) {
                 hqLocation = robot.getLocation();
                 hqID = robot.getID();
-                dirTarget = robotType.equals(RobotType.SLANDERER) ?
-                		Direction.CENTER : Encoding.getDirFromFlag(rc.getFlag(robot.ID));
+                dirTarget = Encoding.getDirFromFlag(rc.getFlag(robot.ID));
                 explorer = Encoding.getExplorerFromFlag(rc.getFlag(robot.ID));
                 return true;
             }
@@ -58,8 +57,7 @@ abstract class Pawn extends Robot {
     }
 
     protected Direction dirForward90(Direction dir) throws GameActionException {
-//        if (rc.canMove(dir) || !rc.onTheMap(rc.getLocation().add(dir))) {
-    	if (rc.canMove(dir) || dir.equals(Direction.CENTER)) {
+        if (rc.canMove(dir) || !rc.onTheMap(rc.getLocation().add(dir))) {
             return dir;
         } else if (rc.canMove(dir.rotateLeft())) {
             return dir.rotateLeft();
@@ -74,8 +72,7 @@ abstract class Pawn extends Robot {
     }
 
     protected Direction dirForward180(Direction dir) throws GameActionException {
-        //if (rc.canMove(dir) || !rc.onTheMap(rc.getLocation().add(dir))) {
-    	if (rc.canMove(dir) || dir.equals(Direction.CENTER)) {
+        if (rc.canMove(dir) || !rc.onTheMap(rc.getLocation().add(dir))) {
             return dir;
         } else if (rc.canMove(dir.rotateLeft())) {
             return dir.rotateLeft();

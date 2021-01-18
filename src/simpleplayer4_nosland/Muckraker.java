@@ -1,4 +1,4 @@
-package simpleplayer4;
+package simpleplayer4_nosland;
 
 import battlecode.common.*;
 import common.*;
@@ -27,7 +27,7 @@ class Muckraker extends Attacker {
 					}
 				}
 			} else {
-				if (enemyHQ == null && !defending && rc.canGetFlag(hqID)) {
+				if (rc.canGetFlag(hqID)) {
 					parseHQFlag(rc.getFlag(hqID));
 				}
 			}

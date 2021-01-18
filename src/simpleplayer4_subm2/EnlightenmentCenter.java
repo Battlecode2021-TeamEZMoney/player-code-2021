@@ -232,6 +232,7 @@ class EnlightenmentCenter extends Robot {
             bid = (int) Math.min(bid, rc.getInfluence() * (0.1 + 0.2 * rc.getRoundNum() / Constants.MAX_ROUNDS));
             prevBid = bid;
             prevTeamVotes = curTeamVotes;
+            //System.out.println(curVoteValue + " -> " + accum);
             return bid;
         }
 
@@ -247,7 +248,9 @@ class EnlightenmentCenter extends Robot {
             double lgProbDiff = (double) (MAX_ROUNDS - rounds - 1) * Math.log(2) + logLin(VOTES_TO_WIN - votes - 1)
                     + logLin((MAX_ROUNDS - rounds) - (VOTES_TO_WIN - votes)) - logLin(MAX_ROUNDS - rounds - 1);
             // lgProbDiff: 0 (highest value) - maxRounds * ln(2) (lowest value)
-
+            if (votes - votesMin < 0) {
+            	return 20; // cannot get majority of votes, but may not need majority to have more than opponent
+            }
             return (MAX_ROUNDS * Math.log(2) - lgProbDiff) / (votes - votesMin + OFFSET);
             // returns: 0.6 (lowest value) - 20.7 (highest value)
         }
