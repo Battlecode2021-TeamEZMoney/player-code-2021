@@ -2,10 +2,7 @@ package simpleplayer5_subm;
 
 import java.util.Arrays;
 
-import javax.swing.text.html.HTMLWriter;
-
 import battlecode.common.*;
-import common.Constants;
 import common.DirectionUtils;
 
 class Politician extends Attacker {
@@ -42,7 +39,7 @@ class Politician extends Attacker {
                     if (ifOptimalSelfEmpower()) {
                         break gotoend;
                     }
-                } else if (ifOptimalEmpower(.7, 3)){
+                } else if (ifOptimalEmpower(.7, 3)) {
                     break gotoend;
                 }
                 if (rc.canGetFlag(hqID)) {

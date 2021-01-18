@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import battlecode.common.*;
-import common.*;
 
 class EnlightenmentCenter extends Robot {
     private int turnCount = 0;
@@ -83,7 +82,7 @@ class EnlightenmentCenter extends Robot {
             return Math.random() > .4 ? RobotType.MUCKRAKER : RobotType.POLITICIAN;
         } else {
             double randTemp = Math.random();
-            if (randTemp < .05){
+            if (randTemp < .05) {
                 return RobotType.SLANDERER;
             } else if (randTemp < .5) {
                 return RobotType.MUCKRAKER;
@@ -115,7 +114,7 @@ class EnlightenmentCenter extends Robot {
                 }
                 return Constants.optimalSlandInfArray[0];
             case POLITICIAN:
-                if (rc.getEmpowerFactor(allyTeam, 11) > 4){
+                if (rc.getEmpowerFactor(allyTeam, 11) > 4) {
                     return (int) Math.max(Constants.minimumPolInf, Math.ceil(rc.getInfluence() * .75));
                 }
                 return Math.max(Constants.minimumPolInf, (int) rc.getInfluence() / 200);
@@ -234,8 +233,8 @@ class EnlightenmentCenter extends Robot {
         private double getBidMultiplier() {
             final int lowerVote = Math.max(VOTES_TO_WIN - MAX_ROUNDS + rc.getRoundNum(), 0);
             final int upperVote = Math.min(rc.getRoundNum(), VOTES_TO_WIN);
-            if (/*rc.getTeamVotes() < lowerVote ||*/ rc.getTeamVotes() > upperVote) {
-                //System.out.println("Error, vote count out of expected bounds.... ????");
+            if (/* rc.getTeamVotes() < lowerVote || */ rc.getTeamVotes() > upperVote) {
+                // System.out.println("Error, vote count out of expected bounds.... ????");
                 return 1;
             }
             return ((1 + .5 * (.05 * (Math.log(rc.getTeamVotes() + 30 - lowerVote) / Math.log(1.5))))

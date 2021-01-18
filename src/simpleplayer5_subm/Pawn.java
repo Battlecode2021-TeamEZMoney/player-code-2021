@@ -104,7 +104,6 @@ abstract class Pawn extends Robot {
     }
 
     protected Direction awayFromAllies() throws GameActionException {
-        return awayFromRobots(
-                Arrays.asList(rc.senseNearbyRobots(rc.getLocation(), sensorRadiusSquared, allyTeam)));
+        return awayFromRobots(Arrays.asList(rc.senseNearbyRobots(rc.getLocation(), sensorRadiusSquared, allyTeam)));
     }
 }

@@ -1,10 +1,10 @@
-package common;
+package simpleplayer5_subm;
 
 import battlecode.common.Direction;
 
 public class DirectionUtils {
     public static final Direction[] nonCenterDirections = { Direction.NORTH, Direction.NORTHEAST, Direction.EAST,
-            Direction.SOUTHEAST, Direction.SOUTH, Direction.SOUTHWEST, Direction.WEST, Direction.NORTHWEST};
+            Direction.SOUTHEAST, Direction.SOUTH, Direction.SOUTHWEST, Direction.WEST, Direction.NORTHWEST };
 
     public static Direction randomDirection() {
         return nonCenterDirections[(int) (Math.random() * nonCenterDirections.length)];
@@ -14,7 +14,7 @@ public class DirectionUtils {
         return Direction.cardinalDirections()[(int) (Math.random() * Direction.cardinalDirections().length)];
     }
 
-    public static Direction randomDirectionBiasCardinal(){
+    public static Direction randomDirectionBiasCardinal() {
         return Math.random() < .5 ? randomCardinalDirection() : randomDirection();
     }
 
