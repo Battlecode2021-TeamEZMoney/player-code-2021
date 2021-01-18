@@ -116,29 +116,28 @@ class Muckraker extends Attacker {
         }
     }
 
-    private boolean tryExpose(int id) throws GameActionException{
-        if(rc.canExpose(id)){
+    private boolean tryExpose(int id) throws GameActionException {
+        if (rc.canExpose(id)) {
             rc.expose(id);
             return true;
         }
         return false;
     }
 
-    private boolean tryExpose(MapLocation pos) throws GameActionException{
-        if(rc.canExpose(pos)){
+    private boolean tryExpose(MapLocation pos) throws GameActionException {
+        if (rc.canExpose(pos)) {
             rc.expose(pos);
             return true;
         }
         return false;
     }
 
-    private boolean tryExpose(RobotInfo enemy) throws GameActionException{
+    private boolean tryExpose(RobotInfo enemy) throws GameActionException {
         return tryExpose(enemy.getID());
     }
 
     protected boolean huntOrKill(RobotInfo enemy) throws GameActionException {
-        return (withinAttackRange(enemy) && tryExpose(enemy))
-                || tryDirForward180(directionTo(enemy.getLocation()));
+        return (withinAttackRange(enemy) && tryExpose(enemy)) || tryDirForward180(directionTo(enemy.getLocation()));
     }
 
 }

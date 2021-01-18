@@ -10,6 +10,7 @@ public class SlandererPlayer {
     private static MapLocation hqLocation;
     private static int hqID;
     private static int turnCount = 0;
+
     static void runSlanderer(RobotController rcin) throws GameActionException {
         SlandererPlayer.rc = rcin;
         if (turnCount == 0) {
@@ -22,15 +23,16 @@ public class SlandererPlayer {
                 }
             }
         }
-        while(rc.getType().equals(RobotType.SLANDERER)){
+        while (rc.getType().equals(RobotType.SLANDERER)) {
             turnCount++;
-            if (rc.isReady()){
+            if (rc.isReady()) {
                 // Handle detecting enemies
-            	int sensorRadius = rc.getType().sensorRadiusSquared;
-                ArrayList<RobotInfo> nearbyEnemies = new ArrayList<RobotInfo>(Arrays.asList(rc.senseNearbyRobots(sensorRadius, rc.getTeam().opponent())));
+                int sensorRadius = rc.getType().sensorRadiusSquared;
+                ArrayList<RobotInfo> nearbyEnemies = new ArrayList<RobotInfo>(
+                        Arrays.asList(rc.senseNearbyRobots(sensorRadius, rc.getTeam().opponent())));
                 nearbyEnemies.removeIf(e -> (!e.getType().equals(RobotType.MUCKRAKER)));
                 if (nearbyEnemies.size() > 0) {
-                	Move.tryMove(rc, RunAway.runAwayDirection(rc, nearbyEnemies));
+                    Move.tryMove(rc, RunAway.runAwayDirection(rc, nearbyEnemies));
                 } else {
                     Move.tryMove(rc, Move.dirForward180(rc, getTeamGoDir()));
                 }
@@ -42,11 +44,11 @@ public class SlandererPlayer {
         PoliticianPlayer.runPolitician(rc, true);
     }
 
-    private static MapLocation runAwayTo(RobotInfo[] runAwayFrom){
-        return rc.getLocation(); //TODO: Implement running away
+    private static MapLocation runAwayTo(RobotInfo[] runAwayFrom) {
+        return rc.getLocation(); // TODO: Implement running away
     }
 
-    private static Direction getTeamGoDir(){
+    private static Direction getTeamGoDir() {
         return Move.getTeamGoDir(rc);
     }
 }

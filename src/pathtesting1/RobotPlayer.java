@@ -28,7 +28,7 @@ public strictfp class RobotPlayer {
                     case ENLIGHTENMENT_CENTER:
                         runEnlightenmentCenter();
                         break;
-                    default: 
+                    default:
                         runStraight();
                 }
 
@@ -60,7 +60,7 @@ public strictfp class RobotPlayer {
             return;
 
         MapLocation pos = hqLocation.translate(-5, 3);
-        //tryMove(PathFind.get_path_direction(rc, pos));
+        // tryMove(PathFind.get_path_direction(rc, pos));
         tryMove(PathFind.pathTo(rc, pos));
     }
 

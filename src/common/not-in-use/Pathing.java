@@ -1,5 +1,3 @@
-package simpleplayer3;
-
 import battlecode.common.*;
 
 public abstract strictfp class Pathing {

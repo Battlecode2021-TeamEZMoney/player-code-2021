@@ -20,7 +20,7 @@ class Slanderer extends Pawn {
             turnCount++;
             if (rc.isReady()) {
                 // Handle detecting enemies
-            	tryDirForward180(awayFromEnemyMuckrakers());
+                tryDirForward180(awayFromEnemyMuckrakers());
             }
             Clock.yield();
         }
@@ -32,7 +32,8 @@ class Slanderer extends Pawn {
     }
 
     protected Direction awayFromEnemyMuckrakers() throws GameActionException {
-        List<RobotInfo> robots = Arrays.asList(rc.senseNearbyRobots(rc.getLocation(), actionRadiusSquared, rc.getTeam().opponent()));
+        List<RobotInfo> robots = Arrays
+                .asList(rc.senseNearbyRobots(rc.getLocation(), actionRadiusSquared, rc.getTeam().opponent()));
         robots.removeIf(r -> (r.type != RobotType.MUCKRAKER));
         return awayFromRobots(robots);
     }

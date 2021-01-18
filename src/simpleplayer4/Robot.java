@@ -12,14 +12,14 @@ abstract class Robot {
 
     static Robot robotFromRobotController(RobotController rc) throws Exception {
         switch (rc.getType()) {
-        case POLITICIAN:
-        case MUCKRAKER:
-        case SLANDERER:
-            return Pawn.unitFromRobotController(rc);
-        case ENLIGHTENMENT_CENTER:
-            return new EnlightenmentCenter(rc);
-        default:
-            throw new Exception(rc.getType() + "is not a valid robot type.");
+            case POLITICIAN:
+            case MUCKRAKER:
+            case SLANDERER:
+                return Pawn.unitFromRobotController(rc);
+            case ENLIGHTENMENT_CENTER:
+                return new EnlightenmentCenter(rc);
+            default:
+                throw new Exception(rc.getType() + "is not a valid robot type.");
         }
     }
 
@@ -34,25 +34,25 @@ abstract class Robot {
     }
 
     void setNearbyHQFlag() throws GameActionException {
-    	int encoded = -1;
+        int encoded = -1;
         RobotInfo[] nearby = rc.senseNearbyRobots();
         for (RobotInfo robot : nearby) {
             if (robot.type.equals(RobotType.ENLIGHTENMENT_CENTER)) {
-            	int flagCode = 0;
+                int flagCode = 0;
                 if (robot.team.equals(Team.NEUTRAL)) {
-                	flagCode = FlagCodes.neutralHQ;
+                    flagCode = FlagCodes.neutralHQ;
                 } else if (robot.team.equals(rc.getTeam().opponent())) {
-                	flagCode = FlagCodes.enemyHQ;
+                    flagCode = FlagCodes.enemyHQ;
                 } else if (robot.team.equals(rc.getTeam())) {
-                	flagCode = FlagCodes.friendlyHQ;
+                    flagCode = FlagCodes.friendlyHQ;
                 }
-            	encoded = Encoding.encode(robot.getLocation(), flagCode);
-            	if (Math.random() < 0.4)
-            		break;
+                encoded = Encoding.encode(robot.getLocation(), flagCode);
+                if (Math.random() < 0.4)
+                    break;
             }
         }
         if (encoded != -1) {
-        	trySetFlag(encoded);
+            trySetFlag(encoded);
         }
     }
 
@@ -64,13 +64,13 @@ abstract class Robot {
         public static int patrol = 5;
     }
 
-//    Direction getTeamGoDir() {
-//        // TODO: make this smarter than assuming team a is on the left side
-//        return rc.getTeam().equals(Team.A) ? Direction.WEST : Direction.EAST;
-//    }
-    
+    // Direction getTeamGoDir() {
+    // // TODO: make this smarter than assuming team a is on the left side
+    // return rc.getTeam().equals(Team.A) ? Direction.WEST : Direction.EAST;
+    // }
+
     protected boolean canSenseEnemy() {
-    	return rc.senseNearbyRobots(-1, rc.getTeam().opponent()).length > 0;
+        return rc.senseNearbyRobots(-1, rc.getTeam().opponent()).length > 0;
     }
 
     protected int distanceSquaredTo(RobotInfo otherRobot) throws GameActionException {
@@ -88,63 +88,62 @@ abstract class Robot {
     protected Direction directionTo(MapLocation pos) throws GameActionException {
         return rc.getLocation().directionTo(pos);
     }
-    
+
     protected boolean isAlly(RobotInfo robot) throws GameActionException {
-    	return robot.team.equals(rc.getTeam());
+        return robot.team.equals(rc.getTeam());
     }
-    
+
     protected boolean isEnemy(RobotInfo robot) throws GameActionException {
-    	return robot.team.equals(rc.getTeam().opponent());
+        return robot.team.equals(rc.getTeam().opponent());
     }
-    
+
     protected boolean isNeutral(RobotInfo robot) throws GameActionException {
-    	return robot.team.equals(Team.NEUTRAL);
+        return robot.team.equals(Team.NEUTRAL);
     }
-    
+
     static protected int initialConviction(RobotInfo robot) throws GameActionException {
         switch (robot.type) {
-        case ENLIGHTENMENT_CENTER:
-        	return Integer.MAX_VALUE;
-        case SLANDERER:
-            return (int) Math.ceil(robot.influence * 0.7);
-        case POLITICIAN:
-        case MUCKRAKER:
-            return robot.influence;
-        default:
-            return 0;
+            case ENLIGHTENMENT_CENTER:
+                return Integer.MAX_VALUE;
+            case SLANDERER:
+                return (int) Math.ceil(robot.influence * 0.7);
+            case POLITICIAN:
+            case MUCKRAKER:
+                return robot.influence;
+            default:
+                return 0;
         }
     }
-    
+
     protected boolean crowdedByEnemy(MapLocation loc) {
-    	return rc.senseNearbyRobots(loc, 2, rc.getTeam().opponent()).length >= 5
-    			|| rc.senseNearbyRobots(loc, 5, rc.getTeam().opponent()).length >= 10;
+        return rc.senseNearbyRobots(loc, 2, rc.getTeam().opponent()).length >= 5
+                || rc.senseNearbyRobots(loc, 5, rc.getTeam().opponent()).length >= 10;
     }
-    
+
     protected boolean crowded(MapLocation loc) {
-    	return rc.senseNearbyRobots(loc, 2, null).length >= 7
-    			|| rc.senseNearbyRobots(loc, 5, null).length >= 15;
+        return rc.senseNearbyRobots(loc, 2, null).length >= 7 || rc.senseNearbyRobots(loc, 5, null).length >= 15;
     }
-    
+
     protected boolean crowdedByAllyMuckrakers(MapLocation loc) {
-    	int numMucks2 = 0, numMucks5 = 0;
-    	for (RobotInfo robot : rc.senseNearbyRobots(loc, 2, rc.getTeam())) {
-    		if (robot.type.equals(RobotType.MUCKRAKER)) {
-    			numMucks2++;
-    		}
-    	}
-    	for (RobotInfo robot : rc.senseNearbyRobots(loc, 5, rc.getTeam())) {
-    		if (robot.type.equals(RobotType.MUCKRAKER)) {
-    			numMucks5++;
-    		}
-    	}
-    	return numMucks2 >= 5 || numMucks5 >= 10;
+        int numMucks2 = 0, numMucks5 = 0;
+        for (RobotInfo robot : rc.senseNearbyRobots(loc, 2, rc.getTeam())) {
+            if (robot.type.equals(RobotType.MUCKRAKER)) {
+                numMucks2++;
+            }
+        }
+        for (RobotInfo robot : rc.senseNearbyRobots(loc, 5, rc.getTeam())) {
+            if (robot.type.equals(RobotType.MUCKRAKER)) {
+                numMucks5++;
+            }
+        }
+        return numMucks2 >= 5 || numMucks5 >= 10;
     }
-    
+
     String printLoc(MapLocation loc) throws GameActionException {
-    	return "(" + loc.x + ", " + loc.y + ")";
+        return "(" + loc.x + ", " + loc.y + ")";
     }
-    
-	//protected int actionRadiusSquared = rc.getType().actionRadiusSquared;
-	//protected int sensorRadiusSquared = rc.getType().sensorRadiusSquared;
-	//protected int detectionRadiusSquared = rc.getType().detectionRadiusSquared;
+
+    // protected int actionRadiusSquared = rc.getType().actionRadiusSquared;
+    // protected int sensorRadiusSquared = rc.getType().sensorRadiusSquared;
+    // protected int detectionRadiusSquared = rc.getType().detectionRadiusSquared;
 }

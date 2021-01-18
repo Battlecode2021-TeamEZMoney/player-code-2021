@@ -46,8 +46,10 @@ public strictfp class RobotPlayer {
         RobotType toBuild;
 
         if (rc.getRoundNum() == 1 && rc.getInfluence() > 20) {
-            rc.buildRobot(RobotType.SLANDERER, Direction.NORTHWEST, rc.getInfluence() - ((rc.getInfluence() - 1) % 20) - 1);
-            if (rc.canBid(3)) rc.bid(3);
+            rc.buildRobot(RobotType.SLANDERER, Direction.NORTHWEST,
+                    rc.getInfluence() - ((rc.getInfluence() - 1) % 20) - 1);
+            if (rc.canBid(3))
+                rc.bid(3);
             return;
         }
 
@@ -57,9 +59,9 @@ public strictfp class RobotPlayer {
             int[] dxy = Formations.stageone_wall[i];
             MapLocation pos = rc.getLocation().translate(dxy[0], dxy[1]);
             if (rc.canSenseLocation(pos) && !rc.isLocationOccupied(pos)) {
-                        rc.setFlag(10 + i);
-                        any_open_pol_spots = true;
-                        break;
+                rc.setFlag(10 + i);
+                any_open_pol_spots = true;
+                break;
             }
         }
 
@@ -69,15 +71,15 @@ public strictfp class RobotPlayer {
                 rc.buildRobot(toBuild, Direction.WEST, rc.getInfluence() - 1);
             }
         }
-        
+
         int bidAmount = Bidding.bidAmount(rc);
         if (rc.canBid(bidAmount)) {
-        	//System.out.println("Bidding " + bidAmount);
+            // System.out.println("Bidding " + bidAmount);
             rc.bid(bidAmount);
         }
 
         if (turnCount % 10 == 0) {
-            //System.out.println(rc.getInfluence());
+            // System.out.println(rc.getInfluence());
         }
     }
 
@@ -100,7 +102,7 @@ public strictfp class RobotPlayer {
 
             int[] dxy = Formations.stageone_wall[storedFlag - 10];
             MapLocation pos = hqLocation.translate(dxy[0], dxy[1]);
-            //tryMove(PathFind.get_path_direction(rc, pos));
+            // tryMove(PathFind.get_path_direction(rc, pos));
             tryMove(PathFind.pathTo(rc, pos));
 
         } else {

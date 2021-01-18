@@ -23,20 +23,20 @@ class EnlightenmentCenter extends Robot {
         this.rc = rcin;
         bidController = new Bidding();
     }
-    
+
     void printStoredECs() throws GameActionException {
         System.out.println();
         for (MapLocation loc : enemyHQs)
-        	System.out.println("Enemy EC: " + printLoc(loc));
+            System.out.println("Enemy EC: " + printLoc(loc));
         System.out.println();
         for (MapLocation loc : friendlyHQs)
-        	System.out.println("Friendly EC: " + printLoc(loc));
+            System.out.println("Friendly EC: " + printLoc(loc));
         System.out.println();
         for (MapLocation loc : neutralHQs)
-        	System.out.println("Neutral EC: " + printLoc(loc));
+            System.out.println("Neutral EC: " + printLoc(loc));
         System.out.println();
         for (Integer unit : units)
-        	System.out.println("Unit ID: " + unit);
+            System.out.println("Unit ID: " + unit);
         System.out.println();
     }
 
@@ -45,11 +45,11 @@ class EnlightenmentCenter extends Robot {
             turnCount++;
             // TODO: Implement smart handling of other units and other HQs
             // gatherIntel();
-            
+
             // printStoredECs();
 
             while (Clock.getBytecodesLeft() > 3000 && units.size() > 0) {
-            	unitsIndex %= units.size();
+                unitsIndex %= units.size();
                 int unitID = units.get(unitsIndex);
                 if (rc.canGetFlag(unitID)) {
                     parseUnitFlag(rc.getFlag(unitID));
@@ -58,9 +58,9 @@ class EnlightenmentCenter extends Robot {
                     units.remove(unitsIndex);
                 }
             }
-            
-            //int start = Clock.getBytecodesLeft();
-            
+
+            // int start = Clock.getBytecodesLeft();
+
             if (rc.isReady()) {
                 unitToBuild = getUnitToBuild();
                 infToSpend = getNewUnitInfluence();
@@ -72,21 +72,22 @@ class EnlightenmentCenter extends Robot {
                     unitsBuilt++;
                     RobotInfo robotBuilt = rc.senseRobotAtLocation(rc.getLocation().add(buildDirection));
                     units.add(robotBuilt.getID());
-                    //addAllFriendlyBots(rc.senseNearbyRobots(rc.getLocation().add(buildDirection), 0, rc.getTeam()));
-                    
+                    // addAllFriendlyBots(rc.senseNearbyRobots(rc.getLocation().add(buildDirection),
+                    // 0, rc.getTeam()));
+
                     // TODO: Implement flag based orders
                     // trySetFlag(getOrdersForUnit(unitToBuild));
                 }
             }
-            
+
             trySetFlag(getTarget());
 
             if (shouldBid()) {
                 tryBid(bidController.getBidAmount());
             }
-            //System.out.println(Clock.getBytecodesLeft() - start);
-            //System.out.println(rc.getEmpowerFactor(rc.getTeam(), 0));
-            
+            // System.out.println(Clock.getBytecodesLeft() - start);
+            // System.out.println(rc.getEmpowerFactor(rc.getTeam(), 0));
+
             Clock.yield();
         }
     }
@@ -96,71 +97,72 @@ class EnlightenmentCenter extends Robot {
      * 
      * }
      */
-    
-    
+
     private void parseUnitFlag(int flag) throws GameActionException {
         MapLocation tempLocation = Encoding.getLocationFromFlag(rc, flag);
         switch (Encoding.getInfoFromFlag(flag)) {
-        case 2:
-            enemyHQs.add(tempLocation);
-            friendlyHQs.remove(tempLocation);
-            neutralHQs.remove(tempLocation);
-            return;
-        case 3:
-            enemyHQs.remove(tempLocation);
-            friendlyHQs.add(tempLocation);
-            neutralHQs.remove(tempLocation);
-            return;
-        case 4:
-            neutralHQs.add(tempLocation);
-            return;	
+            case 2:
+                enemyHQs.add(tempLocation);
+                friendlyHQs.remove(tempLocation);
+                neutralHQs.remove(tempLocation);
+                return;
+            case 3:
+                enemyHQs.remove(tempLocation);
+                friendlyHQs.add(tempLocation);
+                neutralHQs.remove(tempLocation);
+                return;
+            case 4:
+                neutralHQs.add(tempLocation);
+                return;
         }
     }
 
     private int getTarget() throws GameActionException {
-    	if (canSenseEnemy() && Math.random() < 0.8) {
+        if (canSenseEnemy() && Math.random() < 0.8) {
             return Encoding.encode(rc.getLocation(), FlagCodes.patrol, dirTarget, explorer);
         } else if (neutralHQs.size() > 0) {
             return Encoding.encode(neutralHQs.iterator().next(), FlagCodes.neutralHQ, dirTarget, explorer);
         } else if (enemyHQs.size() > 0) {
             return Encoding.encode(enemyHQs.iterator().next(), FlagCodes.enemyHQ, dirTarget, explorer);
         } else {
-        	return Encoding.encode(rc.getLocation(), FlagCodes.simple, dirTarget, explorer);
+            return Encoding.encode(rc.getLocation(), FlagCodes.simple, dirTarget, explorer);
         }
     }
 
     private RobotType getUnitToBuild() throws GameActionException {
-    	double rand = Math.random();
-    	if (rc.getInfluence()-10 < Constants.minimumPolInf) {
-    		return RobotType.MUCKRAKER;
-    	} else if (rc.getEmpowerFactor(rc.getTeam(), 11) > 4 || crowdedByEnemy(rc.getLocation()) || crowded(rc.getLocation())) {
-    		return RobotType.POLITICIAN;
-    	} else if (rand > (0.4 + 0.2 * rc.getRoundNum() / Constants.MAX_ROUNDS) || canSenseEnemy()) {
-    		return RobotType.MUCKRAKER;
-    	} else if (rand > 0 * (1 - rc.getRoundNum() / Constants.MAX_ROUNDS)){
-    		return RobotType.POLITICIAN;
-    	} else {
-    		return RobotType.SLANDERER;
-    	}
+        double rand = Math.random();
+        if (rc.getInfluence() - 10 < Constants.minimumPolInf) {
+            return RobotType.MUCKRAKER;
+        } else if (rc.getEmpowerFactor(rc.getTeam(), 11) > 4 || crowdedByEnemy(rc.getLocation())
+                || crowded(rc.getLocation())) {
+            return RobotType.POLITICIAN;
+        } else if (rand > (0.4 + 0.2 * rc.getRoundNum() / Constants.MAX_ROUNDS) || canSenseEnemy()) {
+            return RobotType.MUCKRAKER;
+        } else if (rand > 0 * (1 - rc.getRoundNum() / Constants.MAX_ROUNDS)) {
+            return RobotType.POLITICIAN;
+        } else {
+            return RobotType.SLANDERER;
+        }
     }
 
     int getNewUnitInfluence() throws GameActionException {
         switch (unitToBuild) {
-        case SLANDERER:
-            Integer x = Constants.optimalSlandInfSet.floor(rc.getInfluence()-10);
-            return x != null ? x : 0;
-        case POLITICIAN:
-            return (rc.getEmpowerFactor(rc.getTeam(), 11)) > 4 ? (rc.getInfluence()-10) / 2 : Math.min(511, Math.max(Constants.minimumPolInf, (rc.getInfluence()-10) / 2));
-        case MUCKRAKER:
-            return 1;
-        default:
-            return 1;
+            case SLANDERER:
+                Integer x = Constants.optimalSlandInfSet.floor(rc.getInfluence() - 10);
+                return x != null ? x : 0;
+            case POLITICIAN:
+                return (rc.getEmpowerFactor(rc.getTeam(), 11)) > 4 ? (rc.getInfluence() - 10) / 2
+                        : Math.min(511, Math.max(Constants.minimumPolInf, (rc.getInfluence() - 10) / 2));
+            case MUCKRAKER:
+                return 1;
+            default:
+                return 1;
         }
     }
-    
+
     Direction getPreferredDirection() throws GameActionException {
-      return DirectionUtils.randomDirection();
-  }
+        return DirectionUtils.randomDirection();
+    }
 
     private Direction getBuildDirection(RobotType type, Direction prefDir, int inf) throws GameActionException {
         if (rc.getInfluence() < inf || prefDir.equals(Direction.CENTER)) {
@@ -195,8 +197,7 @@ class EnlightenmentCenter extends Robot {
      */
 
     private boolean shouldBid() throws GameActionException {
-        return rc.getTeamVotes() < Constants.VOTES_TO_WIN
-                && rc.getRoundNum() > (Constants.MAX_ROUNDS / 6);
+        return rc.getTeamVotes() < Constants.VOTES_TO_WIN && rc.getRoundNum() > (Constants.MAX_ROUNDS / 6);
     }
 
     private void tryBid(int bidAmount) throws GameActionException {
@@ -206,7 +207,7 @@ class EnlightenmentCenter extends Robot {
     }
 
     private class Bidding {
-    	public static final int MAX_ROUNDS = Constants.MAX_ROUNDS;
+        public static final int MAX_ROUNDS = Constants.MAX_ROUNDS;
         public static final int VOTES_TO_WIN = Constants.VOTES_TO_WIN, OFFSET = 100;
         private static final double GROWTH_RATE = 1.15, DECAY_RATE = 0.9;
         private int prevBid = 1, prevTeamVotes = -1;

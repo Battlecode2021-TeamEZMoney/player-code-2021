@@ -44,23 +44,23 @@ public class PathFind {
             Node c = pq.poll();
             int t = Clock.getBytecodeNum();
             Double current_dist = dist.get(c.node);
-            //System.out.println("Getting cdist:\t" + (Clock.getBytecodeNum()-t));
+            // System.out.println("Getting cdist:\t" + (Clock.getBytecodeNum()-t));
             rc.setIndicatorDot(c.node, 255, 0, 0);
-            //System.out.println(Clock.getBytecodeNum());
+            // System.out.println(Clock.getBytecodeNum());
 
             for (int i = 0; i < 8; i++) {
                 t = Clock.getBytecodeNum();
                 Node nc = new Node(c.node.add(DirectionUtils.nonCenterDirections[i]), 0.0);
-                if(nc.node.equals(rc.getLocation())) {
+                if (nc.node.equals(rc.getLocation())) {
                     return rc.getLocation().directionTo(c.node);
                 }
 
-                //System.out.println("Init next node:\t" + (Clock.getBytecodeNum()-t));
+                // System.out.println("Init next node:\t" + (Clock.getBytecodeNum()-t));
                 if (rc.canSenseLocation(nc.node)) {
-                    nc.cost = 1/rc.sensePassability(nc.node);
+                    nc.cost = 1 / rc.sensePassability(nc.node);
                     t = Clock.getBytecodeNum();
                     if (!visited.contains(nc.node)) {
-                        //System.out.println("Visited Check:\t" + (Clock.getBytecodeNum() - t));
+                        // System.out.println("Visited Check:\t" + (Clock.getBytecodeNum() - t));
                         visited.add(nc.node);
                         Double ndist = 999999999.0;
 
@@ -72,11 +72,12 @@ public class PathFind {
                             dist.put(nc.node, current_dist + nc.cost);
                         }
                         pq.add(new Node(nc.node, current_dist + nc.cost));
-                        //System.out.println("PLAYER1 Update and Add:\t" + (Clock.getBytecodeNum() - t));
+                        // System.out.println("PLAYER1 Update and Add:\t" + (Clock.getBytecodeNum() -
+                        // t));
                     }
                 }
             }
-            //System.out.println("TOTAL LOOP:\t" + (Clock.getBytecodeNum()-tt));
+            // System.out.println("TOTAL LOOP:\t" + (Clock.getBytecodeNum()-tt));
 
         }
 
@@ -89,9 +90,9 @@ public class PathFind {
             }
         }
 
-        //System.out.println(dist.get(rc.getLocation()));
+        // System.out.println(dist.get(rc.getLocation()));
 
-        //System.out.println(Clock.getBytecodeNum());
+        // System.out.println(Clock.getBytecodeNum());
 
         return rtn;
     }

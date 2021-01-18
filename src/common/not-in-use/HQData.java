@@ -1,5 +1,4 @@
 
-
 import battlecode.common.*;
 import common.Constants;
 
@@ -8,40 +7,40 @@ public class HQData {
     private final MapLocation pos;
     private Team team = null;
 
-    HQData(MapLocation pos){
+    HQData(MapLocation pos) {
         this.pos = pos;
     }
 
-    HQData(MapLocation pos, Team team){
-        this.pos = pos;
-        this.team = team;
-    }
-
-    HQData(int id, MapLocation pos){
-        this.id = id;
-        this.pos = pos;
-    }
-
-    HQData(int id, MapLocation pos, Team team){
-        this.id = id;
+    HQData(MapLocation pos, Team team) {
         this.pos = pos;
         this.team = team;
     }
 
-    public int getID(){
+    HQData(int id, MapLocation pos) {
+        this.id = id;
+        this.pos = pos;
+    }
+
+    HQData(int id, MapLocation pos, Team team) {
+        this.id = id;
+        this.pos = pos;
+        this.team = team;
+    }
+
+    public int getID() {
         return id;
     }
 
-    public void setID(int id){
+    public void setID(int id) {
         this.id = id;
     }
 
-    public boolean hasID(){
+    public boolean hasID() {
         return id > Constants.minID;
     }
 
-    public boolean isIDCurrent(RobotController rc){
-        if(rc.canGetFlag(id)){
+    public boolean isIDCurrent(RobotController rc) {
+        if (rc.canGetFlag(id)) {
             return true;
         } else {
             id = -1;
@@ -50,35 +49,35 @@ public class HQData {
         }
     }
 
-    public int getFlag(RobotController rc) throws GameActionException{
+    public int getFlag(RobotController rc) throws GameActionException {
         return rc.getFlag(id);
     }
 
-    public MapLocation getLocation(){
+    public MapLocation getLocation() {
         return pos;
     }
 
-    public Team getTeam(){
+    public Team getTeam() {
         return team;
     }
 
-    public void setTeam(Team team){
+    public void setTeam(Team team) {
         this.team = team;
     }
 
-    public boolean hasTeam(){
+    public boolean hasTeam() {
         return team != null;
     }
 
-    public boolean isNeutral(){
+    public boolean isNeutral() {
         return team.equals(Team.NEUTRAL);
     }
 
-    public boolean isFriendly(RobotController rc){
+    public boolean isFriendly(RobotController rc) {
         return team.equals(rc.getTeam());
     }
 
-    public boolean isEnemy(RobotController rc){
+    public boolean isEnemy(RobotController rc) {
         return team.equals(rc.getTeam().opponent());
     }
 
