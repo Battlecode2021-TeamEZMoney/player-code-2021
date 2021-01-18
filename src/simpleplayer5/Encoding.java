@@ -1,6 +1,7 @@
-package simpleplayer4_subm1;
+package simpleplayer5;
 
 import battlecode.common.*;
+import common.*;
 
 class Encoding {
 	private static final int LOC_BITS = 7;
@@ -15,11 +16,11 @@ class Encoding {
 	static int encode(MapLocation loc, int info) throws GameActionException {
 		return encode(loc, info, Direction.NORTH);
 	}
-	
+
 	static int encode(MapLocation loc, int info, Direction dir) throws GameActionException {
 		return encode(loc, info, Direction.NORTH, false);
 	}
-	
+
 	static int encode(MapLocation loc, int info, Direction dir, boolean explorer) throws GameActionException {
 		int x = loc.x, y = loc.y;
 		int xEnc = x & LOC_BITMASK, yEnc = y & LOC_BITMASK;
@@ -31,9 +32,7 @@ class Encoding {
 			}
 		}
 		int expInc = explorer ? 1 : 0;
-		return (xEnc << LOC_BITS) + yEnc
-				+ (dirEnc << (2 * LOC_BITS))
-				+ (expInc << (2 * LOC_BITS + DIR_BITS))
+		return (xEnc << LOC_BITS) + yEnc + (dirEnc << (2 * LOC_BITS)) + (expInc << (2 * LOC_BITS + DIR_BITS))
 				+ (info << (2 * LOC_BITS + DIR_BITS + EXP_BITS));
 	}
 
@@ -50,12 +49,12 @@ class Encoding {
 		}
 		return new MapLocation(loc[0], loc[1]);
 	}
-	
+
 	static Direction getDirFromFlag(int encoded) throws GameActionException {
 		int ind = (encoded >> (2 * LOC_BITS)) & DIR_BITMASK;
 		return DirectionUtils.nonCenterDirections[ind];
 	}
-	
+
 	static boolean getExplorerFromFlag(int encoded) throws GameActionException {
 		return ((encoded >> (2 * LOC_BITS + DIR_BITS)) & EXP_BITMASK) == 1;
 	}

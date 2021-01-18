@@ -1,19 +1,15 @@
-package simpleplayer4;
-
-import battlecode.common.*;
-import common.*;
-import simpleplayer4_subm2.DirectionUtils;
+package simpleplayer5;
 
 import java.util.Arrays;
 import java.util.List;
 
-abstract class Pawn extends Robot {
-    protected MapLocation hqLocation = null;
-    protected int hqID;
-    protected Direction dirTarget = Direction.CENTER;
-    protected boolean explorer = false;
-    protected boolean defending = false;
+import battlecode.common.*;
+import common.DirectionUtils;
 
+abstract class Pawn extends Robot {
+    protected MapLocation hqLocation;
+    protected int hqID;
+    protected Direction dirTarget;
 
     Pawn(RobotController rcin) throws GameActionException {
         super(rcin); // Don't remove this.
@@ -21,7 +17,6 @@ abstract class Pawn extends Robot {
     }
 
     static Pawn unitFromRobotController(RobotController rc) throws Exception {
-        // getHomeHQ();
         switch (rc.getType()) {
             case POLITICIAN:
                 return new Politician(rc);
@@ -34,15 +29,12 @@ abstract class Pawn extends Robot {
         }
     }
 
-    protected boolean getHomeHQ() throws GameActionException {
-        RobotInfo[] robots = rc.senseNearbyRobots(2, allyTeam);
+    protected boolean getHomeHQ() {
+        RobotInfo[] robots = rc.senseNearbyRobots(2, rc.getTeam());
         for (RobotInfo robot : robots) {
-            if (robot.type.equals(RobotType.ENLIGHTENMENT_CENTER)) {
+            if (robot.getType() == RobotType.ENLIGHTENMENT_CENTER) {
                 hqLocation = robot.getLocation();
                 hqID = robot.getID();
-                dirTarget = robotType.equals(RobotType.SLANDERER) ?
-                		Direction.CENTER : Encoding.getDirFromFlag(rc.getFlag(robot.ID));
-                explorer = Encoding.getExplorerFromFlag(rc.getFlag(robot.ID));
                 return true;
             }
         }
@@ -58,8 +50,7 @@ abstract class Pawn extends Robot {
     }
 
     protected Direction dirForward90(Direction dir) throws GameActionException {
-//        if (rc.canMove(dir) || !rc.onTheMap(rc.getLocation().add(dir))) {
-    	if (rc.canMove(dir) || dir.equals(Direction.CENTER)) {
+        if (rc.canMove(dir) || !rc.onTheMap(rc.getLocation().add(dir))) {
             return dir;
         } else if (rc.canMove(dir.rotateLeft())) {
             return dir.rotateLeft();
@@ -74,8 +65,7 @@ abstract class Pawn extends Robot {
     }
 
     protected Direction dirForward180(Direction dir) throws GameActionException {
-        //if (rc.canMove(dir) || !rc.onTheMap(rc.getLocation().add(dir))) {
-    	if (rc.canMove(dir) || dir.equals(Direction.CENTER)) {
+        if (rc.canMove(dir) || !rc.onTheMap(rc.getLocation().add(dir))) {
             return dir;
         } else if (rc.canMove(dir.rotateLeft())) {
             return dir.rotateLeft();
@@ -95,23 +85,26 @@ abstract class Pawn extends Robot {
 
     protected Direction awayFromRobots(List<RobotInfo> robots) throws GameActionException {
         MapLocation location = new MapLocation(0, 0);
-        if (robots.size() == 0) {
+        if (robots.size() == 0)
             return dirTarget;
-        }
         for (RobotInfo robot : robots) {
             location = location.translate(robot.location.x, robot.location.y);
         }
 
         location = new MapLocation(location.x / robots.size(), location.y / robots.size());
-        return directionTo(location).opposite();
+        Direction away_dir = directionTo(location).opposite();
+
+        if (!rc.onTheMap(rc.getLocation().add(away_dir))) {
+            away_dir = away_dir.opposite();
+        }
+        if (DirectionUtils.within45Degrees(dirTarget, away_dir)) {
+            return dirTarget;
+        }
+        return away_dir;
     }
 
     protected Direction awayFromAllies() throws GameActionException {
-<<<<<<< HEAD
-        return awayFromRobots(Arrays.asList(rc.senseNearbyRobots(-1, allyTeam)));
-=======
         return awayFromRobots(
                 Arrays.asList(rc.senseNearbyRobots(rc.getLocation(), sensorRadiusSquared, allyTeam)));
->>>>>>> 01e182063ebffafe1dab4f437b5497029c82224d
     }
 }

@@ -12,8 +12,6 @@ class Politician extends Attacker {
 
 	Politician(RobotController rcin) throws GameActionException {
 		super(rcin); // Don't remove this.
-		this.rc = rcin;
-		getHomeHQ();
 	}
 
 	Politician(Slanderer sland) throws GameActionException {
@@ -232,41 +230,12 @@ class Politician extends Attacker {
 	}
 
 	private boolean ifOptimalEmpower(double empowerThresh, int destThresh) throws GameActionException {
-		// int range = 5;
-		// int nearbyThresh = 4;
-		// RobotInfo[] tempEnemies = rc.senseNearbyRobots(range,
-		// enemyTeam);
-
-		// double empowerThresh = 0.8;
-		// int destThresh = 4;
 		int[] radAndInfo = optimalEmpowerRadiusAndInfo();
 		int rad = radAndInfo[0], inc = radAndInfo[1], numDest = radAndInfo[2];
 		if (rc.getConviction() > 10 && (double) inc / rc.getConviction() >= empowerThresh || numDest >= destThresh) {
-			// System.out.println(printLoc(rc.getLocation()) + ": " + (double) inc /
-			// (rc.getConviction() - 10) + ", " + numDest);
 			return tryEmpower(rad);
 		}
 		return false;
-	}
-
-	// private void ifOptimalEmpower2() throws GameActionException {
-	// int range = 5;
-	// int nearHQThresh = 1;
-	// int hqMaxDist = 10;
-	// int defaultThresh = 4;
-	//
-	// RobotInfo[] tempEnemies = rc.senseNearbyRobots(range,
-	// enemyTeam);
-	// if (tempEnemies.length > defaultThresh
-	// || (tempEnemies.length > nearHQThresh && distanceSquaredTo(hqLocation) <=
-	// hqMaxDist)) {
-	// tryEmpower(range);
-	// }
-	// }
-
-	protected boolean huntOrKill(RobotInfo enemy) throws GameActionException {
-		return (withinAttackRange(enemy) && tryEmpower(distanceSquaredTo(enemy)))
-				|| tryDirForward180(directionTo(enemy.getLocation()));
 	}
 
 	private boolean HQAttackRoutine(MapLocation locHQ) throws GameActionException {
@@ -286,6 +255,11 @@ class Politician extends Attacker {
 			}
 		}
 		return true;
+	}
+
+	protected boolean huntOrKill(RobotInfo enemy) throws GameActionException {
+		return (withinAttackRange(enemy) && tryEmpower(distanceSquaredTo(enemy)))
+				|| tryDirForward180(directionTo(enemy.getLocation()));
 	}
 
 	private boolean runNeutralCode() throws GameActionException {

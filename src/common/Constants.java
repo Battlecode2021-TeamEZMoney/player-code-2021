@@ -15,7 +15,7 @@ public class Constants {
             339, 368, 399, 431, 463, 497, 532, 568, 605, 643, 683, 724, 766, 810, 855, 902, 949, Integer.MAX_VALUE };
     public static final TreeSet<Integer> optimalSlandInfSet = new TreeSet<Integer>(Arrays.asList(optimalSlandInfArray));
     public static final int minimumPolInf = 20;
-    public static final RobotType[] spawnOrder = { RobotType.MUCKRAKER, RobotType.MUCKRAKER, RobotType.SLANDERER,
-            RobotType.MUCKRAKER, RobotType.MUCKRAKER, RobotType.POLITICIAN, RobotType.POLITICIAN, RobotType.SLANDERER,
-            RobotType.POLITICIAN, RobotType.POLITICIAN, RobotType.POLITICIAN };
+    public static final RobotType[] spawnOrder = { RobotType.MUCKRAKER, RobotType.MUCKRAKER, RobotType.MUCKRAKER,
+            RobotType.MUCKRAKER, RobotType.MUCKRAKER, RobotType.POLITICIAN, RobotType.POLITICIAN, RobotType.MUCKRAKER,
+            RobotType.POLITICIAN, RobotType.POLITICIAN, RobotType.POLITICIAN, RobotType.SLANDERER};
 }
