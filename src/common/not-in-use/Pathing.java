@@ -3,9 +3,11 @@ import battlecode.common.*;
 public abstract strictfp class Pathing {
   
   /**
-  * Which direction rc should go to run towards dir, looking only one deep
-  */
-  public static Direction goThatWayOne(RobotController rc, Direction dir) {
+   * Which direction rc should go to run towards dir, looking only one deep
+   * 
+   * @throws GameActionException
+   */
+  public static Direction goThatWayOne(RobotController rc, Direction dir) throws GameActionException {
     MapLocation here = rc.getLocation();
     double[] speeds = { 0.0, 0.0, 0.0 };
     Direction right = dir.rotateRight(), left = dir.rotateLeft();
@@ -56,7 +58,7 @@ public abstract strictfp class Pathing {
     if (here.isWithinDistanceSquared(dest, 2))
       return wayTo;
     
-    return Pathing.goThatWayOne(rc, wayTo)
+    return Pathing.goThatWayOne(rc, wayTo);
   }
 
 }
