@@ -3,7 +3,6 @@ package simpleplayer5_subm;
 import java.util.Arrays;
 
 import battlecode.common.*;
-import common.DirectionUtils;
 
 class Politician extends Attacker {
     private int mode = 1;

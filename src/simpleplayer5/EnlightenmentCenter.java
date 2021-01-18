@@ -80,12 +80,12 @@ class EnlightenmentCenter extends Robot {
             if (Constants.spawnOrder[spawnIndex].equals(RobotType.POLITICIAN)) {
                 spawnIndex++;
             }
-            return Math.random() > .4 ? RobotType.MUCKRAKER : RobotType.POLITICIAN;
+            return RobotType.MUCKRAKER;
         } else {
             double randTemp = Math.random();
             if (randTemp < .05) {
                 return RobotType.SLANDERER;
-            } else if (randTemp < .5) {
+            } else if (randTemp < .5 || rc.getInfluence() < Constants.minimumPolInf) {
                 return RobotType.MUCKRAKER;
             } else {
                 return RobotType.POLITICIAN;

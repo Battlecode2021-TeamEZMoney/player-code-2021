@@ -98,10 +98,7 @@ class Muckraker extends Attacker {
     }
 
     private boolean bounceExploreRoutine() throws GameActionException {
-        if (!rc.onTheMap(rc.getLocation().add(dirTarget)) || rc.isLocationOccupied(rc.getLocation().add(dirTarget))) {
-            dirTarget = DirectionUtils.random180(dirTarget.opposite());
-        }
-        return tryDirForward180(dirTarget);
+        return tryDirForward180(dirTarget) || tryDirForward180(dirTarget = DirectionUtils.randomDirection());
     }
 
     private boolean tryExpose(int id) throws GameActionException {

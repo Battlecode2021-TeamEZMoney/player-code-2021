@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import battlecode.common.*;
-import common.DirectionUtils;
 
 abstract class Pawn extends Robot {
     protected MapLocation hqLocation;
