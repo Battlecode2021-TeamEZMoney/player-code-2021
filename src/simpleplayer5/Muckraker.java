@@ -14,7 +14,7 @@ class Muckraker extends Attacker {
     }
 
     void run() throws GameActionException {
-        dirTarget = DirectionUtils.randomDirectionBiasCardinal();
+        dirTarget = DirectionUtils.randomDirectionBiasCardinal(); 
         exploreOnly = Math.random() > .4;
         getHomeHQ();
         while (true) {
@@ -52,23 +52,10 @@ class Muckraker extends Attacker {
         }
     }
 
-    private void runAttackCode() throws GameActionException {
+    protected void runAttackCode() throws GameActionException {
         showAnyNearbyAlliedHQOnFlag();
-        RobotInfo[] nearbyEnemies = rc.senseNearbyRobots(sensorRadiusSquared, rc.getTeam().opponent());
-        if (nearbyEnemies.length > 0) {
-            RobotInfo tempTarget = null;
-            for (RobotInfo robot : nearbyEnemies) {
-                if (robot.type.equals(RobotType.SLANDERER)) {
-                    if ((tempTarget == null || tempTarget.getInfluence() < robot.getInfluence())
-                            && rc.canExpose(robot.getID())) {
-                        tempTarget = robot;
-                    }
-                }
-            }
-            if (tempTarget != null && tryExpose(tempTarget)) {
-                return;
-            }
-        }
+        if (enemyUnitAttackRoutine())
+            return;
 
         if (enemyHQ.isAdjacentTo(rc.getLocation())) {
             tryDirForward90(directionTo(enemyHQ));
@@ -78,41 +65,43 @@ class Muckraker extends Attacker {
 
     }
 
-    private void runSimpleCode() throws GameActionException {
-        showAnyNearbyAlliedHQOnFlag();
-
-        RobotInfo[] neutralECs = rc.senseNearbyRobots(sensorRadiusSquared, Team.NEUTRAL);
-        if (neutralECs.length > 0) {
-            trySetFlag(Encoding.encode(neutralECs[0].getLocation(), FlagCodes.neutralHQ));
-        }
-
-        if (rc.isReady()) {
-            RobotInfo[] nearbyEnemies = rc.senseNearbyRobots(sensorRadiusSquared, rc.getTeam().opponent());
-            if (nearbyEnemies.length > 0) {
-                RobotInfo tempTarget = null;
-                for (RobotInfo robot : nearbyEnemies) {
-                    if (robot.type.equals(RobotType.ENLIGHTENMENT_CENTER)) {
-                        enemyHQ = robot.getLocation();
-                        trySetFlag(Encoding.encode(enemyHQ, FlagCodes.enemyHQ));
-                        break;
-                    } else if (robot.type.equals(RobotType.SLANDERER)) {
-                        if ((tempTarget == null || tempTarget.getInfluence() < robot.getInfluence())
-                                && rc.canExpose(robot.getID())) {
-                            tempTarget = robot;
-                        }
+    private boolean enemyUnitAttackRoutine() throws GameActionException {
+        RobotInfo[] nearbyEnemies = rc.senseNearbyRobots(sensorRadiusSquared, rc.getTeam().opponent());
+        if (nearbyEnemies.length > 0) {
+            RobotInfo tempTarget = null;
+            for (RobotInfo robot : nearbyEnemies) {
+                if (robot.type.equals(RobotType.ENLIGHTENMENT_CENTER)) {
+                    enemyHQ = robot.getLocation();
+                    trySetFlag(Encoding.encode(enemyHQ, FlagCodes.enemyHQ));
+                    break;
+                } else if (robot.type.equals(RobotType.SLANDERER)) {
+                    if ((tempTarget == null || tempTarget.getInfluence() < robot.getInfluence())
+                            && rc.canExpose(robot.getID())) {
+                        tempTarget = robot;
                     }
                 }
-                if (tempTarget != null && huntOrKill(tempTarget)) {
-                    return;
-                }
             }
-
-            if (!rc.onTheMap(rc.getLocation().add(dirTarget))
-                    || rc.isLocationOccupied(rc.getLocation().add(dirTarget))) {
-                dirTarget = DirectionUtils.random180(dirTarget.opposite());
+            if (tempTarget != null && huntOrKill(tempTarget)) {
+                return true;
             }
-            tryDirForward180(dirTarget);
         }
+        return false;
+    }
+
+    protected void runSimpleCode() throws GameActionException {
+        showAnyNearbyAlliedHQOnFlag();
+        showAnyNearbyNeutralECOnFlag();
+        if (enemyUnitAttackRoutine())
+            return;
+        if (bounceExploreRoutine())
+            return;
+    }
+
+    private boolean bounceExploreRoutine() throws GameActionException {
+        if (!rc.onTheMap(rc.getLocation().add(dirTarget)) || rc.isLocationOccupied(rc.getLocation().add(dirTarget))) {
+            dirTarget = DirectionUtils.random180(dirTarget.opposite());
+        }
+        return tryDirForward180(dirTarget);
     }
 
     private boolean tryExpose(int id) throws GameActionException {

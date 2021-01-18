@@ -19,4 +19,6 @@ public abstract class Attacker extends Pawn {
     }
 
     protected abstract boolean huntOrKill(RobotInfo enemy) throws GameActionException;
+    protected abstract void runSimpleCode() throws GameActionException;
+    protected abstract void runAttackCode() throws GameActionException;
 }

@@ -120,10 +120,10 @@ abstract class Robot {
             case ENLIGHTENMENT_CENTER:
                 return Integer.MAX_VALUE;
             case SLANDERER:
-                return (int) Math.ceil(robot.influence * 0.7);
             case POLITICIAN:
-            case MUCKRAKER:
                 return robot.influence;
+            case MUCKRAKER:
+                return (int) Math.ceil(robot.influence * 0.7);
             default:
                 return 0;
         }

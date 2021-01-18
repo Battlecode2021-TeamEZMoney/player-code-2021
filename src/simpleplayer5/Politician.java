@@ -52,7 +52,7 @@ class Politician extends Attacker {
                     runDefendCode();
                     break;
                 default:
-                    runSimple();
+                    runSimpleCode();
                     break;
             }
 
@@ -124,7 +124,7 @@ class Politician extends Attacker {
         return false;
     }
 
-    private void runAttackCode() throws GameActionException {
+    protected void runAttackCode() throws GameActionException {
         RobotInfo[] neutralECs = rc.senseNearbyRobots(sensorRadiusSquared, Team.NEUTRAL);
         if (neutralECs.length > 0) {
             neutralTarget = neutralECs[0].getLocation();
@@ -141,7 +141,7 @@ class Politician extends Attacker {
             return;
     }
 
-    private void runSimple() throws GameActionException {
+    protected void runSimpleCode() throws GameActionException {
         if (rc.isReady()) {
             densityDestruct();
 
@@ -155,7 +155,6 @@ class Politician extends Attacker {
                         if (!tryDirForward90(directionTo(neutralTarget))) {
                             tryEmpower(2);
                         }
-                        ;
                     }
                 } else {
                     tryDirForward180(directionTo(neutralTarget));
@@ -176,8 +175,10 @@ class Politician extends Attacker {
                     return;
             } else {
                 if (distanceSquaredTo(hqLocation) < 11 && tryDirForward180(directionTo(hqLocation).opposite())) {
-                } else if (distanceSquaredTo(hqLocation) < 45 && rc.isLocationOccupied(rc.getLocation().add(directionTo(hqLocation))) && tryDirForward180(directionTo(hqLocation).opposite())){
-                } else if (!tryDirForward180(DirectionUtils.randomDirection())){
+                } else if (distanceSquaredTo(hqLocation) < 45
+                        && rc.isLocationOccupied(rc.getLocation().add(directionTo(hqLocation)))
+                        && tryDirForward180(directionTo(hqLocation).opposite())) {
+                } else if (!tryDirForward180(DirectionUtils.randomDirection())) {
                     tryDirForward180(DirectionUtils.randomDirection());
                 }
             }
@@ -222,4 +223,104 @@ class Politician extends Attacker {
             tryEmpower(range);
         }
     }
+    private int maxIncrease(RobotInfo robot) throws GameActionException {
+		if (isEnemy(robot)) {
+			switch (robot.type) {
+				case ENLIGHTENMENT_CENTER:
+					return Integer.MAX_VALUE;
+				case POLITICIAN:
+					return robot.conviction + robot.influence;
+				case MUCKRAKER:
+				case SLANDERER:
+					return robot.conviction + 1;
+				default:
+					return 0;
+			}
+		} else {
+			return initialConviction(robot) - robot.conviction;
+		}
+	}
+
+	private int[] optimalEmpowerRadiusAndInfo() throws GameActionException {
+		if (rc.getConviction() <= 10) {
+			return new int[] { 0, 0, 0, 0 };
+		}
+		int maxTotalIncrease = 0, optimalIncRadius = 0, optimalDestroyed = 0;
+		RobotInfo[] nearby = rc.senseNearbyRobots(actionRadiusSquared);
+		for (int empRadius = 1; empRadius <= actionRadiusSquared; empRadius++) {
+			int increase = 0, numAffected = 0, numDestroyed = 0;
+			for (RobotInfo robot : nearby) {
+				if (distanceSquaredTo(robot) <= empRadius) {
+					numAffected++;
+				}
+			}
+			if (numAffected == 0) {
+				continue;
+			}
+			int change = (int) (rc.getConviction() * rc.getEmpowerFactor(allyTeam, 0) - 10) / numAffected;
+			// TODO: factor in remaining undivided conviction, given to later creations
+			for (RobotInfo robot : nearby) {
+				if (distanceSquaredTo(robot) <= empRadius) {
+					increase += Math.min(change, maxIncrease(robot));
+					if (isEnemy(robot) && robot.conviction < change) {
+						numDestroyed++;
+					}
+				}
+			}
+			if (increase > maxTotalIncrease) {
+				maxTotalIncrease = increase;
+				optimalIncRadius = empRadius;
+				optimalDestroyed = numDestroyed;
+			}
+		}
+
+		return new int[] { optimalIncRadius, maxTotalIncrease, optimalDestroyed };
+	}
+
+	private boolean ifOptimalSelfEmpower() throws GameActionException {
+		if (hqLocation == null) {
+			return false;
+		}
+		if (rc.getEmpowerFactor(allyTeam, 0) > 4
+				&& distanceSquaredTo(hqLocation) <= actionRadiusSquared) {
+			return HQAttackRoutine(hqLocation);
+		}
+		return false;
+	}
+
+	private boolean ifOptimalEmpower() throws GameActionException {
+		return ifOptimalEmpower(0.7);
+	}
+
+	private boolean ifOptimalEmpower(double empowerThresh) throws GameActionException {
+		return ifOptimalEmpower(empowerThresh, 6);
+	}
+
+	private boolean ifOptimalEmpower(double empowerThresh, int destThresh) throws GameActionException {
+		int[] radAndInfo = optimalEmpowerRadiusAndInfo();
+		int rad = radAndInfo[0], inc = radAndInfo[1], numDest = radAndInfo[2];
+		if (rc.getConviction() > 10 && (double) inc / rc.getConviction() >= empowerThresh || numDest >= destThresh) {
+			return tryEmpower(rad);
+		}
+		return false;
+	}
+
+	private boolean HQAttackRoutine(MapLocation locHQ) throws GameActionException {
+		if (rc.getLocation().isAdjacentTo(locHQ)) {
+			if (DirectionUtils.isCardinal(directionTo(locHQ))) {
+				return tryEmpower(1);
+			} else {
+				if (!tryDirForward90(directionTo(locHQ))) {
+					return tryEmpower(2);
+				}
+			}
+		} else if (!tryDirForward180(directionTo(locHQ))) {
+			if (withinAttackRange(locHQ)) {
+				return tryEmpower(distanceSquaredTo(locHQ));
+			} else {
+				return false;
+			}
+		}
+		return true;
+	}
 }

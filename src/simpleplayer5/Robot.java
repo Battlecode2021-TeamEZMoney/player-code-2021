@@ -57,6 +57,14 @@ abstract class Robot {
         return false;
     }
 
+    boolean showAnyNearbyNeutralECOnFlag() throws GameActionException {
+        RobotInfo[] neutralECs = rc.senseNearbyRobots(sensorRadiusSquared, Team.NEUTRAL);
+        if (neutralECs.length > 0) {
+            return trySetFlag(Encoding.encode(neutralECs[0].getLocation(), FlagCodes.neutralHQ));
+        }
+        return false;
+    }
+
     static class FlagCodes {
         public static int simple = 1;
         public static int enemyHQ = 2;
@@ -84,5 +92,31 @@ abstract class Robot {
 
     protected Direction directionTo(MapLocation pos) {
         return rc.getLocation().directionTo(pos);
+    }
+
+    static protected int initialConviction(RobotInfo robot) throws GameActionException {
+        switch (robot.type) {
+            case ENLIGHTENMENT_CENTER:
+                return Integer.MAX_VALUE;
+            case SLANDERER:
+            case POLITICIAN:
+                return robot.influence;
+            case MUCKRAKER:
+                return (int) Math.ceil(robot.influence * 0.7);
+            default:
+                return 0;
+        }
+    }
+
+    protected boolean isAlly(RobotInfo robot) throws GameActionException {
+        return robot.team.equals(allyTeam);
+    }
+
+    protected boolean isEnemy(RobotInfo robot) throws GameActionException {
+        return robot.team.equals(enemyTeam);
+    }
+
+    protected boolean isNeutral(RobotInfo robot) throws GameActionException {
+        return robot.team.equals(Team.NEUTRAL);
     }
 }
