@@ -2,7 +2,6 @@ package simpleplayer4;
 
 import battlecode.common.*;
 import common.*;
-import simpleplayer4_subm2.DirectionUtils;
 
 class Muckraker extends Attacker {
 	private MapLocation enemyHQ = null;

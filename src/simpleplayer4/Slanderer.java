@@ -4,11 +4,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import battlecode.common.*;
-<<<<<<< HEAD
 //import java.util.*;
 import common.DirectionUtils;
-=======
->>>>>>> 01e182063ebffafe1dab4f437b5497029c82224d
 
 class Slanderer extends Pawn {
     Politician successor;
@@ -19,7 +16,6 @@ class Slanderer extends Pawn {
     }
 
     void run() throws GameActionException {
-<<<<<<< HEAD
 		while (rc.getType().equals(RobotType.SLANDERER)) {
 			turnCount++;
 			if (rc.isReady()) {
@@ -39,21 +35,6 @@ class Slanderer extends Pawn {
 
 			Clock.yield();
 		}
-		
-=======
-        while (rc.getType().equals(RobotType.SLANDERER)) {
-            turnCount++;
-            if (rc.isReady()) {
-                if(distanceSquaredTo(hqLocation) < 5){
-                    dirTarget = directionTo(hqLocation).opposite();
-                } else {
-                    dirTarget = Direction.CENTER;
-                }
-                tryDirForward180(awayFromEnemyMuckrakers());
-            }
-            Clock.yield();
-        }
->>>>>>> 01e182063ebffafe1dab4f437b5497029c82224d
         if (successor == null) {
             successor = new Politician(this);
         }
@@ -93,7 +74,7 @@ class Slanderer extends Pawn {
 			return false;
 		}
 		
-		return tryDirForward180(awayFromEnemyMuckrakers()) || tryDirForward180(DirectionUtils.randomDirection());
+		return tryDirForward180(awayFromEnemyMuckrakers());
 	}
 
     protected Direction awayFromEnemyMuckrakers() throws GameActionException {

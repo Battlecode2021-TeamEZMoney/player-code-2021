@@ -2,7 +2,6 @@ package simpleplayer4;
 
 import battlecode.common.*;
 import common.*;
-import simpleplayer4_subm2.DirectionUtils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -107,11 +106,6 @@ abstract class Pawn extends Robot {
     }
 
     protected Direction awayFromAllies() throws GameActionException {
-<<<<<<< HEAD
         return awayFromRobots(Arrays.asList(rc.senseNearbyRobots(-1, allyTeam)));
-=======
-        return awayFromRobots(
-                Arrays.asList(rc.senseNearbyRobots(rc.getLocation(), sensorRadiusSquared, allyTeam)));
->>>>>>> 01e182063ebffafe1dab4f437b5497029c82224d
     }
 }
