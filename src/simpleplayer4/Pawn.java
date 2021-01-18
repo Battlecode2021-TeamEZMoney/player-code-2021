@@ -13,12 +13,10 @@ abstract class Pawn extends Robot {
     protected Direction dirTarget = Direction.CENTER;
     protected boolean explorer = false;
     protected boolean defending = false;
-    protected int actionRadiusSquared;
-    protected int detectionRadiusSquared;
-    protected int sensorRadiusSquared;
 
-    Pawn() {
 
+    Pawn(RobotController rcin) {
+        super(rcin); // Don't remove this.
     }
 
     static Pawn unitFromRobotController(RobotController rc) throws Exception {
@@ -50,14 +48,10 @@ abstract class Pawn extends Robot {
     }
 
     protected boolean tryMove(Direction dir) throws GameActionException {
-        // System.out.println("Trying move");
         if (rc.canMove(dir)) {
-            // System.out.println("Possible");
             rc.move(dir);
-            // System.out.println("Moved");
             return true;
         }
-        // System.out.println("Can't Move");
         return false;
     }
 
@@ -119,22 +113,4 @@ abstract class Pawn extends Robot {
         return awayFromRobots(
                 Arrays.asList(rc.senseNearbyRobots(rc.getLocation(), rc.getType().sensorRadiusSquared, rc.getTeam())));
     }
-
-    // Direction best_dir = Direction.CENTER;
-    // double minDist = Double.MAX_VALUE;
-    // RobotInfo[] allies = rc.senseNearbyRobots(-1, rc.getTeam());
-    // //System.out.println(allies.length);
-    // for (Direction dir : DirectionUtils.nonCenterDirections) {
-    // if (rc.canMove(dir)) {
-    // double totalDist = 0;
-    // for (RobotInfo ally : allies) {
-    // totalDist += (double) 1 / rc.getLocation().distanceSquaredTo(ally.location);
-    // }
-    // if (totalDist < minDist) {
-    // minDist = totalDist;
-    // best_dir = dir;
-    // }
-    // }
-    // }
-    // return best_dir;
 }

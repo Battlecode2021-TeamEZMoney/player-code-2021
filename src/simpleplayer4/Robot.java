@@ -1,12 +1,26 @@
 package simpleplayer4;
 
 import battlecode.common.*;
-import common.Constants;
-import java.util.*;
 
 abstract class Robot {
     protected RobotController rc;
     protected int turnCount = 0;
+    protected final Team allyTeam;
+    protected final Team enemyTeam;
+    protected final RobotType robotType;
+    protected final int actionRadiusSquared;
+    protected final int detectionRadiusSquared;
+    protected final int sensorRadiusSquared;
+
+    Robot(RobotController rcin){
+        this.rc = rcin;
+        this.allyTeam = rc.getTeam();
+        this.enemyTeam = allyTeam.opponent();
+        this.robotType = rc.getType();
+        this.actionRadiusSquared = this.robotType.actionRadiusSquared;
+        this.detectionRadiusSquared = this.robotType.detectionRadiusSquared;
+        this.sensorRadiusSquared = this.robotType.sensorRadiusSquared;
+    }
 
     abstract void run() throws GameActionException;
 

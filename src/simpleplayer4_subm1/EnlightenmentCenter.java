@@ -24,7 +24,7 @@ class EnlightenmentCenter extends Robot {
         bidController = new Bidding();
     }
     
-    void printStoredECs() throws GameActionException {
+    /*void printStoredECs() throws GameActionException {
         System.out.println();
         for (MapLocation loc : enemyHQs)
         	System.out.println("Enemy EC: " + printLoc(loc));
@@ -38,7 +38,7 @@ class EnlightenmentCenter extends Robot {
         for (Integer unit : units)
         	System.out.println("Unit ID: " + unit);
         System.out.println();
-    }
+    }*/
 
     void run() throws GameActionException {
         while (true) {

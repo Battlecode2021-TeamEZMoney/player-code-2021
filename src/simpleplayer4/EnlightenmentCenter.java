@@ -20,7 +20,7 @@ class EnlightenmentCenter extends Robot {
     private final Bidding bidController;
 
     EnlightenmentCenter(RobotController rcin) throws GameActionException {
-        this.rc = rcin;
+        super(rcin); // Don't remove this.
         bidController = new Bidding();
     }
 

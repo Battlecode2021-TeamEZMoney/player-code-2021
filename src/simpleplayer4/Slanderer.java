@@ -10,8 +10,7 @@ class Slanderer extends Pawn {
     Politician successor;
 
     Slanderer(RobotController rcin) throws GameActionException {
-        super();
-        this.rc = rcin;
+        super(rcin); // Don't remove this.
         getHomeHQ();
     }
 

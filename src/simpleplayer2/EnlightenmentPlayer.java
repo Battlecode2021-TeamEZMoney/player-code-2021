@@ -65,9 +65,9 @@ public class EnlightenmentPlayer {
         }
     }
 
-    private static void gatherIntel() {
+    /*private static void gatherIntel() {
 
-    }
+    }*/
 
     private static RobotType getUnitToBuild() {
         if (spawnIndex >= Constants.spawnOrder.length) {
@@ -148,9 +148,9 @@ public class EnlightenmentPlayer {
         }
     }
 
-    private static int getOrdersForUnit(RobotType unit) {
+    /*private static int getOrdersForUnit(RobotType unit) {
         return 0; // TODO: Placeholder
-    }
+    }*/
 
     private static int getTarget() {
         if (enemyHQs.size() > 0) {

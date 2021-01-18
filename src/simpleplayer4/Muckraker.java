@@ -7,7 +7,7 @@ class Muckraker extends Attacker {
 	private MapLocation enemyHQ = null;
 
 	Muckraker(RobotController rcin) throws GameActionException {
-		this.rc = rcin;
+		super(rcin); // Don't remove this.
 		getHomeHQ();
 	}
 

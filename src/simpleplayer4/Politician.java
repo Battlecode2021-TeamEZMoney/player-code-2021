@@ -11,6 +11,7 @@ class Politician extends Attacker {
 	private boolean waiting = Math.random() < 0.1;
 
 	Politician(RobotController rcin) throws GameActionException {
+		super(rcin); // Don't remove this.
 		this.rc = rcin;
 		getHomeHQ();
 	}
@@ -18,7 +19,7 @@ class Politician extends Attacker {
 	Politician(Slanderer sland) throws GameActionException {
 		// TODO: Remember to update these when new common fields are added in the Pawn
 		// and Robot classes.
-		this.rc = sland.rc;
+		super(sland.rc);
 		this.turnCount = sland.turnCount;
 		this.hqLocation = sland.hqLocation;
 		this.hqID = sland.hqID;

@@ -44,10 +44,6 @@ public class SlandererPlayer {
         PoliticianPlayer.runPolitician(rc, true);
     }
 
-    private static MapLocation runAwayTo(RobotInfo[] runAwayFrom) {
-        return rc.getLocation(); // TODO: Implement running away
-    }
-
     private static Direction getTeamGoDir() {
         return Move.getTeamGoDir(rc);
     }
