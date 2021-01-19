@@ -93,7 +93,7 @@ class Muckraker extends Attacker {
         showAnyNearbyNeutralECOnFlag();
         if (enemyUnitAttackRoutine())
             return;
-        if (bounceExploreRoutine())
+        if (rc.isReady() && bounceExploreRoutine())
             return;
     }
 
