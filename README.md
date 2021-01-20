@@ -1,6 +1,6 @@
-# Battlecode 2021 Scaffold
+# Battlecode 2021, Team EZ Money
 
-This is the Battlecode 2021 scaffold, containing an `examplefuncsplayer`. Read https://2021.battlecode.org/getting-started!
+Team EZ Money's repository for Battlecode 2021.
 
 ### Project Structure
 
