@@ -1,12 +1,11 @@
-package simpleplayer4;
+package simpleplayer6;
 
 import battlecode.common.*;
 
 public abstract class Attacker extends Pawn {
     Attacker(RobotController rcin) throws GameActionException {
-        super(rcin); // Don't remove this.
+        super(rcin);
     }
-
     protected boolean withinAttackRange(RobotInfo enemy) throws GameActionException {
         return withinAttackRange(enemy.getLocation());
     }
@@ -14,6 +13,4 @@ public abstract class Attacker extends Pawn {
     protected boolean withinAttackRange(MapLocation enemyLocation) throws GameActionException {
         return rc.getLocation().distanceSquaredTo(enemyLocation) <= actionRadiusSquared;
     }
-
-    //protected abstract boolean huntOrKill(RobotInfo enemy) throws GameActionException;
 }

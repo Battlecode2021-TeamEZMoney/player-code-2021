@@ -6,6 +6,9 @@ public class DirectionUtils {
     public static final Direction[] nonCenterDirections = { Direction.NORTH, Direction.NORTHEAST, Direction.EAST,
             Direction.SOUTHEAST, Direction.SOUTH, Direction.SOUTHWEST, Direction.WEST, Direction.NORTHWEST };
 
+    public static final Direction[] cardinalDirections = { Direction.NORTH, Direction.EAST, Direction.SOUTH,
+            Direction.WEST };
+
     public static Direction randomDirection() {
         return nonCenterDirections[(int) (Math.random() * nonCenterDirections.length)];
     }
