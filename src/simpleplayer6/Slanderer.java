@@ -1,22 +1,23 @@
-package simpleplayer4;
+package simpleplayer6;
 
 import battlecode.common.*;
 import java.util.*;
-import common.*;
 
 class Slanderer extends Pawn {
     Politician successor;
     private MapLocation slandCenter = null;
 
     Slanderer(RobotController rcin) throws GameActionException {
-        super(rcin); // Don't remove this.
+        super(rcin);
     }
 
     void run() throws GameActionException {
 		while (rc.getType().equals(RobotType.SLANDERER)) {
 			turnCount++;
 			if (rc.isReady()) {
-				if (!runToSlandCenter()) {
+				if (slandCenter != null && hqLocation != null) {
+					runToSlandCenter();
+				} else {
 					if (rc.canGetFlag(hqID)) {
 						parseHQFlag(rc.getFlag(hqID));
 					} else {
@@ -51,27 +52,22 @@ class Slanderer extends Pawn {
 		}
 	}
 	
-	private boolean runToSlandCenter() throws GameActionException {
-		if (!rc.isReady()) {
-			return false;
-		}
-		
-		if (slandCenter == null || hqLocation == null) {
-			return false;
+	private void runToSlandCenter() throws GameActionException {
+		if (!rc.isReady() || slandCenter == null || hqLocation == null) {
+			return;
 		}
 
-		if (!tryDirForward180(awayFromEnemyMuckrakers())) {
+		if (!tryDirForward90180(awayFromEnemyMuckrakers())) {
 			tryDirForward90(directionTo(slandCenter));
 		}
-		return true;
 	}
 
-	private boolean runSimpleCode() throws GameActionException {
+	private void runSimpleCode() throws GameActionException {
 		if (!rc.isReady()) {
-			return false;
+			return;
 		}
 		
-		return tryDirForward180(awayFromEnemyMuckrakers());
+		tryDirForward90180(awayFromEnemyMuckrakers());
 	}
 
     protected Direction awayFromEnemyMuckrakers() throws GameActionException {
