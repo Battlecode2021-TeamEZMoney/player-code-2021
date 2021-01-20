@@ -4,14 +4,14 @@ import battlecode.common.*;
 import java.util.*;
 
 class Slanderer extends Pawn {
-    Politician successor;
-    private MapLocation slandCenter = null;
+	Politician successor;
+	private MapLocation slandCenter = null;
 
-    Slanderer(RobotController rcin) throws GameActionException {
-        super(rcin); // Don't remove this.
-    }
+	Slanderer(RobotController rcin) throws GameActionException {
+		super(rcin); // Don't remove this.
+	}
 
-    void run() throws GameActionException {
+	void run() throws GameActionException {
 		while (rc.getType().equals(RobotType.SLANDERER)) {
 			turnCount++;
 			if (rc.isReady()) {
@@ -27,16 +27,16 @@ class Slanderer extends Pawn {
 					parseHQFlag(rc.getFlag(hqID));
 				}
 			}
-			//setNearbyHQFlag();
+			// setNearbyHQFlag();
 
 			Clock.yield();
 		}
-        if (successor == null) {
-            successor = new Politician(this);
-        }
-        successor.run();
-    }
-    
+		if (successor == null) {
+			successor = new Politician(this);
+		}
+		successor.run();
+	}
+
 	private void parseHQFlag(int flag) throws GameActionException {
 		MapLocation tempLocation = Encoding.getLocationFromFlag(rc, flag);
 		switch (Encoding.getInfoFromFlag(flag)) {
@@ -49,12 +49,12 @@ class Slanderer extends Pawn {
 				break;
 		}
 	}
-	
+
 	private boolean runToSlandCenter() throws GameActionException {
 		if (!rc.isReady()) {
 			return false;
 		}
-		
+
 		if (slandCenter == null || hqLocation == null) {
 			return false;
 		}
@@ -69,16 +69,16 @@ class Slanderer extends Pawn {
 		if (!rc.isReady()) {
 			return false;
 		}
-		
+
 		return tryDirForward180(awayFromEnemyMuckrakers());
 	}
 
-    protected Direction awayFromEnemyMuckrakers() throws GameActionException {
-        List<RobotInfo> robots = Arrays.asList(rc.senseNearbyRobots(sensorRadiusSquared, enemyTeam));
-        if (robots.size() == 0) {
-        	return dirTarget;
-        }
-        robots.removeIf(r -> (r.type != RobotType.MUCKRAKER));
-        return awayFromRobots(robots);
-    }
+	protected Direction awayFromEnemyMuckrakers() throws GameActionException {
+		List<RobotInfo> robots = Arrays.asList(rc.senseNearbyRobots(sensorRadiusSquared, enemyTeam));
+		if (robots.size() == 0) {
+			return dirTarget;
+		}
+		robots.removeIf(r -> (r.type != RobotType.MUCKRAKER));
+		return awayFromRobots(robots);
+	}
 }

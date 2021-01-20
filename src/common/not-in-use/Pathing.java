@@ -1,7 +1,7 @@
 import battlecode.common.*;
 
 public abstract strictfp class Pathing {
-  
+
   /**
    * Which direction rc should go to run towards dir, looking only one deep
    * 
@@ -57,7 +57,7 @@ public abstract strictfp class Pathing {
 
     if (here.isWithinDistanceSquared(dest, 2))
       return wayTo;
-    
+
     return Pathing.goThatWayOne(rc, wayTo);
   }
 

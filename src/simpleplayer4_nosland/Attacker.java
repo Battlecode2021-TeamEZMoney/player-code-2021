@@ -3,9 +3,10 @@ package simpleplayer4_nosland;
 import battlecode.common.*;
 
 public abstract class Attacker extends Pawn {
-    Attacker(RobotController rcin){
+    Attacker(RobotController rcin) {
         super(rcin); // Don't remove this.
     }
+
     protected boolean withinAttackRange(RobotInfo enemy) throws GameActionException {
         return withinAttackRange(enemy.getLocation());
     }

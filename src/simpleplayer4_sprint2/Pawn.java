@@ -10,7 +10,6 @@ abstract class Pawn extends Robot {
     protected boolean explorer = false;
     protected boolean defending = false;
 
-
     Pawn(RobotController rcin) throws GameActionException {
         super(rcin); // Don't remove this.
         getHomeHQ();
@@ -36,8 +35,8 @@ abstract class Pawn extends Robot {
             if (robot.type.equals(RobotType.ENLIGHTENMENT_CENTER)) {
                 hqLocation = robot.getLocation();
                 hqID = robot.getID();
-                dirTarget = robotType.equals(RobotType.SLANDERER) ?
-                		Direction.CENTER : Encoding.getDirFromFlag(rc.getFlag(robot.ID));
+                dirTarget = robotType.equals(RobotType.SLANDERER) ? Direction.CENTER
+                        : Encoding.getDirFromFlag(rc.getFlag(robot.ID));
                 explorer = Encoding.getExplorerFromFlag(rc.getFlag(robot.ID));
                 return true;
             }
@@ -54,8 +53,8 @@ abstract class Pawn extends Robot {
     }
 
     protected Direction dirForward90(Direction dir) throws GameActionException {
-//        if (rc.canMove(dir) || !rc.onTheMap(rc.getLocation().add(dir))) {
-    	if (rc.canMove(dir) || dir.equals(Direction.CENTER)) {
+        // if (rc.canMove(dir) || !rc.onTheMap(rc.getLocation().add(dir))) {
+        if (rc.canMove(dir) || dir.equals(Direction.CENTER)) {
             return dir;
         } else if (rc.canMove(dir.rotateLeft())) {
             return dir.rotateLeft();
@@ -70,8 +69,8 @@ abstract class Pawn extends Robot {
     }
 
     protected Direction dirForward180(Direction dir) throws GameActionException {
-        //if (rc.canMove(dir) || !rc.onTheMap(rc.getLocation().add(dir))) {
-    	if (rc.canMove(dir) || dir.equals(Direction.CENTER)) {
+        // if (rc.canMove(dir) || !rc.onTheMap(rc.getLocation().add(dir))) {
+        if (rc.canMove(dir) || dir.equals(Direction.CENTER)) {
             return dir;
         } else if (rc.canMove(dir.rotateLeft())) {
             return dir.rotateLeft();

@@ -74,15 +74,14 @@ class Muckraker extends Attacker {
 		if (!rc.isReady()) {
 			return false;
 		}
-		
+
 		if (hqLocation == null) {
 			return runSimpleCode();
 		} else if (!defending) {
 			return false;
 		}
 
-		if (distanceSquaredTo(hqLocation) > actionRadiusSquared / 2
-				&& tryDirForward90(directionTo(hqLocation))) {
+		if (distanceSquaredTo(hqLocation) > actionRadiusSquared / 2 && tryDirForward90(directionTo(hqLocation))) {
 			return true;
 		} else {
 			if (distanceSquaredTo(hqLocation) > actionRadiusSquared) {
@@ -140,7 +139,7 @@ class Muckraker extends Attacker {
 		if (!rc.isReady()) {
 			return false;
 		}
-		
+
 		if (enemyHQ == null) {
 			return false;
 		} else {
@@ -150,24 +149,24 @@ class Muckraker extends Attacker {
 
 	private Direction muckAwayFromAllies() throws GameActionException {
 		Direction away_dir = awayFromAllies();
-        if (!rc.onTheMap(rc.getLocation().add(away_dir))) {
-        	away_dir = away_dir.opposite();
-        }
-        if (DirectionUtils.within45Degrees(dirTarget, away_dir)) {
-        	return dirTarget;
-        }
-        return away_dir;
+		if (!rc.onTheMap(rc.getLocation().add(away_dir))) {
+			away_dir = away_dir.opposite();
+		}
+		if (DirectionUtils.within45Degrees(dirTarget, away_dir)) {
+			return dirTarget;
+		}
+		return away_dir;
 	}
-	
+
 	private boolean runSimpleCode() throws GameActionException {
 		if (!rc.isReady()) {
 			return false;
 		}
-		
+
 		return huntOrExposeSlanderer() || tryDirForward180(dirTarget)
 				|| tryDirForward180(dirTarget = DirectionUtils.randomDirection());
-//		return huntOrExposeSlanderer() || tryDirForward180(muckAwayFromAllies())
-//				|| tryDirForward180(DirectionUtils.randomDirection());
+		// return huntOrExposeSlanderer() || tryDirForward180(muckAwayFromAllies())
+		// || tryDirForward180(DirectionUtils.randomDirection());
 	}
 
 	private boolean tryExpose(int id) throws GameActionException {

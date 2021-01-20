@@ -27,10 +27,10 @@ class Politician extends Attacker {
 	}
 
 	void run() throws GameActionException {
-//		while (hqLocation == null && !tryEmpower(1)) {
-//			// getHomeHQ();
-//			Clock.yield();
-//		}
+		// while (hqLocation == null && !tryEmpower(1)) {
+		// // getHomeHQ();
+		// Clock.yield();
+		// }
 		while (true) {
 			turnCount++;
 			if (rc.isReady()) {
@@ -112,7 +112,8 @@ class Politician extends Attacker {
 	}
 
 	private boolean runDefendCode() throws GameActionException {
-		// if (hqLocation == null || distanceSquaredTo(hqLocation) > 4 * actionRadiusSquared) {
+		// if (hqLocation == null || distanceSquaredTo(hqLocation) > 4 *
+		// actionRadiusSquared) {
 
 		// if (hqLocation == null) {
 		// runSimpleCode();
@@ -132,7 +133,7 @@ class Politician extends Attacker {
 		if (!rc.isReady()) {
 			return false;
 		}
-		
+
 		if (hqLocation == null) {
 			return runSimpleCode();
 		} else if (!defending) {
@@ -216,8 +217,7 @@ class Politician extends Attacker {
 		if (hqLocation == null) {
 			return false;
 		}
-		if (rc.getEmpowerFactor(allyTeam, 0) > 4
-				&& distanceSquaredTo(hqLocation) <= actionRadiusSquared) {
+		if (rc.getEmpowerFactor(allyTeam, 0) > 4 && distanceSquaredTo(hqLocation) <= actionRadiusSquared) {
 			return HQAttackRoutine(hqLocation);
 		}
 		return false;
@@ -292,7 +292,7 @@ class Politician extends Attacker {
 		if (!rc.isReady()) {
 			return false;
 		}
-		
+
 		if (neutralHQ == null) {
 			return false;
 		} else {
@@ -316,7 +316,7 @@ class Politician extends Attacker {
 		if (!rc.isReady()) {
 			return false;
 		}
-		
+
 		if (enemyHQ == null) {
 			return false;
 		}
@@ -328,7 +328,7 @@ class Politician extends Attacker {
 		if (!rc.isReady()) {
 			return false;
 		}
-		
+
 		return tryDirForward180(awayFromAllies()) || tryDirForward180(DirectionUtils.randomDirection());
 	}
 

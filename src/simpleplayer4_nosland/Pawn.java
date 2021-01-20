@@ -14,7 +14,6 @@ abstract class Pawn extends Robot {
     protected boolean explorer = false;
     protected boolean defending = false;
 
-
     Pawn(RobotController rcin) {
         super(rcin); // Don't remove this.
     }

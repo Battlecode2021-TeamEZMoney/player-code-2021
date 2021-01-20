@@ -60,7 +60,6 @@ class EnlightenmentCenter extends Robot {
                     units.remove(unitsIndex);
                 }
             }
-            
 
             // int start = Clock.getBytecodesLeft();
 
@@ -120,56 +119,55 @@ class EnlightenmentCenter extends Robot {
                 return;
         }
     }
-    
-    
+
     MapLocation avgLoc(Set<MapLocation> locs) {
-    	MapLocation avg = Constants.origin;
-    	if (locs.size() == 0) {
-    		return avg;
-    	}
-    	for (MapLocation loc : locs) {
-    		avg = avg.translate(loc.x, loc.y);
-    	}
-    	return new MapLocation(avg.x / locs.size(), avg.y / locs.size());
+        MapLocation avg = Constants.origin;
+        if (locs.size() == 0) {
+            return avg;
+        }
+        for (MapLocation loc : locs) {
+            avg = avg.translate(loc.x, loc.y);
+        }
+        return new MapLocation(avg.x / locs.size(), avg.y / locs.size());
     }
-    
+
     MapLocation slandCenter() {
-    	if (enemyHQs.size() == 0) {
-    		return rc.getLocation();
-    	}
-    	MapLocation avgEnemyHQ = avgLoc(enemyHQs);
-		Direction awayFromEnemyHQs = rc.getLocation().directionTo(avgEnemyHQ).opposite();
-		return rc.getLocation().translate(slandDistAway * awayFromEnemyHQs.dx, slandDistAway * awayFromEnemyHQs.dy);
+        if (enemyHQs.size() == 0) {
+            return rc.getLocation();
+        }
+        MapLocation avgEnemyHQ = avgLoc(enemyHQs);
+        Direction awayFromEnemyHQs = rc.getLocation().directionTo(avgEnemyHQ).opposite();
+        return rc.getLocation().translate(slandDistAway * awayFromEnemyHQs.dx, slandDistAway * awayFromEnemyHQs.dy);
     }
-    
+
     private int getTarget() throws GameActionException {
         if (canSenseEnemy() && Math.random() < 0.8) {
             return Encoding.encode(rc.getLocation(), FlagCodes.patrol, dirTarget, explorer);
         } else if (neutralHQs.size() > 0 && (robotType.equals(RobotType.POLITICIAN) || Math.random() < 0.5)) {
             return Encoding.encode(neutralHQs.iterator().next(), FlagCodes.neutralHQ, dirTarget, explorer);
         } else if (enemyHQs.size() > 0) {
-        	if (robotType.equals(RobotType.SLANDERER) || Math.random() < 0.1) {
-        		return Encoding.encode(slandCenter(), FlagCodes.slandCenter, dirTarget, explorer);
-        	}
+            if (robotType.equals(RobotType.SLANDERER) || Math.random() < 0.1) {
+                return Encoding.encode(slandCenter(), FlagCodes.slandCenter, dirTarget, explorer);
+            }
             return Encoding.encode(enemyHQs.iterator().next(), FlagCodes.enemyHQ, dirTarget, explorer);
         } else {
             return Encoding.encode(rc.getLocation(), FlagCodes.simple, dirTarget, explorer);
         }
     }
-    
+
     private RobotType getUnitToBuild() throws GameActionException {
         double rand = Math.random();
         if (rc.getRoundNum() <= 2) {
-        	return RobotType.SLANDERER;
+            return RobotType.SLANDERER;
         } else if (rc.getInfluence() - 10 < Constants.minimumPolInf) {
             return RobotType.MUCKRAKER;
-        } else if (rc.getEmpowerFactor(allyTeam, 11) > 4
-        		|| crowdedByEnemy(rc.getLocation()) || crowded(rc.getLocation())) {
+        } else if (rc.getEmpowerFactor(allyTeam, 11) > 4 || crowdedByEnemy(rc.getLocation())
+                || crowded(rc.getLocation())) {
             return RobotType.POLITICIAN;
         } else if (rand > (0.4 + 0.2 * rc.getRoundNum() / Constants.MAX_ROUNDS) || canSenseEnemy()) {
             return RobotType.MUCKRAKER;
         } else if (rand > 0.05 * (1 - (double) rc.getRoundNum() / Constants.MAX_ROUNDS)
-        		|| rc.getEmpowerFactor(enemyTeam, 0) > 1.1) {
+                || rc.getEmpowerFactor(enemyTeam, 0) > 1.1) {
             return RobotType.POLITICIAN;
         } else {
             return RobotType.SLANDERER;
@@ -233,7 +231,6 @@ class EnlightenmentCenter extends Robot {
         }
         return false;
     }
-
 
     private class Bidding {
         private static final int MAX_ROUNDS = GameConstants.GAME_MAX_NUMBER_OF_ROUNDS;

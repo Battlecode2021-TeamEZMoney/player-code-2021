@@ -6,6 +6,7 @@ public abstract class Attacker extends Pawn {
     Attacker(RobotController rcin) throws GameActionException {
         super(rcin); // Don't remove this.
     }
+
     protected boolean withinAttackRange(RobotInfo enemy) throws GameActionException {
         return withinAttackRange(enemy.getLocation());
     }
