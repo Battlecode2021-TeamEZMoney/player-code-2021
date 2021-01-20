@@ -1,4 +1,4 @@
-package simpleplayer4_sprint2;
+package sprintplayer2_sprint2;
 
 import battlecode.common.*;
 import java.util.*;

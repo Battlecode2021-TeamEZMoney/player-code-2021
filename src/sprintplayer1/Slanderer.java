@@ -1,4 +1,4 @@
-package simpleplayer3;
+package sprintplayer1;
 
 import java.util.ArrayList;
 import java.util.Arrays;

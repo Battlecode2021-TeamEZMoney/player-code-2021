@@ -1,4 +1,4 @@
-package simpleplayer4_nosland;
+package sprintplayer2_nosland;
 
 import java.util.Arrays;
 import java.util.List;

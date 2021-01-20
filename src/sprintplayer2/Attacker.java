@@ -1,4 +1,4 @@
-package simpleplayer4;
+package sprintplayer2;
 
 import battlecode.common.*;
 
