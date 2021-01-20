@@ -38,8 +38,6 @@ class EnlightenmentCenter extends Robot {
                 unitsIndex %= units.size();
                 int unitID = units.get(unitsIndex);
                 if (rc.canGetFlag(unitID)) {
-                	// TODO: How do we remove pols that have converted to the enemy team?
-                	// CanGetFlag doesn't account for this.
                     parseUnitFlag(rc.getFlag(unitID));
                     unitsIndex++;
                 } else {
