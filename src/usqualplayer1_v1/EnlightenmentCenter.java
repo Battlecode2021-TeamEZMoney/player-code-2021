@@ -1,4 +1,4 @@
-package sprintplayer4;
+package usqualplayer1_v1;
 
 import battlecode.common.*;
 import common.*;
@@ -123,10 +123,10 @@ class EnlightenmentCenter extends Robot {
     private int getTarget() throws GameActionException {
         if (canSenseEnemy() && Math.random() < 0.8) {
             return Encoding.encode(rc.getLocation(), FlagCodes.patrol, dirTarget, explorer);
-        } else if (neutralHQs.size() > 0 && (robotType.equals(RobotType.POLITICIAN) || Math.random() < 0.5)) {
+        } else if (neutralHQs.size() > 0 && ((robotType.equals(RobotType.POLITICIAN) && Math.random() < 0.6) || Math.random() < 0.5)) {
             return Encoding.encode(neutralHQs.iterator().next(), FlagCodes.neutralHQ, dirTarget, explorer);
         } else if (enemyHQs.size() > 0) {
-        	if (robotType.equals(RobotType.SLANDERER) || Math.random() < 0.1) {
+        	if (robotType.equals(RobotType.SLANDERER) || Math.random() < 0.2) {
         		return Encoding.encode(slandCenter(), FlagCodes.slandCenter, dirTarget, explorer);
         	}
             return Encoding.encode(enemyHQs.iterator().next(), FlagCodes.enemyHQ, dirTarget, explorer);
@@ -145,7 +145,7 @@ class EnlightenmentCenter extends Robot {
         } else if (rand > (0.4 + 0.2 * rc.getRoundNum() / Constants.MAX_ROUNDS)
         		|| (rc.getInfluence() - 30)/2 < Constants.minimumPolInf || canSenseEnemyPolitician()) {
             return RobotType.MUCKRAKER;
-        } else if (rand > 0.2 * (1 - (double) rc.getRoundNum() / Constants.MAX_ROUNDS)
+        } else if (rand > 0.2 * (1 - 0 * (double) rc.getRoundNum() / Constants.MAX_ROUNDS)
         		|| rc.getEmpowerFactor(enemyTeam, 0) > 1.1 || canSenseEnemy()) {
             return RobotType.POLITICIAN;
         } else {

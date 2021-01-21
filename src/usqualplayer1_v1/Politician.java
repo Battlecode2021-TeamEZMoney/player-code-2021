@@ -1,4 +1,4 @@
-package sprintplayer4;
+package usqualplayer1_v1;
 
 import battlecode.common.*;
 import common.*;
@@ -9,12 +9,13 @@ class Politician extends Attacker {
 	private MapLocation enemyHQ = null;
 	private MapLocation neutralHQ = null;
 	private boolean waiting = Math.random() < 0.1;
+	private MapLocation slandCenter = null;
 
 	Politician(RobotController rcin) throws GameActionException {
 		super(rcin);
 	}
 
-	Politician(Slanderer sland) throws GameActionException {
+	Politician(Slanderer sland, MapLocation slandCenter) throws GameActionException {
 		// TODO: Remember to update these when new common fields are added in the Pawn
 		// and Robot classes.
 		super(sland.rc);
@@ -22,6 +23,7 @@ class Politician extends Attacker {
 		this.hqLocation = sland.hqLocation;
 		this.hqID = sland.hqID;
 		this.dirTarget = sland.dirTarget;
+		this.slandCenter = slandCenter;
 	}
 
 	void run() throws GameActionException {
@@ -40,6 +42,8 @@ class Politician extends Attacker {
 				if (Clock.getBytecodesLeft() > 6000) {
 					if (explorer) {
 						runSimpleCode();
+					} else if (slandCenter != null) {
+						defendSlandCenter();
 					} else if (neutralHQ != null) {
 						runNeutralCode();
 					} else if (enemyHQ != null) {
@@ -53,7 +57,7 @@ class Politician extends Attacker {
 					}
 				}
 			} else {
-				if (enemyHQ == null && neutralHQ == null && rc.canGetFlag(hqID)) {
+				if (rc.canGetFlag(hqID) && slandCenter == null && enemyHQ == null && neutralHQ == null) {
 					parseHQFlag(rc.getFlag(hqID));
 				}
 			}
@@ -109,9 +113,44 @@ class Politician extends Attacker {
 				neutralHQ = tempLocation;
 				runNeutralCode();
 				break;
+			case 6:
+				slandCenter = tempLocation;
+				defendSlandCenter();
+				break;
 			default:
 				runSimpleCode();
 				break;
+		}
+	}
+	
+	private void defendSlandCenter() throws GameActionException {
+		if (!rc.isReady() || slandCenter == null) {
+			return;
+		}
+		
+		boolean exitDefendSlandCenter = false;
+		
+		if (distanceSquaredTo(slandCenter) <= actionRadiusSquared) {
+			empowerIfMuckNearby();
+		}
+		if (distanceSquaredTo(slandCenter) > actionRadiusSquared
+				&& tryDirForward90(directionTo(slandCenter))) {
+			return;
+		}
+		if (distanceSquaredTo(slandCenter) > actionRadiusSquared * 2) {
+			exitDefendSlandCenter = true;
+		}
+		tryDirForward90180(directionTo(slandCenter).opposite());
+		if (exitDefendSlandCenter) {
+			slandCenter = null;
+		}
+	}
+	
+	private void empowerIfMuckNearby() throws GameActionException {
+		for (RobotInfo robot : rc.senseNearbyRobots(sensorRadiusSquared, enemyTeam)) {
+			if (robot.type.equals(RobotType.MUCKRAKER)) {
+				tryEmpower(distanceSquaredTo(robot));
+			}
 		}
 	}
 

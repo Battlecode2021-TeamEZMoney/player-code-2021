@@ -17,7 +17,7 @@ class Encoding {
 	}
 
 	static int encode(MapLocation loc, int info, Direction dir) throws GameActionException {
-		return encode(loc, info, Direction.NORTH, false);
+		return encode(loc, info, dir, false);
 	}
 
 	static int encode(MapLocation loc, int info, Direction dir, boolean explorer) throws GameActionException {

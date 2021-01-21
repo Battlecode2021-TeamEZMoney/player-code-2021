@@ -1,21 +1,23 @@
-package sprintplayer2_sprint2;
+package usqualplayer1_v1;
 
 import battlecode.common.*;
 import java.util.*;
 
 class Slanderer extends Pawn {
-	Politician successor;
-	private MapLocation slandCenter = null;
+    Politician successor;
+    private MapLocation slandCenter = null;
 
-	Slanderer(RobotController rcin) throws GameActionException {
-		super(rcin); // Don't remove this.
-	}
+    Slanderer(RobotController rcin) throws GameActionException {
+        super(rcin);
+    }
 
-	void run() throws GameActionException {
+    void run() throws GameActionException {
 		while (rc.getType().equals(RobotType.SLANDERER)) {
 			turnCount++;
 			if (rc.isReady()) {
-				if (!runToSlandCenter()) {
+				if (slandCenter != null && hqLocation != null) {
+					runToSlandCenter();
+				} else {
 					if (rc.canGetFlag(hqID)) {
 						parseHQFlag(rc.getFlag(hqID));
 					} else {
@@ -27,16 +29,16 @@ class Slanderer extends Pawn {
 					parseHQFlag(rc.getFlag(hqID));
 				}
 			}
-			// setNearbyHQFlag();
+			//setNearbyHQFlag();
 
 			Clock.yield();
 		}
-		if (successor == null) {
-			successor = new Politician(this);
-		}
-		successor.run();
-	}
-
+        if (successor == null) {
+            successor = new Politician(this, slandCenter);
+        }
+        successor.run();
+    }
+    
 	private void parseHQFlag(int flag) throws GameActionException {
 		MapLocation tempLocation = Encoding.getLocationFromFlag(rc, flag);
 		switch (Encoding.getInfoFromFlag(flag)) {
@@ -49,33 +51,28 @@ class Slanderer extends Pawn {
 				break;
 		}
 	}
-
-	private boolean runToSlandCenter() throws GameActionException {
-		if (!rc.isReady()) {
-			return false;
+	
+	private void runToSlandCenter() throws GameActionException {
+		if (!rc.isReady() || slandCenter == null || hqLocation == null) {
+			return;
 		}
 
-		if (slandCenter == null || hqLocation == null) {
-			return false;
+		if (!tryDirForward90180(awayFromEnemyMuckrakers())) {
+			tryDirForward90(directionTo(slandCenter));
 		}
-
-		if (!tryDirForward180(awayFromEnemyMuckrakers())) {
-			tryDirForward180(directionTo(slandCenter));
-		}
-		return true;
 	}
 
-	private boolean runSimpleCode() throws GameActionException {
-		if (!rc.isReady() || hqLocation == null) {
-			return false;
+	private void runSimpleCode() throws GameActionException {
+		if (!rc.isReady()) {
+			return;
 		}
 		
-		if (!tryDirForward180(awayFromEnemyMuckrakers())) {
+		if (!tryDirForward90180(awayFromEnemyMuckrakers())) {
 			if (distanceSquaredTo(hqLocation) < 25) {
-				tryDirForward180(directionTo(hqLocation).opposite());
+				tryDirForward90(directionTo(hqLocation).opposite());
 			}
 		}
-		return true;
+		
 	}
 
     protected Direction awayFromEnemyMuckrakers() throws GameActionException {

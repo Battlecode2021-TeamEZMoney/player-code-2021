@@ -1,4 +1,4 @@
-package sprintplayer4;
+package usqualplayer1_v1;
 
 import battlecode.common.*;
 

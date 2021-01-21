@@ -1,4 +1,4 @@
-package sprintplayer4;
+package usqualplayer1_v1;
 
 import battlecode.common.*;
 import common.*;
@@ -118,9 +118,9 @@ class Muckraker extends Attacker {
 
 	private void HQAttackRoutine(MapLocation locHQ) throws GameActionException {
 		if (huntOrExposeSlanderer()) {
-			;
-		} else if (distanceSquaredTo(locHQ) > actionRadiusSquared && tryDirForward90(directionTo(locHQ))) {
-			;
+			return;
+		} else if (distanceSquaredTo(locHQ) > actionRadiusSquared && tryDirForward90180(directionTo(locHQ))) {
+			return;
 		} else {
 			tryDirForward90180(directionTo(locHQ).opposite());
 		}

@@ -1,4 +1,4 @@
-package sprintplayer4;
+package usqualplayer1;
 
 import battlecode.common.*;
 import java.util.*;
@@ -34,14 +34,14 @@ class Slanderer extends Pawn {
 			Clock.yield();
 		}
         if (successor == null) {
-            successor = new Politician(this);
+            successor = new Politician(this, slandCenter);
         }
         successor.run();
     }
     
 	private void parseHQFlag(int flag) throws GameActionException {
 		MapLocation tempLocation = Encoding.getLocationFromFlag(rc, flag);
-		switch (Encoding.getInfoFromFlag(flag)) {
+		switch (Encoding.getTypeFromFlag(flag)) {
 			case 6:
 				slandCenter = tempLocation;
 				runToSlandCenter();
@@ -67,13 +67,18 @@ class Slanderer extends Pawn {
 			return;
 		}
 		
-		tryDirForward90180(awayFromEnemyMuckrakers());
+		if (!tryDirForward90180(awayFromEnemyMuckrakers())) {
+			if (distanceSquaredTo(hqLocation) < 25) {
+				tryDirForward90(directionTo(hqLocation).opposite());
+			}
+		}
+		
 	}
 
     protected Direction awayFromEnemyMuckrakers() throws GameActionException {
         ArrayList<RobotInfo> robots = new ArrayList<>(Arrays.asList(rc.senseNearbyRobots(sensorRadiusSquared, enemyTeam)));
         if (robots.size() == 0) {
-        	return dirTarget;
+        	return Direction.CENTER;
         }
         robots.removeIf(r -> (r.type != RobotType.MUCKRAKER));
         return awayFromRobots(robots);
