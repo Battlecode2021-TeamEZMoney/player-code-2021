@@ -1,9 +1,6 @@
-package usqualplayer1;
+package usqualplayer1_subm3;
 
 import battlecode.common.*;
-import common.*;
-import usqualplayer1_subm2.Constants;
-
 import java.util.*;
 
 class EnlightenmentCenter extends Robot {
@@ -17,10 +14,9 @@ class EnlightenmentCenter extends Robot {
     private boolean explorer;
     private int slandDistAway = 10;
     private int maxInf;
-    private MapLocation slandCenter;
     private int encoding = 0, nextEncoding = 0;
-	private Map.Entry<MapLocation, Integer> minNeutral;
-	private Map.Entry<MapLocation, Integer> minEnemy;
+	Map.Entry<MapLocation, Integer> minNeutral;
+	Map.Entry<MapLocation, Integer> minEnemy;
     //private Set<MapLocation> enemyHQs = new HashSet<MapLocation>();
     private Map<MapLocation, Integer> enemyHQs = new HashMap<MapLocation, Integer>();
     private Set<MapLocation> friendlyHQs = new HashSet<MapLocation>();
@@ -65,18 +61,12 @@ class EnlightenmentCenter extends Robot {
         	minNeutral = entryWithMinVal(neutralHQs);
         	minEnemy = entryWithMinVal(enemyHQs);
         	maxInf = rc.getInfluence() - 50;
-        	slandCenter = slandCenter();
 
 
             if (rc.isReady()) {
                 unitToBuild = getUnitToBuild();
                 if (unitToBuild != RobotType.ENLIGHTENMENT_CENTER) {
-                	//if (unitToBuild != RobotType.SLANDERER && rc.getInfluence() - 20 > Constants.minimumPolInf) unitToBuild = RobotType.POLITICIAN;
 	                infToSpend = getNewUnitInfluence();
-	                if (!unitToBuild.equals(RobotType.SLANDERER) && Constants.optimalSlandInfSet.contains(infToSpend)) {
-	                	// allows politicians to distinguish slanderers by their influence
-	                	infToSpend--;
-	                }
 	                dirTarget = getPreferredDirection();
 	                buildDirection = getBuildDirection(unitToBuild, dirTarget, infToSpend);
 	                explorer = (unitToBuild == RobotType.MUCKRAKER && Math.random() < 0.5);
@@ -143,13 +133,12 @@ class EnlightenmentCenter extends Robot {
     }
     
     MapLocation slandCenter() {
-    	return rc.getLocation();
-//    	if (enemyHQs.size() == 0) {
-//    		return Constants.origin;
-//    	}
-//    	MapLocation avgEnemyHQ = avgLoc(enemyHQs.keySet());
-//		Direction awayFromEnemyHQs = rc.getLocation().directionTo(avgEnemyHQ).opposite();
-//		return rc.getLocation().translate(slandDistAway * awayFromEnemyHQs.dx, slandDistAway * awayFromEnemyHQs.dy);
+    	if (enemyHQs.size() == 0) {
+    		return rc.getLocation();
+    	}
+    	MapLocation avgEnemyHQ = avgLoc(enemyHQs.keySet());
+		Direction awayFromEnemyHQs = rc.getLocation().directionTo(avgEnemyHQ).opposite();
+		return rc.getLocation().translate(slandDistAway * awayFromEnemyHQs.dx, slandDistAway * awayFromEnemyHQs.dy);
     }
     
     private Map.Entry<MapLocation, Integer> entryWithMinVal(Map<MapLocation, Integer> HQs) {
@@ -173,13 +162,14 @@ class EnlightenmentCenter extends Robot {
         		&& ( (!neutralHQs.isEmpty() && maxInf * rc.getEmpowerFactor(allyTeam, 20) >= minNeutral.getValue()) || (!enemyHQs.isEmpty() && maxInf * rc.getEmpowerFactor(allyTeam, 20) >= minEnemy.getValue()) ) ) {
         	//System.out.println("b");
         	return RobotType.POLITICIAN;
-        } else if (rand > (0.2 + 0.2 * rc.getRoundNum() / Constants.MAX_ROUNDS) || canSenseEnemyPolitician()) {
+        } else if (rand > (0.1 + 0.2 * rc.getRoundNum() / Constants.MAX_ROUNDS)
+        		|| maxInf / 2 < Constants.minimumPolInf || canSenseEnemyPolitician()) {
             return RobotType.MUCKRAKER;
-        } else if (rand < (0.2 - 0.1 * rc.getRoundNum() / Constants.MAX_ROUNDS)
+        } else if (rand < (0.1 - 0.1 * rc.getRoundNum() / Constants.MAX_ROUNDS)
         		&& !canSenseEnemyMuckraker() && rc.getEmpowerFactor(enemyTeam, 0) < 1.1) {
             return RobotType.SLANDERER;
         } else {
-        	return RobotType.ENLIGHTENMENT_CENTER; // build no robot this round
+        	return RobotType.ENLIGHTENMENT_CENTER;
         }
     }
 
@@ -187,19 +177,14 @@ class EnlightenmentCenter extends Robot {
         switch (unitToBuild) {
             case SLANDERER:
                 Integer maxOptimalSlandInf = Constants.optimalSlandInfSet.floor(maxInf);
-                if (slandCenter != Constants.origin) {
-                	nextEncoding = Encoding.encode(slandCenter, FlagCodes.slandCenter, explorer);
+                if (!enemyHQs.isEmpty()) {
+                	nextEncoding = Encoding.encode(slandCenter(), FlagCodes.slandCenter, explorer);
                 }
                 return maxOptimalSlandInf != null ? maxOptimalSlandInf : 0;
             case POLITICIAN:
             	if (rc.getEmpowerFactor(allyTeam, 11) > 1.5) {
             		//System.out.println(".a");
-            		return maxInf / 2;
-            	} else if (Math.random() < (0.9 - 0.8 * rc.getRoundNum() / Constants.MAX_ROUNDS)
-            			&& slandCenter != Constants.origin) {
-            		//System.out.println(".b");
-            		nextEncoding = Encoding.encode(slandCenter, FlagCodes.slandCenter, false);
-            		return Constants.minimumPolInf;
+            		return maxInf;
             	} else if (!neutralHQs.isEmpty() && maxInf * rc.getEmpowerFactor(allyTeam, 20) >= minNeutral.getValue()) {
             		//System.out.println(".b");
             		nextEncoding = Encoding.encode(minNeutral.getKey(), FlagCodes.neutralHQ, false);
@@ -208,16 +193,12 @@ class EnlightenmentCenter extends Robot {
             		//System.out.println(".c");
             		nextEncoding = Encoding.encode(minEnemy.getKey(), FlagCodes.enemyHQ, false);
               		return minEnemy.getValue();
-            	} else if (Math.random() < 1 && slandCenter != Constants.origin) {
-            		//System.out.println(".b");
-            		nextEncoding = Encoding.encode(slandCenter, FlagCodes.slandCenter, false);
-            		return Constants.minimumPolInf;
             	} else {
             		//System.out.println(".d");
             		return Math.max(Constants.minimumPolInf, Math.min(600, maxInf / 2));
             	}
             case MUCKRAKER:
-                return 0;
+                return 1;
             default:
                 return 0;
         }
@@ -233,8 +214,8 @@ class EnlightenmentCenter extends Robot {
         } else if (!neutralHQs.isEmpty() && ((unitToBuild.equals(RobotType.POLITICIAN) && Math.random() < 0.5) || Math.random() < 0.2) ) {
         	return Encoding.encode(minNeutral.getKey(), FlagCodes.neutralHQ, explorer);
         } else if (!enemyHQs.isEmpty()) {
-        	if (Math.random() < 0.2 && slandCenter != Constants.origin) {
-        		return Encoding.encode(slandCenter, FlagCodes.slandCenter, explorer);
+        	if (unitToBuild.equals(RobotType.SLANDERER) || Math.random() < 0.2) {
+        		return Encoding.encode(slandCenter(), FlagCodes.slandCenter, explorer);
         	}
             return Encoding.encode(minEnemy.getKey(), FlagCodes.enemyHQ, explorer);
         } else {

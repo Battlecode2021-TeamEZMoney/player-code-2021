@@ -1,4 +1,4 @@
-package usqualplayer1;
+package usqualplayer1_subm3;
 
 import battlecode.common.*;
 import java.util.*;
@@ -15,7 +15,7 @@ class Slanderer extends Pawn {
 		while (rc.getType().equals(RobotType.SLANDERER)) {
 			turnCount++;
 			if (rc.isReady()) {
-				if (slandCenter != null) {
+				if (slandCenter != null && hqLocation != null) {
 					runToSlandCenter();
 				} else {
 					if (rc.canGetFlag(hqID)) {
@@ -53,27 +53,21 @@ class Slanderer extends Pawn {
 	}
 	
 	private void runToSlandCenter() throws GameActionException {
-		if (!rc.isReady() || slandCenter == null) {
+		if (!rc.isReady() || slandCenter == null || hqLocation == null) {
 			return;
-		}
-		
-		if (distanceSquaredTo(slandCenter) > 8 && tryDirForward090180(directionTo(slandCenter))) {
-			return;
-		} else {
-			tryDirForward090180(directionTo(slandCenter).opposite());
 		}
 
-//		if (!tryDirForward90180(awayFromEnemyMuckrakers())) {
-//			tryDirForward90(directionTo(slandCenter));
-//		}
+		if (!tryDirForward90180(awayFromEnemyMuckrakers())) {
+			tryDirForward90(directionTo(slandCenter));
+		}
 	}
 
 	private void runSimpleCode() throws GameActionException {
-		if (!rc.isReady() || hqLocation == null) {
+		if (!rc.isReady()) {
 			return;
 		}
 		
-		if (!tryDirForward090180(awayFromEnemyMuckrakers())) {
+		if (!tryDirForward90180(awayFromEnemyMuckrakers())) {
 			if (distanceSquaredTo(hqLocation) < 25) {
 				tryDirForward90(directionTo(hqLocation).opposite());
 			}

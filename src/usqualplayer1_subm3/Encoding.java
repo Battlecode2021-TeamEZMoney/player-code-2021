@@ -1,4 +1,4 @@
-package usqualplayer1;
+package usqualplayer1_subm3;
 
 import battlecode.common.*;
 

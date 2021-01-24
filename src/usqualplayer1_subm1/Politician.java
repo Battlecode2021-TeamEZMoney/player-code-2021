@@ -1,8 +1,7 @@
-package usqualplayer1;
+package usqualplayer1_subm1;
 
 import battlecode.common.*;
-import common.*;
-import java.util.*;
+//import java.util.*;
 //import simpleplayer4.Robot.FlagCodes;
 
 class Politician extends Attacker {
@@ -10,8 +9,6 @@ class Politician extends Attacker {
 	private MapLocation neutralHQ = null;
 	private boolean waiting = Math.random() < 0.1;
 	private MapLocation slandCenter = null;
-	//private boolean inDefenseRing = false;
-	//private MapLocation tempTarget = null;
 
 	Politician(RobotController rcin) throws GameActionException {
 		super(rcin);
@@ -26,9 +23,6 @@ class Politician extends Attacker {
 		this.hqID = sland.hqID;
 		this.dirTarget = sland.dirTarget;
 		this.slandCenter = slandCenter;
-		while(true) {
-			if (rc.canEmpower(1)) rc.empower(1);
-		}
 	}
 
 	void run() throws GameActionException {
@@ -36,7 +30,8 @@ class Politician extends Attacker {
 			turnCount++;
 			if (rc.isReady()) {
 				updateHQs();
-				if (Math.random() < 0.8 && slandCenter == null) {
+				if (Math.random() < 0.8) {
+					tryOptimalSelfEmpower();
 					//int start = Clock.getBytecodesLeft();
 					tryOptimalEmpower();
 					//System.out.println(Clock.getBytecodesLeft()-start);
@@ -69,10 +64,6 @@ class Politician extends Attacker {
 			// if (Clock.getBytecodesLeft()-start < -4000) System.out.println("Used " +
 			// (Clock.getBytecodesLeft()-start));
 
-//			System.out.println("N: " + (neutralHQ == null ? "null" : printLoc(neutralHQ)));
-//			System.out.println("E: " + (enemyHQ == null ? "null" : printLoc(enemyHQ)));
-//			System.out.println("S: " + (slandCenter == null ? "null" : printLoc(slandCenter)));
-//			System.out.println("LOC: " + printLoc(rc.getLocation()));
 			Clock.yield();
 		}
 
@@ -136,78 +127,26 @@ class Politician extends Attacker {
 			return;
 		}
 		
-		empowerIfMuckNearby();
-		if (distanceSquaredTo(slandCenter) < sensorRadiusSquared) {
-			if (tryDirForward090180(directionTo(slandCenter).opposite())) {
-				return;
-			}
+		boolean exitDefendSlandCenter = false;
+		
+		if (distanceSquaredTo(slandCenter) <= actionRadiusSquared) {
+			empowerIfMuckNearby();
 		}
-		
-//		if (tempTarget != null) {
-//			tryDirForward90180(directionTo(tempTarget));
-//			tempTarget = null;
-//			return;
-//		}
-		
-		//MapLocation target = rc.getLocation();
-		ArrayList<RobotInfo> slands = new ArrayList<RobotInfo>();
-		ArrayList<RobotInfo> pols = new ArrayList<RobotInfo>();
-		for (RobotInfo robot : rc.senseNearbyRobots(sensorRadiusSquared, allyTeam)) {
-			if (robot.type == RobotType.POLITICIAN) {
-				// includes Slanderers
-				double angle = angleBetween(rc.getLocation(), slandCenter, robot.location);
-				if (Constants.optimalSlandInfSet.contains(robot.influence) && angle <= 45) {
-					slands.add(robot);
-				} else if (!Constants.optimalSlandInfSet.contains(robot.influence)
-						&& 60 <= angle && angle <= 120) {
-					pols.add(robot);
-				} else {
-					//System.out.println(printLoc(robot.location) + " " + angle);
-				}
-				
-			}
+		if (distanceSquaredTo(slandCenter) > actionRadiusSquared
+				&& tryDirForward90(directionTo(slandCenter))) {
+			return;
 		}
-		
-//		System.out.println("SLANDS");
-//		for (RobotInfo sland : slands) {
-//			System.out.println(printLoc(sland.location));
-//		}
-//		System.out.println("POLS");
-//		for (RobotInfo pol : pols) {
-//			System.out.println(printLoc(pol.location));
-//		}
-		
-		//target = target.add(awayFromRobots(pols));
-		//System.out.println("TARGET " + printLoc(target));
-		if (Math.random() < 0.2) {
-			if (slands.isEmpty()) {
-				tryDirForward090180(directionTo(slandCenter));
-				//target = target.add(directionTo(slandCenter));
-			} else if (slands.size() > 3) {
-				tryDirForward090180(directionTo(slandCenter).opposite());
-				//target = target.add(directionTo(slandCenter).opposite());
-			}
+		if (distanceSquaredTo(slandCenter) > actionRadiusSquared * 2) {
+			exitDefendSlandCenter = true;
 		}
-		tryDirForward090180(awayFromRobots(pols));
-		
-		//System.out.println("TARGET " + printLoc(target));
-		//tryDirForward90180(directionTo(target));
-		
-//		if (slands.size() > 4) {
-//			inDefenseRing = false;
-//			tryDirForward90180(directionTo(slandCenter).opposite());
-//		} else if (slands.isEmpty()) {
-//			inDefenseRing = true;
-//			tryDirForward90180(directionTo(slandCenter));
-//		}
-//		
-//		if (inDefenseRing) {
-//			tryDirForward90(awayFromRobots(pols));
-//		}
+		tryDirForward90180(directionTo(slandCenter).opposite());
+		if (exitDefendSlandCenter) {
+			slandCenter = null;
+		}
 	}
 	
 	private void empowerIfMuckNearby() throws GameActionException {
-		for (RobotInfo robot : rc.senseNearbyRobots(2, enemyTeam)) {
+		for (RobotInfo robot : rc.senseNearbyRobots(sensorRadiusSquared, enemyTeam)) {
 			if (robot.type.equals(RobotType.MUCKRAKER)) {
 				tryEmpower(distanceSquaredTo(robot));
 			}
@@ -266,6 +205,16 @@ class Politician extends Attacker {
 		}
 
 		return new int[] { optimalIncRadius, maxTotalIncrease, optimalDestroyed };
+	}
+
+	private void tryOptimalSelfEmpower() throws GameActionException {
+		if (hqLocation == null) {
+			return;
+		}
+		
+		if (rc.getEmpowerFactor(allyTeam, 0) > 4 && distanceSquaredTo(hqLocation) <= actionRadiusSquared) {
+			HQAttackRoutine(hqLocation);
+		}
 	}
 
 	private void tryOptimalEmpower() throws GameActionException {

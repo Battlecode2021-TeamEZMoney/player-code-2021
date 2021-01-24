@@ -1,4 +1,4 @@
-package usqualplayer1;
+package usqualplayer1_subm1;
 
 import battlecode.common.*;
 
@@ -9,7 +9,7 @@ class Encoding {
 	private static final int EXP_BITMASK = (1 << EXP_BITS) - 1;
 	private static final int TYPE_BITS = 3;
 	private static final int TYPE_BITMASK = (1 << TYPE_BITS) - 1;
-	private static final int CONV_BITS = 6;
+	private static final int CONV_BITS = 4;
 	private static final int CONV_BITMASK = (1 << CONV_BITS) - 1;
 
 	static int encode(MapLocation loc, int type) throws GameActionException {
@@ -24,10 +24,9 @@ class Encoding {
 		int x = loc.x, y = loc.y;
 		int xEnc = x & LOC_BITMASK, yEnc = y & LOC_BITMASK;
 		int expInc = explorer ? 1 : 0;
-		int typeEnc = type & TYPE_BITMASK;
-		int convEnc = ((int) Math.round(Math.log(conv) / Math.log(1.5))) & CONV_BITMASK;
+		int convEnc = (int) Math.round((Math.log(conv) / Math.log(1.5)));
 		return (xEnc << LOC_BITS) + yEnc + (expInc << (2 * LOC_BITS))
-				+ (typeEnc << (2 * LOC_BITS + EXP_BITS))
+				+ (type << (2 * LOC_BITS + EXP_BITS))
 				+  (convEnc << (2 * LOC_BITS + EXP_BITS + TYPE_BITS));
 	}
 
@@ -56,6 +55,6 @@ class Encoding {
 	static int getConvFromFlag(int encoded) throws GameActionException {
 		int convEnc = (encoded >> (2 * LOC_BITS + EXP_BITS + TYPE_BITS)) & CONV_BITMASK;
 		double convClose = Math.exp(convEnc * Math.log(1.5));
-		return (int) Math.max(convClose + 50, convClose * 1.3); // need a > 1.5 ^ 0.5. Currently a = 1.3
+		return (int) Math.max(convClose + 100, convClose * 1.3); // need a > 1.5 ^ 0.5. Currently a = 1.3
 	}
 }

@@ -1,7 +1,6 @@
-package usqualplayer1;
+package usqualplayer1_subm2;
 
 import battlecode.common.*;
-
 import java.util.*;
 
 
@@ -138,16 +137,16 @@ abstract class Robot {
         }
     }
 
-    protected boolean crowdedByEnemy(MapLocation loc) throws GameActionException {
+    protected boolean crowdedByEnemy(MapLocation loc) {
         return rc.senseNearbyRobots(loc, 2, enemyTeam).length >= 5
                 || rc.senseNearbyRobots(loc, 5, enemyTeam).length >= 10;
     }
 
-    protected boolean crowded(MapLocation loc) throws GameActionException {
+    protected boolean crowded(MapLocation loc) {
         return rc.senseNearbyRobots(loc, 2, null).length >= 7 || rc.senseNearbyRobots(loc, 5, null).length >= 15;
     }
 
-    protected boolean crowdedByAllyMuckrakers(MapLocation loc) throws GameActionException {
+    protected boolean crowdedByAllyMuckrakers(MapLocation loc) {
         int numMucks2 = 0, numMucks5 = 0;
         for (RobotInfo robot : rc.senseNearbyRobots(loc, 2, allyTeam)) {
             if (robot.type.equals(RobotType.MUCKRAKER)) {
@@ -160,22 +159,6 @@ abstract class Robot {
             }
         }
         return numMucks2 >= 5 || numMucks5 >= 10;
-    }
-    
-    public static double angleBetween(MapLocation center, MapLocation loc1, MapLocation loc2) throws GameActionException {
-    	double angle = Math.atan2(loc2.y - center.y, loc2.x - center.x) - Math.atan2(loc1.y - center.y, loc1.x - center.x);
-    	angle = Math.abs(angle) * 180 / Math.PI;
-    	return Math.min(angle, 360 - angle);
-    }
-    
-    public static final <T> void swap (T[] a, int i, int j) {
-    	T t = a[i];
-    	a[i] = a[j];
-    	a[j] = t;
-    }
-    
-    protected MapLocation oppositePoint(MapLocation center, MapLocation point) {
-    	return new MapLocation(2 * center.x - point.x, 2 * center.y - point.y);
     }
 
     String printLoc(MapLocation loc) throws GameActionException {
