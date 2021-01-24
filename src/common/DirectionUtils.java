@@ -174,4 +174,16 @@ public class DirectionUtils {
                 return false;
         }
     }
+
+    public static boolean isDiagonal(Direction dir) {
+        switch (dir) {
+            case NORTHEAST:
+            case SOUTHEAST:
+            case SOUTHWEST:
+            case NORTHWEST:
+                return true;
+            default:
+                return false;
+        }
+    }
 }

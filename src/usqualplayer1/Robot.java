@@ -14,6 +14,7 @@ abstract class Robot {
     protected final int actionRadiusSquared;
     protected final int detectionRadiusSquared;
     protected final int sensorRadiusSquared;
+    protected final double baseActionCooldown;
 
     Robot(RobotController rcin){
         this.rc = rcin;
@@ -23,6 +24,7 @@ abstract class Robot {
         this.actionRadiusSquared = this.robotType.actionRadiusSquared;
         this.detectionRadiusSquared = this.robotType.detectionRadiusSquared;
         this.sensorRadiusSquared = this.robotType.sensorRadiusSquared;
+        this.baseActionCooldown = this.robotType.actionCooldown;
     }
 
     abstract void run() throws GameActionException;
