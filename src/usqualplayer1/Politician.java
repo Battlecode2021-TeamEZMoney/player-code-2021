@@ -26,9 +26,6 @@ class Politician extends Attacker {
 		this.hqID = sland.hqID;
 		this.dirTarget = sland.dirTarget;
 		this.slandCenter = slandCenter;
-		while(true) {
-			if (rc.canEmpower(1)) rc.empower(1);
-		}
 	}
 
 	void run() throws GameActionException {
@@ -136,12 +133,6 @@ class Politician extends Attacker {
 			return;
 		}
 		
-		empowerIfMuckNearby();
-		if (distanceSquaredTo(slandCenter) < sensorRadiusSquared) {
-			if (tryDirForward090180(directionTo(slandCenter).opposite())) {
-				return;
-			}
-		}
 		
 //		if (tempTarget != null) {
 //			tryDirForward90180(directionTo(tempTarget));
@@ -150,21 +141,31 @@ class Politician extends Attacker {
 //		}
 		
 		//MapLocation target = rc.getLocation();
-		ArrayList<RobotInfo> slands = new ArrayList<RobotInfo>();
-		ArrayList<RobotInfo> pols = new ArrayList<RobotInfo>();
-		for (RobotInfo robot : rc.senseNearbyRobots(sensorRadiusSquared, allyTeam)) {
-			if (robot.type == RobotType.POLITICIAN) {
+		ArrayList<RobotInfo> allySlands = new ArrayList<RobotInfo>();
+		ArrayList<RobotInfo> allyPols = new ArrayList<RobotInfo>();
+		ArrayList<RobotInfo> enemyMucks = new ArrayList<RobotInfo>();
+		for (RobotInfo robot : rc.senseNearbyRobots()) {
+			if (robot.team == allyTeam && robot.type == RobotType.POLITICIAN) {
 				// includes Slanderers
 				double angle = angleBetween(rc.getLocation(), slandCenter, robot.location);
-				if (Constants.optimalSlandInfSet.contains(robot.influence) && angle <= 45) {
-					slands.add(robot);
+				if (Constants.optimalSlandInfSet.contains(robot.influence)) {
+					allySlands.add(robot);
 				} else if (!Constants.optimalSlandInfSet.contains(robot.influence)
 						&& 60 <= angle && angle <= 120) {
-					pols.add(robot);
+					allyPols.add(robot);
 				} else {
 					//System.out.println(printLoc(robot.location) + " " + angle);
 				}
 				
+			} else if (robot.team == enemyTeam && robot.type == RobotType.MUCKRAKER) {
+				enemyMucks.add(robot);
+			}
+		}
+		
+		empowerIfMuckNearSlanderer(enemyMucks, allySlands);
+		if (distanceSquaredTo(slandCenter) < sensorRadiusSquared) {
+			if (tryDirForward090180(directionTo(slandCenter).opposite())) {
+				return;
 			}
 		}
 		
@@ -180,15 +181,15 @@ class Politician extends Attacker {
 		//target = target.add(awayFromRobots(pols));
 		//System.out.println("TARGET " + printLoc(target));
 		if (Math.random() < 0.2) {
-			if (slands.isEmpty()) {
+			if (allySlands.isEmpty()) {
 				tryDirForward090180(directionTo(slandCenter));
 				//target = target.add(directionTo(slandCenter));
-			} else if (slands.size() > 3) {
+			} else if (allySlands.size() > 3) {
 				tryDirForward090180(directionTo(slandCenter).opposite());
 				//target = target.add(directionTo(slandCenter).opposite());
 			}
 		}
-		tryDirForward090180(awayFromRobots(pols));
+		tryDirForward090180(awayFromRobots(allyPols));
 		
 		//System.out.println("TARGET " + printLoc(target));
 		//tryDirForward90180(directionTo(target));
@@ -213,6 +214,26 @@ class Politician extends Attacker {
 			}
 		}
 	}
+	
+	private void empowerIfMuckNearSlanderer(ArrayList<RobotInfo> enemyMucks, ArrayList<RobotInfo> allySlands) throws GameActionException {
+		System.out.println("MUCK");
+		for (RobotInfo enemyMuck : enemyMucks) {
+			System.out.println(printLoc(enemyMuck.location));
+		}
+		System.out.println("SLAND");
+		for (RobotInfo allySland : allySlands) {
+			System.out.println(printLoc(allySland.location));
+		}
+		if (enemyMucks.isEmpty() || allySlands.isEmpty()) {
+			return;
+		}
+		for (RobotInfo enemyMuck : enemyMucks) {
+			RobotInfo closestSland = Collections.min(allySlands, Comparator.comparing(sland -> enemyMuck.location.distanceSquaredTo(sland.location)));
+			if (enemyMuck.location.distanceSquaredTo(closestSland.location) <= 25) {
+				tryEmpower(distanceSquaredTo(enemyMuck));
+			}
+		}
+	}
 
 	private int maxIncrease(RobotInfo robot) throws GameActionException {
 		if (isEnemy(robot)) {
@@ -231,7 +252,23 @@ class Politician extends Attacker {
 			return initialConviction(robot) - robot.conviction;
 		}
 	}
-
+	
+	private double changeWithBuff(double conv, double buff, RobotInfo robot) {
+		if (robot.type == RobotType.ENLIGHTENMENT_CENTER && robot.team == rc.getTeam()) {
+			;
+        } else if (robot.type == RobotType.ENLIGHTENMENT_CENTER) {
+            double convNeededToConvert = robot.conviction / buff;
+            if (conv <= convNeededToConvert) {
+                conv *= buff;
+            } else {
+                conv = robot.conviction + (conv - convNeededToConvert);
+            }
+        } else {
+            conv *= buff;
+        }
+		return conv;
+	}
+	
 	private int[] optimalEmpowerRadiusAndInfo() throws GameActionException {
 		if (rc.getConviction() <= 10) {
 			return new int[] { 0, 0, 0, 0 };
@@ -248,11 +285,12 @@ class Politician extends Attacker {
 			if (numAffected == 0) {
 				continue;
 			}
-			int change = (int) (rc.getConviction() * rc.getEmpowerFactor(allyTeam, 0) - 10) / numAffected;
+			double buff = rc.getEmpowerFactor(allyTeam, 0);
+			double change = (int) (rc.getConviction() - 10) / numAffected;
 			// TODO: factor in remaining undivided conviction, given to later creations
 			for (RobotInfo robot : nearby) {
 				if (distanceSquaredTo(robot) <= empRadius) {
-					increase += Math.min(change, maxIncrease(robot));
+					increase += Math.min((int) changeWithBuff(change, buff, robot), maxIncrease(robot));
 					if (isEnemy(robot) && robot.conviction < change) {
 						numDestroyed++;
 					}

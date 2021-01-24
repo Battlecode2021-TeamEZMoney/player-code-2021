@@ -60,7 +60,7 @@ class EnlightenmentCenter extends Robot {
             
         	minNeutral = entryWithMinVal(neutralHQs);
         	minEnemy = entryWithMinVal(enemyHQs);
-        	maxInf = rc.getInfluence() - 50;
+        	maxInf = rc.getInfluence() - 30;
 
 
             if (rc.isReady()) {

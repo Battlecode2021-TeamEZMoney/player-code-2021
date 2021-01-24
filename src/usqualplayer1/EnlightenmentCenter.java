@@ -2,7 +2,6 @@ package usqualplayer1;
 
 import battlecode.common.*;
 import common.*;
-import usqualplayer1_subm2.Constants;
 
 import java.util.*;
 
@@ -64,7 +63,7 @@ class EnlightenmentCenter extends Robot {
             
         	minNeutral = entryWithMinVal(neutralHQs);
         	minEnemy = entryWithMinVal(enemyHQs);
-        	maxInf = rc.getInfluence() - 50;
+        	maxInf = rc.getInfluence() - 30;
         	slandCenter = slandCenter();
 
 
@@ -161,21 +160,20 @@ class EnlightenmentCenter extends Robot {
     
     private RobotType getUnitToBuild() throws GameActionException {
     	double rand = Math.random();
-        if (rc.getRoundNum() <= 2) {
+        if (rc.getRoundNum() <= 3) {
         	return RobotType.SLANDERER;
-        } else if ( (rc.getEmpowerFactor(allyTeam, 11) > 1.5 || crowdedByEnemy(rc.getLocation()) )
-        		&& rc.getInfluence() - 20 > Constants.minimumPolInf) {
+        } else if ( rand > (0.6 + 0.2 * rc.getRoundNum() / Constants.MAX_ROUNDS)
+        		|| (rc.getEmpowerFactor(allyTeam, 11) > 1.5 || crowdedByEnemy(rc.getLocation()) )
+        		&& rc.getInfluence() > Constants.minimumPolInf) {
         	//System.out.println("a");
             return RobotType.POLITICIAN;
-        } else if (canSenseEnemyPolitician()) {
-            return RobotType.MUCKRAKER;
         } else if ( (rand > 0.6 || crowded(rc.getLocation()))
         		&& ( (!neutralHQs.isEmpty() && maxInf * rc.getEmpowerFactor(allyTeam, 20) >= minNeutral.getValue()) || (!enemyHQs.isEmpty() && maxInf * rc.getEmpowerFactor(allyTeam, 20) >= minEnemy.getValue()) ) ) {
         	//System.out.println("b");
         	return RobotType.POLITICIAN;
-        } else if (rand > (0.2 + 0.2 * rc.getRoundNum() / Constants.MAX_ROUNDS) || canSenseEnemyPolitician()) {
+        } else if (rand > (0.4 + 0.2 * rc.getRoundNum() / Constants.MAX_ROUNDS)) {
             return RobotType.MUCKRAKER;
-        } else if (rand < (0.2 - 0.1 * rc.getRoundNum() / Constants.MAX_ROUNDS)
+        } else if (rand < Math.max(0.2, 0.4 - 0.2 * rc.getRoundNum() / 50)
         		&& !canSenseEnemyMuckraker() && rc.getEmpowerFactor(enemyTeam, 0) < 1.1) {
             return RobotType.SLANDERER;
         } else {
@@ -214,10 +212,10 @@ class EnlightenmentCenter extends Robot {
             		return Constants.minimumPolInf;
             	} else {
             		//System.out.println(".d");
-            		return Math.max(Constants.minimumPolInf, Math.min(600, maxInf / 2));
+            		return Math.max(Constants.minimumPolInf, maxInf / 2);
             	}
             case MUCKRAKER:
-                return 0;
+                return 1;
             default:
                 return 0;
         }
