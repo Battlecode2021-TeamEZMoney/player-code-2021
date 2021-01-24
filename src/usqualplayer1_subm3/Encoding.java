@@ -15,7 +15,7 @@ class Encoding {
 	static int encode(MapLocation loc, int type) throws GameActionException {
 		return encode(loc, type, false);
 	}
-	
+
 	static int encode(MapLocation loc, int type, boolean explorer) throws GameActionException {
 		return encode(loc, type, explorer, 0);
 	}
@@ -26,9 +26,8 @@ class Encoding {
 		int expInc = explorer ? 1 : 0;
 		int typeEnc = type & TYPE_BITMASK;
 		int convEnc = ((int) Math.round(Math.log(conv) / Math.log(1.5))) & CONV_BITMASK;
-		return (xEnc << LOC_BITS) + yEnc + (expInc << (2 * LOC_BITS))
-				+ (typeEnc << (2 * LOC_BITS + EXP_BITS))
-				+  (convEnc << (2 * LOC_BITS + EXP_BITS + TYPE_BITS));
+		return (xEnc << LOC_BITS) + yEnc + (expInc << (2 * LOC_BITS)) + (typeEnc << (2 * LOC_BITS + EXP_BITS))
+				+ (convEnc << (2 * LOC_BITS + EXP_BITS + TYPE_BITS));
 	}
 
 	static MapLocation getLocationFromFlag(RobotController rc, int encoded) throws GameActionException {
@@ -52,7 +51,7 @@ class Encoding {
 	static int getTypeFromFlag(int encoded) throws GameActionException {
 		return (encoded >> (2 * LOC_BITS + EXP_BITS)) & TYPE_BITMASK;
 	}
-	
+
 	static int getConvFromFlag(int encoded) throws GameActionException {
 		int convEnc = (encoded >> (2 * LOC_BITS + EXP_BITS + TYPE_BITS)) & CONV_BITMASK;
 		double convClose = Math.exp(convEnc * Math.log(1.5));

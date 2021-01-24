@@ -69,7 +69,7 @@ class Slanderer extends Pawn {
 		if (!rc.isReady() || hqLocation == null) {
 			return false;
 		}
-		
+
 		if (!tryDirForward180(awayFromEnemyMuckrakers())) {
 			if (distanceSquaredTo(hqLocation) < 25) {
 				tryDirForward180(directionTo(hqLocation).opposite());
@@ -78,12 +78,13 @@ class Slanderer extends Pawn {
 		return true;
 	}
 
-    protected Direction awayFromEnemyMuckrakers() throws GameActionException {
-        ArrayList<RobotInfo> robots = new ArrayList<>(Arrays.asList(rc.senseNearbyRobots(sensorRadiusSquared, enemyTeam)));
-        if (robots.size() == 0) {
-        	return dirTarget;
-        }
-        robots.removeIf(r -> (r.type != RobotType.MUCKRAKER));
-        return awayFromRobots(robots);
-    }
+	protected Direction awayFromEnemyMuckrakers() throws GameActionException {
+		ArrayList<RobotInfo> robots = new ArrayList<>(
+				Arrays.asList(rc.senseNearbyRobots(sensorRadiusSquared, enemyTeam)));
+		if (robots.size() == 0) {
+			return dirTarget;
+		}
+		robots.removeIf(r -> (r.type != RobotType.MUCKRAKER));
+		return awayFromRobots(robots);
+	}
 }

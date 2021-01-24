@@ -227,13 +227,12 @@ class Politician extends Attacker {
 		}
 		return false;
 	}
-	
+
 	private boolean ifOptimalSelfEmpower() throws GameActionException {
 		if (hqLocation == null) {
 			return false;
 		}
-		if (rc.getEmpowerFactor(allyTeam, 0) > 4
-				&& distanceSquaredTo(hqLocation) <= actionRadiusSquared) {
+		if (rc.getEmpowerFactor(allyTeam, 0) > 4 && distanceSquaredTo(hqLocation) <= actionRadiusSquared) {
 			return HQAttackRoutine(hqLocation);
 		}
 		return false;

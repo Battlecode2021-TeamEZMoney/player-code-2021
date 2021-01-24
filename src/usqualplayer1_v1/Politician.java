@@ -33,9 +33,9 @@ class Politician extends Attacker {
 				updateHQs();
 				if (Math.random() < 0.8) {
 					tryOptimalSelfEmpower();
-					//int start = Clock.getBytecodesLeft();
+					// int start = Clock.getBytecodesLeft();
 					tryOptimalEmpower();
-					//System.out.println(Clock.getBytecodesLeft()-start);
+					// System.out.println(Clock.getBytecodesLeft()-start);
 				}
 				endOfMatchEmpower();
 				// start = Clock.getBytecodesLeft();
@@ -99,7 +99,7 @@ class Politician extends Attacker {
 				}
 			}
 		}
-		
+
 	}
 
 	private void parseHQFlag(int flag) throws GameActionException {
@@ -122,19 +122,18 @@ class Politician extends Attacker {
 				break;
 		}
 	}
-	
+
 	private void defendSlandCenter() throws GameActionException {
 		if (!rc.isReady() || slandCenter == null) {
 			return;
 		}
-		
+
 		boolean exitDefendSlandCenter = false;
-		
+
 		if (distanceSquaredTo(slandCenter) <= actionRadiusSquared) {
 			empowerIfMuckNearby();
 		}
-		if (distanceSquaredTo(slandCenter) > actionRadiusSquared
-				&& tryDirForward90(directionTo(slandCenter))) {
+		if (distanceSquaredTo(slandCenter) > actionRadiusSquared && tryDirForward90(directionTo(slandCenter))) {
 			return;
 		}
 		if (distanceSquaredTo(slandCenter) > actionRadiusSquared * 2) {
@@ -145,7 +144,7 @@ class Politician extends Attacker {
 			slandCenter = null;
 		}
 	}
-	
+
 	private void empowerIfMuckNearby() throws GameActionException {
 		for (RobotInfo robot : rc.senseNearbyRobots(sensorRadiusSquared, enemyTeam)) {
 			if (robot.type.equals(RobotType.MUCKRAKER)) {
@@ -212,7 +211,7 @@ class Politician extends Attacker {
 		if (hqLocation == null) {
 			return;
 		}
-		
+
 		if (rc.getEmpowerFactor(allyTeam, 0) > 4 && distanceSquaredTo(hqLocation) <= actionRadiusSquared) {
 			HQAttackRoutine(hqLocation);
 		}
@@ -256,7 +255,7 @@ class Politician extends Attacker {
 		if (!rc.isReady() || neutralHQ == null) {
 			return;
 		}
-		
+
 		if (!waiting || (rc.canSenseLocation(neutralHQ) && rc.senseRobotAtLocation(neutralHQ).conviction < 25)) {
 			HQAttackRoutine(neutralHQ);
 		} else {
@@ -279,16 +278,16 @@ class Politician extends Attacker {
 		if (!rc.isReady()) {
 			return;
 		}
-		
+
 		updateDirIfOnBorder();
-		
+
 		if (!tryDirForward90(dirTarget)) {
 			tryDirForward90180(awayFromAllies());
 		}
-		
-//		if (!tryDirForward90180(awayFromAllies())) {
-//			tryDirForward90180(DirectionUtils.randomDirection());
-//		}
+
+		// if (!tryDirForward90180(awayFromAllies())) {
+		// tryDirForward90180(DirectionUtils.randomDirection());
+		// }
 	}
 
 	private void tryEmpower(int radius) throws GameActionException {

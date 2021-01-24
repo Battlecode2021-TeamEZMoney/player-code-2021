@@ -73,8 +73,8 @@ public strictfp class RobotPlayer {
                 }
                 Clock.yield();
             }
-            System.out.println((firstRound - 1) + " finished in " + turnCount + " turns with a maximum of " + mostBytecode
-                    + " bytecode.");
+            System.out.println((firstRound - 1) + " finished in " + turnCount + " turns with a maximum of "
+                    + mostBytecode + " bytecode.");
             while (true) {
                 tryMove(Direction.SOUTH);
                 Clock.yield();
@@ -115,9 +115,15 @@ public strictfp class RobotPlayer {
             MapLocation posRR = rc.getLocation().add(dirRR);
             boolean diagonalMovesRemaining = diagonalMovesRemaining(from, to);
             double costLL = rc.canMove(dirLL) ? cooldownAtTile(posLL) : Double.MAX_VALUE;
-            double costL = rc.canMove(dirL) ? (isDiagonal(dirL) && diagonalMovesRemaining ? .75 : 1) * cooldownAtTile(posL) : Double.MAX_VALUE;
-            double costM = rc.canMove(dirM) ? (isDiagonal(dirM) && diagonalMovesRemaining ? .6 : 1) * cooldownAtTile(posM) : Double.MAX_VALUE;
-            double costR = rc.canMove(dirR) ? (isDiagonal(dirR) && diagonalMovesRemaining ? .75 : 1) * cooldownAtTile(posR) : Double.MAX_VALUE;
+            double costL = rc.canMove(dirL)
+                    ? (isDiagonal(dirL) && diagonalMovesRemaining ? .75 : 1) * cooldownAtTile(posL)
+                    : Double.MAX_VALUE;
+            double costM = rc.canMove(dirM)
+                    ? (isDiagonal(dirM) && diagonalMovesRemaining ? .6 : 1) * cooldownAtTile(posM)
+                    : Double.MAX_VALUE;
+            double costR = rc.canMove(dirR)
+                    ? (isDiagonal(dirR) && diagonalMovesRemaining ? .75 : 1) * cooldownAtTile(posR)
+                    : Double.MAX_VALUE;
             double costRR = rc.canMove(dirRR) ? cooldownAtTile(posRR) : Double.MAX_VALUE;
 
             rc.setIndicatorDot(posLL, 0, 0, 0);

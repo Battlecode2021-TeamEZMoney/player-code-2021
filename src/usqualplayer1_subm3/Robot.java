@@ -3,7 +3,6 @@ package usqualplayer1_subm3;
 import battlecode.common.*;
 import java.util.*;
 
-
 abstract class Robot {
     protected RobotController rc;
     protected int turnCount = 0;
@@ -14,7 +13,7 @@ abstract class Robot {
     protected final int detectionRadiusSquared;
     protected final int sensorRadiusSquared;
 
-    Robot(RobotController rcin){
+    Robot(RobotController rcin) {
         this.rc = rcin;
         this.allyTeam = rc.getTeam();
         this.enemyTeam = allyTeam.opponent();
@@ -84,15 +83,15 @@ abstract class Robot {
     protected boolean canSenseEnemy() throws GameActionException {
         return rc.senseNearbyRobots(sensorRadiusSquared, enemyTeam).length > 0;
     }
-    
+
     protected boolean canSenseEnemyPolitician() throws GameActionException {
-    	RobotInfo[] nearby = rc.senseNearbyRobots(sensorRadiusSquared, enemyTeam);
-    	return Arrays.stream(nearby).filter(r -> r.type.equals(RobotType.POLITICIAN)).toArray().length > 0;
+        RobotInfo[] nearby = rc.senseNearbyRobots(sensorRadiusSquared, enemyTeam);
+        return Arrays.stream(nearby).filter(r -> r.type.equals(RobotType.POLITICIAN)).toArray().length > 0;
     }
-    
+
     protected boolean canSenseEnemyMuckraker() throws GameActionException {
-    	RobotInfo[] nearby = rc.senseNearbyRobots(sensorRadiusSquared, enemyTeam);
-    	return Arrays.stream(nearby).filter(r -> r.type.equals(RobotType.MUCKRAKER)).toArray().length > 0;
+        RobotInfo[] nearby = rc.senseNearbyRobots(sensorRadiusSquared, enemyTeam);
+        return Arrays.stream(nearby).filter(r -> r.type.equals(RobotType.MUCKRAKER)).toArray().length > 0;
     }
 
     protected int distanceSquaredTo(RobotInfo otherRobot) throws GameActionException {

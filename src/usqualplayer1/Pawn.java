@@ -11,11 +11,12 @@ abstract class Pawn extends Robot {
     protected Direction dirTarget = Direction.CENTER;
     protected boolean explorer = false;
     protected boolean defending = false;
-
+    protected Pathfinding pathingController;
 
     Pawn(RobotController rcin) throws GameActionException {
         super(rcin);
         getHomeHQ();
+        this.pathingController = new Pathfinding();
     }
 
     static Pawn unitFromRobotController(RobotController rc) throws Exception {
@@ -53,16 +54,15 @@ abstract class Pawn extends Robot {
         return false;
     }
 
-    
     protected Direction dirForward90(Direction dir) throws GameActionException {
-    	if (dir.equals(Direction.CENTER)) {
-    		return dir;
-    	}
-    	Direction[] possDirs = {dir, dir.rotateLeft(), dir.rotateRight()};
-    	if (Math.random() < 0.5) {
-    		swap(possDirs, 1, 2);
-    	}
-    	return maxPassabilityDir(possDirs);
+        if (dir.equals(Direction.CENTER)) {
+            return dir;
+        }
+        Direction[] possDirs = { dir, dir.rotateLeft(), dir.rotateRight() };
+        if (Math.random() < 0.5) {
+            swap(possDirs, 1, 2);
+        }
+        return maxPassabilityDir(possDirs);
     }
 
     protected boolean tryDirForward90(Direction dir) throws GameActionException {
@@ -70,43 +70,43 @@ abstract class Pawn extends Robot {
     }
 
     protected Direction dirForward180(Direction dir) throws GameActionException {
-    	if (dir.equals(Direction.CENTER)) {
-    		return dir;
-    	}
-    	Direction[] possDirs = {dir, dir.rotateLeft(), dir.rotateRight(), 
-    		DirectionUtils.rotateLeft90(dir), DirectionUtils.rotateRight90(dir)};
-    	if (Math.random() < 0.5) {
-    		swap(possDirs, 1, 2);
-    	}
-    	if (Math.random() < 0.5) {
-    		swap(possDirs, 3, 4);
-    	}
-    	return maxPassabilityDir(possDirs);
+        if (dir.equals(Direction.CENTER)) {
+            return dir;
+        }
+        Direction[] possDirs = { dir, dir.rotateLeft(), dir.rotateRight(), DirectionUtils.rotateLeft90(dir),
+                DirectionUtils.rotateRight90(dir) };
+        if (Math.random() < 0.5) {
+            swap(possDirs, 1, 2);
+        }
+        if (Math.random() < 0.5) {
+            swap(possDirs, 3, 4);
+        }
+        return maxPassabilityDir(possDirs);
     }
-    
+
     protected Direction maxPassabilityDir(Direction[] possDirs) throws GameActionException {
-    	Direction bestDir = possDirs[0];
-    	double maxPassability = 0;
-    	for (Direction curDir : possDirs) {
-    		if (rc.canMove(curDir)) {
-	    		double curPassability = rc.sensePassability(rc.getLocation().add(curDir));
-	    		if (curPassability > maxPassability) {
-	    			maxPassability = curPassability;
-	    			bestDir = curDir;
-	    		}
-    		}
-    	}
-    	return bestDir;
+        Direction bestDir = possDirs[0];
+        double maxPassability = 0;
+        for (Direction curDir : possDirs) {
+            if (rc.canMove(curDir)) {
+                double curPassability = rc.sensePassability(rc.getLocation().add(curDir));
+                if (curPassability > maxPassability) {
+                    maxPassability = curPassability;
+                    bestDir = curDir;
+                }
+            }
+        }
+        return bestDir;
     }
 
     protected boolean tryDirForward180(Direction dir) throws GameActionException {
         return tryMove(dirForward180(dir));
     }
-    
+
     protected boolean tryDirForward90180(Direction dir) throws GameActionException {
         return tryDirForward90(dir) || tryDirForward180(dir);
     }
-    
+
     protected boolean tryDirForward090180(Direction dir) throws GameActionException {
         return tryMove(dir) || tryDirForward90180(dir);
     }
@@ -114,7 +114,7 @@ abstract class Pawn extends Robot {
     protected Direction awayFromRobots(List<RobotInfo> robots) throws GameActionException {
         MapLocation location = new MapLocation(0, 0);
         if (robots.size() == 0) {
-        	return Direction.CENTER; //return dirTarget;
+            return Direction.CENTER; // return dirTarget;
         }
         for (RobotInfo robot : robots) {
             location = location.translate(robot.location.x, robot.location.y);
@@ -122,26 +122,27 @@ abstract class Pawn extends Robot {
 
         location = new MapLocation(location.x / robots.size(), location.y / robots.size());
         return directionTo(location).opposite();
-    	//return awayFromRobots1AndTowardsRobots2(robots, Collections.emptyList());
+        // return awayFromRobots1AndTowardsRobots2(robots, Collections.emptyList());
     }
-    
-//    protected Direction awayFromRobots1AndTowardsRobots2(List<RobotInfo> robots1, List<RobotInfo> robots2) throws GameActionException {
-//        MapLocation location = new MapLocation(0, 0);
-//        if (robots1.isEmpty() && robots2.isEmpty()) {
-//            return Direction.CENTER; //return dirTarget;
-//        }
-//        for (RobotInfo robot : robots1) {
-//            location = location.translate(robot.location.x, robot.location.y);
-//        }
-//        for (RobotInfo robot : robots2) {
-//        	MapLocation oppositeLoc = oppositePoint(rc.getLocation(), robot.location);
-//            location = location.translate(oppositeLoc.x, oppositeLoc.y);
-//        }
-//        
-//        int size = robots1.size() + robots2.size();
-//        location = new MapLocation(location.x / size, location.y / size);
-//        return directionTo(location).opposite();
-//    }
+
+    // protected Direction awayFromRobots1AndTowardsRobots2(List<RobotInfo> robots1,
+    // List<RobotInfo> robots2) throws GameActionException {
+    // MapLocation location = new MapLocation(0, 0);
+    // if (robots1.isEmpty() && robots2.isEmpty()) {
+    // return Direction.CENTER; //return dirTarget;
+    // }
+    // for (RobotInfo robot : robots1) {
+    // location = location.translate(robot.location.x, robot.location.y);
+    // }
+    // for (RobotInfo robot : robots2) {
+    // MapLocation oppositeLoc = oppositePoint(rc.getLocation(), robot.location);
+    // location = location.translate(oppositeLoc.x, oppositeLoc.y);
+    // }
+    //
+    // int size = robots1.size() + robots2.size();
+    // location = new MapLocation(location.x / size, location.y / size);
+    // return directionTo(location).opposite();
+    // }
 
     protected Direction awayFromAllies() throws GameActionException {
         return awayFromRobots(Arrays.asList(rc.senseNearbyRobots(sensorRadiusSquared, allyTeam)));
@@ -149,26 +150,26 @@ abstract class Pawn extends Robot {
 
     protected Direction towardsRobots(List<RobotInfo> robots) throws GameActionException {
         return awayFromRobots(robots).opposite();
-        //return awayFromRobots1AndTowardsRobots2(Collections.emptyList(), robots);
+        // return awayFromRobots1AndTowardsRobots2(Collections.emptyList(), robots);
     }
-    
+
     protected void updateDirIfOnBorder() throws GameActionException {
-    	for (Direction dir : DirectionUtils.cardinalDirections) {
-    		if (!rc.onTheMap(rc.getLocation().add(dir))) {
-    			dir = dir.opposite();
-    			switch((int) (Math.random() * 3)) {
-    			case 0:
-    				dirTarget = dir.rotateLeft();
-    				return;
-    			case 1:
-    				dirTarget = dir.rotateRight();
-    				return;
-    			case 2:
-    			default:
-    				dirTarget = dir;
-    			}
-    		}
-    	}
+        for (Direction dir : DirectionUtils.cardinalDirections) {
+            if (!rc.onTheMap(rc.getLocation().add(dir))) {
+                dir = dir.opposite();
+                switch ((int) (Math.random() * 3)) {
+                    case 0:
+                        dirTarget = dir.rotateLeft();
+                        return;
+                    case 1:
+                        dirTarget = dir.rotateRight();
+                        return;
+                    case 2:
+                    default:
+                        dirTarget = dir;
+                }
+            }
+        }
     }
 
     protected class Pathfinding {
@@ -180,17 +181,17 @@ abstract class Pawn extends Robot {
         private MapLocation oldOpR = null;
         private MapLocation oldOpRR = null;
 
-        void resetPrevMovesAndDir(){
+        void resetPrevMovesAndDir() {
             lastDir = null;
-                oldOpLL = null;
-                oldOpL = null;
-                oldOpM = null;
-                oldOpR = null;
-                oldOpRR = null;
+            oldOpLL = null;
+            oldOpL = null;
+            oldOpM = null;
+            oldOpR = null;
+            oldOpRR = null;
         }
 
-        void setTarget(MapLocation target){
-            if(pos.equals(target)){
+        void setTarget(MapLocation target) {
+            if (pos.equals(target)) {
                 return;
             } else {
                 resetPrevMovesAndDir();
@@ -198,14 +199,14 @@ abstract class Pawn extends Robot {
             }
         }
 
-        MapLocation getTarget(){
+        MapLocation getTarget() {
             return pos;
         }
 
         Direction dirToTarget() throws GameActionException {
             return bestDir180(rc.getLocation(), furthestSensibleTile(rc.getLocation(), pos));
         }
-    
+
         private Direction bestDir180(MapLocation from, MapLocation to) throws GameActionException {
             Direction dirM = from.directionTo(to);
             boolean rcLocIsNotEqFrom = rc.getLocation().equals(from);
@@ -224,17 +225,23 @@ abstract class Pawn extends Robot {
                 MapLocation posRR = from.add(dirRR);
                 boolean diagonalMovesRemaining = diagonalMovesRemaining(from, to);
                 double costLL = rcLocIsNotEqFrom || rc.canMove(dirLL) ? cooldownAtTile(posLL) : Double.MAX_VALUE;
-                double costL = rcLocIsNotEqFrom || rc.canMove(dirL) ? (DirectionUtils.isDiagonal(dirL) && diagonalMovesRemaining ? .75 : 1) * cooldownAtTile(posL) : Double.MAX_VALUE;
-                double costM = rcLocIsNotEqFrom || rc.canMove(dirM) ? (DirectionUtils.isDiagonal(dirM) && diagonalMovesRemaining ? .6 : 1) * cooldownAtTile(posM) : Double.MAX_VALUE;
-                double costR = rcLocIsNotEqFrom || rc.canMove(dirR) ? (DirectionUtils.isDiagonal(dirR) && diagonalMovesRemaining ? .75 : 1) * cooldownAtTile(posR) : Double.MAX_VALUE;
+                double costL = rcLocIsNotEqFrom || rc.canMove(dirL)
+                        ? (DirectionUtils.isDiagonal(dirL) && diagonalMovesRemaining ? .75 : 1) * cooldownAtTile(posL)
+                        : Double.MAX_VALUE;
+                double costM = rcLocIsNotEqFrom || rc.canMove(dirM)
+                        ? (DirectionUtils.isDiagonal(dirM) && diagonalMovesRemaining ? .6 : 1) * cooldownAtTile(posM)
+                        : Double.MAX_VALUE;
+                double costR = rcLocIsNotEqFrom || rc.canMove(dirR)
+                        ? (DirectionUtils.isDiagonal(dirR) && diagonalMovesRemaining ? .75 : 1) * cooldownAtTile(posR)
+                        : Double.MAX_VALUE;
                 double costRR = rcLocIsNotEqFrom || rc.canMove(dirRR) ? cooldownAtTile(posRR) : Double.MAX_VALUE;
-    
+
                 rc.setIndicatorDot(posLL, 0, 0, 0);
                 rc.setIndicatorDot(posL, 0, 0, 0);
                 rc.setIndicatorDot(posM, 0, 0, 0);
                 rc.setIndicatorDot(posR, 0, 0, 0);
                 rc.setIndicatorDot(posRR, 0, 0, 0);
-    
+
                 if (costLL < tempCost && !dirLL.equals(oppLastDir) && notLastMoveOption(posLL)) {
                     tempCost = costLL;
                     tempDir = dirLL;
@@ -292,7 +299,7 @@ abstract class Pawn extends Robot {
             } else {
                 return from;
             }
-    
+
         }
 
         private boolean diagonalMovesRemaining(MapLocation from, MapLocation to) {
@@ -302,7 +309,7 @@ abstract class Pawn extends Robot {
         private double cooldownAtTile(MapLocation tile) throws GameActionException {
             return cooldownFromPassability(rc.sensePassability(tile));
         }
-    
+
         private double cooldownFromPassability(double speed) {
             return baseActionCooldown / speed;
         }

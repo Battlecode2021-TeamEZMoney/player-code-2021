@@ -12,7 +12,6 @@ abstract class Pawn extends Robot {
     protected boolean explorer = false;
     protected boolean defending = false;
 
-
     Pawn(RobotController rcin) throws GameActionException {
         super(rcin);
         getHomeHQ();
@@ -37,8 +36,8 @@ abstract class Pawn extends Robot {
             if (robot.type.equals(RobotType.ENLIGHTENMENT_CENTER)) {
                 hqLocation = robot.getLocation();
                 hqID = robot.getID();
-                dirTarget = robotType.equals(RobotType.SLANDERER) ?
-                		Direction.CENTER : Encoding.getDirFromFlag(rc.getFlag(robot.ID));
+                dirTarget = robotType.equals(RobotType.SLANDERER) ? Direction.CENTER
+                        : Encoding.getDirFromFlag(rc.getFlag(robot.ID));
                 explorer = Encoding.getExplorerFromFlag(rc.getFlag(robot.ID));
                 return true;
             }
@@ -55,11 +54,11 @@ abstract class Pawn extends Robot {
     }
 
     protected Direction dirForward90(Direction dir) throws GameActionException {
-    	if (dir.equals(Direction.CENTER)) {
-    		return dir;
-    	}
-    	Direction[] possDirs = {dir, dir.rotateLeft(), dir.rotateRight()};
-    	return maxPassabilityDir(possDirs);
+        if (dir.equals(Direction.CENTER)) {
+            return dir;
+        }
+        Direction[] possDirs = { dir, dir.rotateLeft(), dir.rotateRight() };
+        return maxPassabilityDir(possDirs);
     }
 
     protected boolean tryDirForward90(Direction dir) throws GameActionException {
@@ -67,33 +66,33 @@ abstract class Pawn extends Robot {
     }
 
     protected Direction dirForward180(Direction dir) throws GameActionException {
-    	if (dir.equals(Direction.CENTER)) {
-    		return dir;
-    	}
-    	Direction[] possDirs = {dir, dir.rotateLeft(), dir.rotateRight(), 
-    		DirectionUtils.rotateLeft90(dir), DirectionUtils.rotateRight90(dir)};
-    	return maxPassabilityDir(possDirs);
+        if (dir.equals(Direction.CENTER)) {
+            return dir;
+        }
+        Direction[] possDirs = { dir, dir.rotateLeft(), dir.rotateRight(), DirectionUtils.rotateLeft90(dir),
+                DirectionUtils.rotateRight90(dir) };
+        return maxPassabilityDir(possDirs);
     }
-    
+
     protected Direction maxPassabilityDir(Direction[] possDirs) throws GameActionException {
-    	Direction bestDir = possDirs[0];
-    	double maxPassability = 0;
-    	for (Direction curDir : possDirs) {
-    		if (rc.canMove(curDir)) {
-	    		double curPassability = rc.sensePassability(rc.getLocation().add(curDir));
-	    		if (curPassability > maxPassability) {
-	    			maxPassability = curPassability;
-	    			bestDir = curDir;
-	    		}
-    		}
-    	}
-    	return bestDir;
+        Direction bestDir = possDirs[0];
+        double maxPassability = 0;
+        for (Direction curDir : possDirs) {
+            if (rc.canMove(curDir)) {
+                double curPassability = rc.sensePassability(rc.getLocation().add(curDir));
+                if (curPassability > maxPassability) {
+                    maxPassability = curPassability;
+                    bestDir = curDir;
+                }
+            }
+        }
+        return bestDir;
     }
 
     protected boolean tryDirForward180(Direction dir) throws GameActionException {
         return tryMove(dirForward180(dir));
     }
-    
+
     protected boolean tryDirForward90180(Direction dir) throws GameActionException {
         return tryDirForward90(dir) || tryDirForward180(dir);
     }
@@ -114,23 +113,24 @@ abstract class Pawn extends Robot {
     protected Direction awayFromAllies() throws GameActionException {
         return awayFromRobots(Arrays.asList(rc.senseNearbyRobots(sensorRadiusSquared, allyTeam)));
     }
-    
+
     protected void updateDirIfOnBorder() throws GameActionException {
-    	for (Direction dir : DirectionUtils.cardinalDirections) {
-    		if (!rc.onTheMap(rc.getLocation().add(dir))) {
-    			dir = dir.opposite();
-    			switch((int) (Math.random() * 3)) {
-    			case 0:
-    				dirTarget = dir.rotateLeft();
-    				return;
-    			case 1:
-    				dirTarget = dir.rotateRight();
-    				return;
-    			case 2:
-    			default:
-    				dirTarget = dir;;
-    			}
-    		}
-    	}
+        for (Direction dir : DirectionUtils.cardinalDirections) {
+            if (!rc.onTheMap(rc.getLocation().add(dir))) {
+                dir = dir.opposite();
+                switch ((int) (Math.random() * 3)) {
+                    case 0:
+                        dirTarget = dir.rotateLeft();
+                        return;
+                    case 1:
+                        dirTarget = dir.rotateRight();
+                        return;
+                    case 2:
+                    default:
+                        dirTarget = dir;
+                        ;
+                }
+            }
+        }
     }
 }
