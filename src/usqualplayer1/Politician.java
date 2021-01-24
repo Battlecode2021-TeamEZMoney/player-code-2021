@@ -134,14 +134,6 @@ class Politician extends Attacker {
 			return;
 		}
 		
-		
-//		if (tempTarget != null) {
-//			tryDirForward90180(directionTo(tempTarget));
-//			tempTarget = null;
-//			return;
-//		}
-		
-		//MapLocation target = rc.getLocation();
 		ArrayList<RobotInfo> allySlands = new ArrayList<RobotInfo>();
 		ArrayList<RobotInfo> allyPols = new ArrayList<RobotInfo>();
 		ArrayList<RobotInfo> enemyMucks = new ArrayList<RobotInfo>();
@@ -181,9 +173,6 @@ class Politician extends Attacker {
 //		for (RobotInfo pol : pols) {
 //			System.out.println(printLoc(pol.location));
 //		}
-		
-		//target = target.add(awayFromRobots(pols));
-		//System.out.println("TARGET " + printLoc(target));
 		if (Math.random() < 0.2) {
 			if (allySlands.isEmpty()) {
 				tryDirForward090180(directionTo(slandCenter));
@@ -194,9 +183,6 @@ class Politician extends Attacker {
 			}
 		}
 		tryDirForward090180(awayFromRobots(allyPols));
-		
-		//System.out.println("TARGET " + printLoc(target));
-		//tryDirForward90180(directionTo(target));
 		
 //		if (slands.size() > 4) {
 //			inDefenseRing = false;
