@@ -20,6 +20,10 @@ class Encoding {
 		return encode(loc, type, explorer, 0);
 	}
 
+	static int encode(MapLocation loc, int type, int conv) throws GameActionException{
+		return encode(loc, type, false, conv);
+	}
+
 	static int encode(MapLocation loc, int type, boolean explorer, int conv) throws GameActionException {
 		int x = loc.x, y = loc.y;
 		int xEnc = x & LOC_BITMASK, yEnc = y & LOC_BITMASK;

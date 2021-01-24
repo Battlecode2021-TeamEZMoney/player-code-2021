@@ -12,7 +12,7 @@ abstract class Pawn extends Robot {
     protected boolean explorer = false;
     protected boolean defending = false;
     protected Pathfinding pathingController;
-    protected int lastMode = -1;
+    protected int mode = -1;
 
     Pawn(RobotController rcin) throws GameActionException {
         super(rcin);
@@ -40,15 +40,62 @@ abstract class Pawn extends Robot {
                 hqLocation = robot.getLocation();
                 hqID = robot.getID();
                 dirTarget = directionTo(hqLocation).opposite();
-                explorer = Encoding.getExplorerFromFlag(rc.getFlag(hqID));
+                explorer = rcType.equals(RobotType.MUCKRAKER) && Math.random() > .5;
                 return true;
             }
         }
         return false;
     }
 
+    protected boolean hasOrCanGetHomeHQ() throws GameActionException {
+        if(rc.canGetFlag(hqID)){
+            return true;
+        } else if (getHomeHQ()){
+            return true;
+        }
+        return false;
+    }
+
+    void setNearbyHQFlag() throws GameActionException {
+        if (encoded == 0) {
+            RobotInfo[] nearby = rc.senseNearbyRobots();
+            int tempDist = Integer.MAX_VALUE;
+            Team tempTeam = null;
+            RobotInfo tempBot = null;
+            for (RobotInfo robot : nearby) {
+                int distFromHQ = minMovesLeft(robot.getLocation(), hqLocation);
+                if (robot.getType().equals(RobotType.ENLIGHTENMENT_CENTER)) {
+                    if(distFromHQ < 15 && isEnemy(robot) && (!tempTeam.equals(enemyTeam) || tempDist > distFromHQ)){
+                        tempTeam = robot.getTeam();
+                        tempDist = distFromHQ;
+                        tempBot = robot;
+                    }
+
+                    if(tempDist < 15 && tempTeam.equals(enemyTeam)){
+                        continue;   
+                    } else {
+                        if(tempTeam.equals(allyTeam) && distFromHQ < tempDist){
+                        } else if (tempTeam.equals(enemyTeam) && (robot.getTeam().equals(Team.NEUTRAL) || (distFromHQ < tempDist && robot.getTeam().equals(enemyTeam)))){
+                        } else if (tempTeam.equals(Team.NEUTRAL) && distFromHQ < tempDist && robot.getTeam().equals(Team.NEUTRAL)){
+                        } else if (Math.random() < .1){
+                        } else {
+                            continue;
+                        }
+                        tempTeam = robot.getTeam();
+                        tempDist = distFromHQ;
+                        tempBot = robot;
+                    }
+                }
+            }
+            encoded = Encoding.encode(tempBot.getLocation(), flagCodeFromHQTeam(tempTeam), tempBot.conviction);
+        }
+        trySetFlag(encoded);
+        encoded = 0;
+    }
+
+
     protected boolean tryMove(Direction dir) throws GameActionException {
-        if (rc.canMove(dir)) {
+        if (!dir.equals(Direction.CENTER) && rc.canMove(dir)) {
             rc.move(dir);
             return true;
         }
@@ -191,7 +238,7 @@ abstract class Pawn extends Robot {
             oldOpRR = null;
         }
 
-        void setTarget(MapLocation target) {
+        private void setTarget(MapLocation target) {
             if (pos.equals(target)) {
                 return;
             } else {
@@ -204,7 +251,11 @@ abstract class Pawn extends Robot {
             return pos;
         }
 
-        Direction dirToTarget() throws GameActionException {
+        Direction dirToTarget(MapLocation target) throws GameActionException {
+            setTarget(target);
+            if(pos == null){
+                return Direction.CENTER;
+            }
             return bestDir180(rc.getLocation(), furthestSensibleTile(rc.getLocation(), pos));
         }
 

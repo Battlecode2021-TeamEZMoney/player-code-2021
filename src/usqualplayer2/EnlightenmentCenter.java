@@ -13,7 +13,6 @@ class EnlightenmentCenter extends Robot {
     private RobotType unitToBuild;
     private int infToSpend;
     private Direction dirTarget, buildDirection;
-    private boolean explorer;
     private int slandDistAway = 10;
     private int influence, maxInf;
     private MapLocation slandCenter;
@@ -84,7 +83,6 @@ class EnlightenmentCenter extends Robot {
                         dirTarget = directionTo(spawnLocs.remove());
                     }
                     buildDirection = getBuildDirection(unitToBuild, dirTarget, infToSpend);
-                    explorer = (unitToBuild == RobotType.MUCKRAKER && Math.random() < 0.5);
                     // || (unitToBuild == RobotType.POLITICIAN && Math.random() < 0.2);
                     if (rc.canBuildRobot(unitToBuild, buildDirection, infToSpend)) {
                         rc.buildRobot(unitToBuild, buildDirection, infToSpend);
@@ -211,7 +209,7 @@ class EnlightenmentCenter extends Robot {
             case SLANDERER:
                 Integer maxOptimalSlandInf = Constants.optimalSlandInfSet.floor(maxInf);
                 if (slandCenter != Constants.origin) {
-                    nextEncoding = Encoding.encode(slandCenter, FlagCodes.slandCenter, explorer);
+                    nextEncoding = Encoding.encode(slandCenter, FlagCodes.slandCenter);
                 }
                 return maxOptimalSlandInf != null ? maxOptimalSlandInf : 0;
             case POLITICIAN:
@@ -247,18 +245,18 @@ class EnlightenmentCenter extends Robot {
             return encoding;
         }
 
-        if (canSenseEnemy() && Math.random() < 0.8) {
-            return Encoding.encode(rc.getLocation(), FlagCodes.patrol, explorer);
+        if (canSenseEnemy()) {
+            return Encoding.encode(rc.getLocation(), FlagCodes.patrol);
         } else if (!neutralHQs.isEmpty()
                 && ((unitToBuild.equals(RobotType.POLITICIAN) && Math.random() < 0.5) || Math.random() < 0.2)) {
-            return Encoding.encode(minNeutral.getKey(), FlagCodes.neutralHQ, explorer);
+            return Encoding.encode(minNeutral.getKey(), FlagCodes.neutralHQ);
         } else if (!enemyHQs.isEmpty()) {
             if (Math.random() < 0.2 && slandCenter != Constants.origin) {
-                return Encoding.encode(slandCenter, FlagCodes.slandCenter, explorer);
+                return Encoding.encode(slandCenter, FlagCodes.slandCenter);
             }
-            return Encoding.encode(minEnemy.getKey(), FlagCodes.enemyHQ, explorer);
+            return Encoding.encode(minEnemy.getKey(), FlagCodes.enemyHQ);
         } else {
-            return Encoding.encode(rc.getLocation(), FlagCodes.simple, explorer);
+            return Encoding.encode(rc.getLocation(), FlagCodes.simple);
         }
     }
 
@@ -327,12 +325,11 @@ class EnlightenmentCenter extends Robot {
         private double getBidMultiplier() {
             final int lowerVote = Math.max(VOTES_TO_WIN - MAX_ROUNDS + rc.getRoundNum(), 0);
             final int upperVote = Math.min(rc.getRoundNum(), VOTES_TO_WIN);
-            if (rc.getTeamVotes() < lowerVote || rc.getTeamVotes() > upperVote) {
-                // System.out.println("Error, vote count out of expected bounds.... ????");
-                // TODO: Not necessarily ^, the opponent often does not get all the votes we
-                // didn't,
-                // so we potentially could still win more votes with less than 751 total.
+            if (rc.getTeamVotes() > upperVote) {
+                System.out.println("Error, vote count out of expected bounds.... ????");
                 return 1;
+            } else if (rc.getTeamVotes() < lowerVote) {
+                return 1.7;
             }
             return ((1 + .5 * (.05 * (Math.log(rc.getTeamVotes() + 30 - lowerVote) / Math.log(1.5))))
                     / (1 + Math.exp(0.03 * (rc.getTeamVotes() - lowerVote)))) + 1 + (1 / (upperVote - lowerVote));
@@ -340,7 +337,7 @@ class EnlightenmentCenter extends Robot {
 
     }
 
-    void printStoredECs() throws GameActionException {
+    void printStoredECs() {
         System.out.println();
         for (Map.Entry<MapLocation, Integer> entry : enemyHQs.entrySet())
             System.out.println("Enemy EC: " + printLoc(entry.getKey()) + " with conv to spawn " + entry.getValue());

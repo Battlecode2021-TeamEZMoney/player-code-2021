@@ -9,7 +9,7 @@ abstract class Robot {
     protected int turnCount = 0;
     protected final Team allyTeam;
     protected final Team enemyTeam;
-    protected final RobotType robotType;
+    protected final RobotType rcType;
     protected final int actionRadiusSquared;
     protected final int detectionRadiusSquared;
     protected final int sensorRadiusSquared;
@@ -20,11 +20,11 @@ abstract class Robot {
         this.rc = rcin;
         this.allyTeam = rc.getTeam();
         this.enemyTeam = allyTeam.opponent();
-        this.robotType = rc.getType();
-        this.actionRadiusSquared = this.robotType.actionRadiusSquared;
-        this.detectionRadiusSquared = this.robotType.detectionRadiusSquared;
-        this.sensorRadiusSquared = this.robotType.sensorRadiusSquared;
-        this.baseActionCooldown = this.robotType.actionCooldown;
+        this.rcType = rc.getType();
+        this.actionRadiusSquared = this.rcType.actionRadiusSquared;
+        this.detectionRadiusSquared = this.rcType.detectionRadiusSquared;
+        this.sensorRadiusSquared = this.rcType.sensorRadiusSquared;
+        this.baseActionCooldown = this.rcType.actionCooldown;
     }
 
     abstract void run() throws GameActionException;
@@ -52,30 +52,19 @@ abstract class Robot {
         return false;
     }
 
-    void setNearbyHQFlag() throws GameActionException {
-        if (encoded == 0) {
-            RobotInfo[] nearby = rc.senseNearbyRobots();
-            int tempDist = Integer.MAX_VALUE;
-            Team tempTeam = null;
-            for (RobotInfo robot : nearby) {
-                if (robot.type.equals(RobotType.ENLIGHTENMENT_CENTER)) {
-                    
-                    
-                    if (robot.team.equals(Team.NEUTRAL)) {
-                        flagCode = FlagCodes.neutralHQ;
-                    } else if (robot.team.equals(enemyTeam)) {
-                        flagCode = FlagCodes.enemyHQ;
-                    } else if (robot.team.equals(allyTeam)) {
-                        flagCode = FlagCodes.friendlyHQ;
-                    }
-                    encoded = Encoding.encode(robot.getLocation(), flagCode, false, robot.conviction);
-                    if (Math.random() < 0.4)
-                        break;
-                }
-            }
+    static int minMovesLeft(MapLocation from, MapLocation to) {
+        return Math.max(Math.abs(from.x - to.x), Math.abs(from.y - to.y));
+    }
+
+    protected int flagCodeFromHQTeam(Team team){
+        if (team.equals(enemyTeam)){
+            return FlagCodes.enemyHQ;
+        } else if (team.equals(allyTeam)){
+            return FlagCodes.friendlyHQ;
+        } else if (team.equals(Team.NEUTRAL)){
+            return FlagCodes.neutralHQ;
         }
-        trySetFlag(encoded);
-        encoded = 0;
+        return 0;
     }
 
     static class FlagCodes {
@@ -190,7 +179,7 @@ abstract class Robot {
         return new MapLocation(2 * center.x - point.x, 2 * center.y - point.y);
     }
 
-    String printLoc(MapLocation loc) throws GameActionException {
+    String printLoc(MapLocation loc) {
         return "(" + loc.x + ", " + loc.y + ")";
     }
 }
