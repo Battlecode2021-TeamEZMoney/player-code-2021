@@ -31,9 +31,9 @@ public strictfp class RobotPlayer {
         while (true) {
             switch (rc.getRoundNum()) {
                 case 1:
-                case 100:
                 case 200:
-                case 300:
+                case 400:
+                case 600:
                     rc.buildRobot(RobotType.POLITICIAN, Direction.SOUTHEAST, 1);
             }
             Clock.yield();
@@ -45,7 +45,7 @@ public strictfp class RobotPlayer {
         int firstRound = rc.getRoundNum();
         for (RobotInfo robot : rc.senseNearbyRobots(2, rc.getTeam())) {
             if (robot.getType() == RobotType.ENLIGHTENMENT_CENTER) {
-                pos = robot.getLocation().translate(7, -55);
+                pos = robot.getLocation().translate(25, -40);
                 break;
             }
         }
@@ -58,13 +58,13 @@ public strictfp class RobotPlayer {
                         case 1:
                             goStraight();
                             break;
-                        case 100:
+                        case 200:
                             best90();
                             break;
-                        case 200:
+                        case 400:
                             best180();
                             break;
-                        case 300:
+                        case 600:
                             best90heur();
                             break;
                         default:
@@ -76,7 +76,7 @@ public strictfp class RobotPlayer {
             System.out.println((firstRound - 1) + " finished in " + turnCount + " turns with a maximum of " + mostBytecode
                     + " bytecode.");
             while (true) {
-                tryMove(Direction.EAST);
+                tryMove(Direction.SOUTH);
                 Clock.yield();
             }
         }
