@@ -162,10 +162,10 @@ class EnlightenmentCenter extends Robot {
         		&& ( (!neutralHQs.isEmpty() && maxInf * rc.getEmpowerFactor(allyTeam, 20) >= minNeutral.getValue()) || (!enemyHQs.isEmpty() && maxInf * rc.getEmpowerFactor(allyTeam, 20) >= minEnemy.getValue()) ) ) {
         	//System.out.println("b");
         	return RobotType.POLITICIAN;
-        } else if (rand > (0.1 + 0.2 * rc.getRoundNum() / Constants.MAX_ROUNDS)
+        } else if (rand > (0.3 + 0.2 * rc.getRoundNum() / Constants.MAX_ROUNDS)
         		|| maxInf / 2 < Constants.minimumPolInf || canSenseEnemyPolitician()) {
             return RobotType.MUCKRAKER;
-        } else if (rand < (0.1 - 0.1 * rc.getRoundNum() / Constants.MAX_ROUNDS)
+        } else if (rand < Math.max(0.2, 0.3 - 0.1 * rc.getRoundNum() / 100)
         		&& !canSenseEnemyMuckraker() && rc.getEmpowerFactor(enemyTeam, 0) < 1.1) {
             return RobotType.SLANDERER;
         } else {
@@ -184,7 +184,7 @@ class EnlightenmentCenter extends Robot {
             case POLITICIAN:
             	if (rc.getEmpowerFactor(allyTeam, 11) > 1.5) {
             		//System.out.println(".a");
-            		return maxInf;
+            		return maxInf / 2;
             	} else if (!neutralHQs.isEmpty() && maxInf * rc.getEmpowerFactor(allyTeam, 20) >= minNeutral.getValue()) {
             		//System.out.println(".b");
             		nextEncoding = Encoding.encode(minNeutral.getKey(), FlagCodes.neutralHQ, false);

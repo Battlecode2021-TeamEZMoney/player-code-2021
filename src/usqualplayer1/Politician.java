@@ -32,6 +32,7 @@ class Politician extends Attacker {
 	void run() throws GameActionException {
 		while (true) {
 			turnCount++;
+			//int start = 0;
 			if (rc.isReady()) {
 				updateHQs();
 				if (Math.random() < 0.8 && neutralHQ == null && enemyHQ == null) {
@@ -39,9 +40,9 @@ class Politician extends Attacker {
 					tryOptimalEmpower();
 					//System.out.println(Clock.getBytecodesLeft()-start);
 				}
+				//start = Clock.getBytecodesLeft();
 				endOfMatchEmpower();
-				// start = Clock.getBytecodesLeft();
-				if (Clock.getBytecodesLeft() > 6000) {
+				if (Clock.getBytecodesLeft() > 10000) {
 					if (explorer) {
 						runSimpleCode();
 					} else if (slandCenter != null) {
@@ -64,8 +65,7 @@ class Politician extends Attacker {
 				}
 			}
 			setNearbyHQFlag();
-			// if (Clock.getBytecodesLeft()-start < -4000) System.out.println("Used " +
-			// (Clock.getBytecodesLeft()-start));
+			//if (Clock.getBytecodesLeft()-start < -10000) System.out.println("Used " + (Clock.getBytecodesLeft()-start));
 
 //			System.out.println("N: " + (neutralHQ == null ? "null" : printLoc(neutralHQ)));
 //			System.out.println("E: " + (enemyHQ == null ? "null" : printLoc(enemyHQ)));
@@ -214,8 +214,8 @@ class Politician extends Attacker {
 	private void empowerIfMuckNearby() throws GameActionException {
 		for (RobotInfo robot : rc.senseNearbyRobots(2, enemyTeam)) {
 			if (robot.type.equals(RobotType.MUCKRAKER)) {
-				tryEmpower(distanceSquaredTo(robot));
-				//tryEmpower(actionRadiusSquared);
+				//tryEmpower(distanceSquaredTo(robot));
+				tryEmpower(actionRadiusSquared);
 			}
 		}
 	}

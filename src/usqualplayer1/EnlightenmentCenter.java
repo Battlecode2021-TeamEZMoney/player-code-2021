@@ -186,15 +186,15 @@ class EnlightenmentCenter extends Robot {
         } else if (rand > Math.min(0.6, 0.4 + 0.2 * rc.getRoundNum() / 100)) {
         	//System.out.println("a");
             nextEncoding = Encoding.encode(slandCenter, FlagCodes.slandCenter, false);
-    		influence = Constants.minimumPolInf;
+    		influence = rc.getInfluence() > 100 ? Constants.minimumPolInf * 2 : Constants.minimumPolInf;
             return RobotType.POLITICIAN;
         } else if (rand > 0.5
         		&& ( (!neutralHQs.isEmpty() && maxInf * rc.getEmpowerFactor(allyTeam, 20) >= minNeutral.getValue())
         				|| (!enemyHQs.isEmpty() && maxInf * rc.getEmpowerFactor(allyTeam, 20) >= minEnemy.getValue()) ) ) {
         	//System.out.println("b");
-        	System.out.println("I AM SENT");
+        	//System.out.println("I AM SENT");
         	return RobotType.POLITICIAN;
-        } else if (rand > (0.4 + 0.2 * rc.getRoundNum() / Constants.MAX_ROUNDS)) {
+        } else if (rand > (0.3 + 0.2 * rc.getRoundNum() / Constants.MAX_ROUNDS)) {
             return RobotType.MUCKRAKER;
         } else if (rand < Math.max(0.2, 0.3 - 0.1 * rc.getRoundNum() / 100)
         		&& !canSenseEnemyMuckraker() && rc.getEmpowerFactor(enemyTeam, 0) < 1.1) {

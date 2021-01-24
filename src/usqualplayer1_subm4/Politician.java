@@ -39,7 +39,7 @@ class Politician extends Attacker {
 				}
 				endOfMatchEmpower();
 				// start = Clock.getBytecodesLeft();
-				if (Clock.getBytecodesLeft() > 6000) {
+				if (Clock.getBytecodesLeft() > 10000) {
 					if (explorer) {
 						runSimpleCode();
 					} else if (slandCenter != null) {
