@@ -1,4 +1,4 @@
-package usqualplayer1_subm2;
+package usqualplayer1_subm4;
 
 import battlecode.common.*;
 //import java.util.*;
@@ -9,6 +9,7 @@ class Politician extends Attacker {
 	private MapLocation neutralHQ = null;
 	private boolean waiting = Math.random() < 0.1;
 	private MapLocation slandCenter = null;
+	private int turnsWaited = 0;
 
 	Politician(RobotController rcin) throws GameActionException {
 		super(rcin);
@@ -30,7 +31,7 @@ class Politician extends Attacker {
 			turnCount++;
 			if (rc.isReady()) {
 				updateHQs();
-				if (Math.random() < 0.8) {
+				if (Math.random() < 0.8 && neutralHQ == null && enemyHQ == null) {
 					tryOptimalSelfEmpower();
 					//int start = Clock.getBytecodesLeft();
 					tryOptimalEmpower();
@@ -235,22 +236,34 @@ class Politician extends Attacker {
 			tryEmpower(rad);
 		}
 	}
-
+	
 	private void HQAttackRoutine(MapLocation locHQ) throws GameActionException {
+		int numSurrounding1 = numSurrounding(1);
+		int numSurrounding2 = numSurrounding(2);
 		if (rc.getLocation().isAdjacentTo(locHQ)) {
 			if (DirectionUtils.isCardinal(directionTo(locHQ))) {
-				tryEmpower(1);
+				if (numSurrounding1 <= turnsWaited / 10 + 1) {
+					tryEmpower(1);
+				}
 			} else {
 				if (!tryDirForward90(directionTo(locHQ))) {
-					tryEmpower(2);
+					if (numSurrounding2 <= turnsWaited / 10 + 1) {
+						tryEmpower(2);
+					}
+				} else {
+					turnsWaited = 0;
 				}
 			}
+			turnsWaited++;
 		} else if (!tryDirForward90(directionTo(locHQ))) {
-			if (withinAttackRange(locHQ)) {
+			if (withinAttackRange(locHQ) && turnsWaited > 20) {
 				tryEmpower(distanceSquaredTo(locHQ));
 			} else {
 				tryDirForward180(directionTo(locHQ));
 			}
+			turnsWaited++;
+		} else {
+			turnsWaited = 0;
 		}
 	}
 

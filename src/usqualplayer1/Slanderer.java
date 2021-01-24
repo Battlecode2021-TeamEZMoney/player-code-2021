@@ -57,10 +57,14 @@ class Slanderer extends Pawn {
 			return;
 		}
 		
-		if (distanceSquaredTo(slandCenter) > 8 && tryDirForward090180(directionTo(slandCenter))) {
-			return;
-		} else {
-			tryDirForward090180(directionTo(slandCenter).opposite());
+		if (!tryDirForward090180(awayFromEnemyMuckrakers())) {
+			if (distanceSquaredTo(slandCenter) > 8 && tryDirForward090180(directionTo(slandCenter))) {
+				return;
+			} else {
+				if (Math.random() < 0.2) {
+					tryDirForward090180(directionTo(slandCenter).opposite());
+				}
+			}
 		}
 
 //		if (!tryDirForward90180(awayFromEnemyMuckrakers())) {
