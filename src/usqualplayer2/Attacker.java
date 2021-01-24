@@ -3,6 +3,8 @@ package usqualplayer2;
 import battlecode.common.*;
 
 public abstract class Attacker extends Pawn {
+    protected MapLocation enemyHQ = null;
+
     Attacker(RobotController rcin) throws GameActionException {
         super(rcin);
     }

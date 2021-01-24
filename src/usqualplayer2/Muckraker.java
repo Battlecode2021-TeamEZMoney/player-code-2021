@@ -4,7 +4,7 @@ import battlecode.common.*;
 import common.*;
 
 class Muckraker extends Attacker {
-	private MapLocation enemyHQ = null;
+	private boolean wasEnemyHQMuckSaturated = false;
 
 	Muckraker(RobotController rcin) throws GameActionException {
 		super(rcin);
@@ -13,6 +13,13 @@ class Muckraker extends Attacker {
 	void run() throws GameActionException {
 		while (true) {
 			turnCount++;
+
+			// When attacking
+			if (enemyHQIsCurrent()){
+				
+				runAttackCode();
+			}
+
 			if (rc.isReady()) {
 				updateHQs();
 				if (explorer) {
@@ -39,21 +46,16 @@ class Muckraker extends Attacker {
 		}
 	}
 
-	private void updateHQs() throws GameActionException {
-		if (enemyHQ != null && rc.canSenseLocation(enemyHQ)
-				&& !rc.senseRobotAtLocation(enemyHQ).team.equals(enemyTeam)) {
-			enemyHQ = null;
-		}
-		if (enemyHQ == null) {
-			RobotInfo[] nearby = rc.senseNearbyRobots();
-			for (RobotInfo robot : nearby) {
-				if (robot.type.equals(RobotType.ENLIGHTENMENT_CENTER)) {
-					if (robot.team.equals(enemyTeam)) {
-						enemyHQ = robot.location;
-					}
-				}
+	private boolean enemyHQIsCurrent() throws GameActionException {
+		if (enemyHQ != null && rc.canSenseLocation(enemyHQ)) {
+			RobotInfo tempHQ = rc.senseRobotAtLocation(enemyHQ);
+			if (!tempHQ.getTeam().equals(enemyTeam)){
+				enemyHQ = null;
+				encoded = Encoding.encode(tempHQ.getLocation(), FlagCodes.friendlyHQ, false, tempHQ.conviction);
+				return false;
 			}
 		}
+		return true;
 	}
 
 	private void parseHQFlag(int flag) throws GameActionException {
@@ -118,11 +120,29 @@ class Muckraker extends Attacker {
 	private void HQAttackRoutine(MapLocation locHQ) throws GameActionException {
 		if (huntOrExposeSlanderer()) {
 			return;
-		} else if (distanceSquaredTo(locHQ) > actionRadiusSquared && tryDirForward90180(directionTo(locHQ))) {
+		} else if (distanceSquaredTo(locHQ) <= 2) {
+			return;
+		} else if (distanceSquaredTo(locHQ) > 17 ) {
+			tryMove(pathingController.dirToTarget());
+		} else if (isEnemyHQMuckSaturated(locHQ)){
+			wasEnemyHQMuckSaturated = true;
+			runSimpleCode();
+		} else {
+			tryMove(pathingController.dirToTarget());
+		}
+		
+		/*if (distanceSquaredTo(locHQ) > actionRadiusSquared && tryDirForward90180(directionTo(locHQ))) {
 			return;
 		} else {
 			tryDirForward90180(directionTo(locHQ).opposite());
-		}
+		}*/
+	}
+
+	private boolean isEnemyHQMuckSaturated(MapLocation locHQ) throws GameActionException {
+		if(rc.canSenseLocation(locHQ) && distanceSquaredTo(locHQ) <= 17){
+			return rc.senseNearbyRobots(locHQ, 2, allyTeam).length == 8;	
+		} 
+		return false;
 	}
 
 	private void runAttackCode() throws GameActionException {

@@ -55,9 +55,12 @@ abstract class Robot {
     void setNearbyHQFlag() throws GameActionException {
         if (encoded == 0) {
             RobotInfo[] nearby = rc.senseNearbyRobots();
+            int tempDist = Integer.MAX_VALUE;
+            Team tempTeam = null;
             for (RobotInfo robot : nearby) {
                 if (robot.type.equals(RobotType.ENLIGHTENMENT_CENTER)) {
-                    int flagCode = 0;
+                    
+                    
                     if (robot.team.equals(Team.NEUTRAL)) {
                         flagCode = FlagCodes.neutralHQ;
                     } else if (robot.team.equals(enemyTeam)) {

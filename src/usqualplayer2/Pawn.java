@@ -12,6 +12,7 @@ abstract class Pawn extends Robot {
     protected boolean explorer = false;
     protected boolean defending = false;
     protected Pathfinding pathingController;
+    protected int lastMode = -1;
 
     Pawn(RobotController rcin) throws GameActionException {
         super(rcin);
@@ -39,7 +40,7 @@ abstract class Pawn extends Robot {
                 hqLocation = robot.getLocation();
                 hqID = robot.getID();
                 dirTarget = directionTo(hqLocation).opposite();
-                explorer = Encoding.getExplorerFromFlag(rc.getFlag(robot.ID));
+                explorer = Encoding.getExplorerFromFlag(rc.getFlag(hqID));
                 return true;
             }
         }

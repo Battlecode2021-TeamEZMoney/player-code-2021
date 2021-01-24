@@ -6,7 +6,6 @@ import java.util.*;
 //import simpleplayer4.Robot.FlagCodes;
 
 class Politician extends Attacker {
-	private MapLocation enemyHQ = null;
 	private MapLocation neutralHQ = null;
 	private boolean waiting = Math.random() < 0.1;
 	private MapLocation slandCenter = null;
