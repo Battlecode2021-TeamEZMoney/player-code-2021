@@ -1,4 +1,4 @@
-package usqualplayer1_subm1;
+package usqualplayer1_subm4;
 
 import battlecode.common.*;
 import java.util.*;
@@ -161,6 +161,10 @@ abstract class Robot {
         return numMucks2 >= 5 || numMucks5 >= 10;
     }
 
+    protected int numSurrounding(int radius) {
+    	return rc.senseNearbyRobots(radius).length;
+    }
+    
     String printLoc(MapLocation loc) throws GameActionException {
         return "(" + loc.x + ", " + loc.y + ")";
     }

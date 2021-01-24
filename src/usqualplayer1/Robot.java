@@ -15,6 +15,7 @@ abstract class Robot {
     protected final int detectionRadiusSquared;
     protected final int sensorRadiusSquared;
     protected final double baseActionCooldown;
+    protected int encoded = 0;
 
     Robot(RobotController rcin){
         this.rc = rcin;
@@ -53,26 +54,26 @@ abstract class Robot {
     }
 
     void setNearbyHQFlag() throws GameActionException {
-        int encoded = -1;
-        RobotInfo[] nearby = rc.senseNearbyRobots();
-        for (RobotInfo robot : nearby) {
-            if (robot.type.equals(RobotType.ENLIGHTENMENT_CENTER)) {
-                int flagCode = 0;
-                if (robot.team.equals(Team.NEUTRAL)) {
-                    flagCode = FlagCodes.neutralHQ;
-                } else if (robot.team.equals(enemyTeam)) {
-                    flagCode = FlagCodes.enemyHQ;
-                } else if (robot.team.equals(allyTeam)) {
-                    flagCode = FlagCodes.friendlyHQ;
-                }
-                encoded = Encoding.encode(robot.getLocation(), flagCode, false, robot.conviction);
-                if (Math.random() < 0.4)
-                    break;
-            }
-        }
-        if (encoded != -1) {
-            trySetFlag(encoded);
-        }
+    	if (encoded == 0) {
+	        RobotInfo[] nearby = rc.senseNearbyRobots();
+	        for (RobotInfo robot : nearby) {
+	            if (robot.type.equals(RobotType.ENLIGHTENMENT_CENTER)) {
+	                int flagCode = 0;
+	                if (robot.team.equals(Team.NEUTRAL)) {
+	                    flagCode = FlagCodes.neutralHQ;
+	                } else if (robot.team.equals(enemyTeam)) {
+	                    flagCode = FlagCodes.enemyHQ;
+	                } else if (robot.team.equals(allyTeam)) {
+	                    flagCode = FlagCodes.friendlyHQ;
+	                }
+	                encoded = Encoding.encode(robot.getLocation(), flagCode, false, robot.conviction);
+	                if (Math.random() < 0.4)
+	                    break;
+	            }
+	        }
+    	}
+        trySetFlag(encoded);
+        encoded = 0;
     }
 
     static class FlagCodes {
@@ -82,6 +83,7 @@ abstract class Robot {
         public static int neutralHQ = 4;
         public static int patrol = 5;
         public static int slandCenter = 6;
+        public static int empowering = 7;
     }
 
     protected boolean canSenseEnemy() throws GameActionException {
@@ -138,6 +140,10 @@ abstract class Robot {
             default:
                 return 0;
         }
+    }
+    
+    protected int numSurrounding(int radius) {
+    	return rc.senseNearbyRobots(radius).length;
     }
 
     protected boolean crowdedByEnemy(MapLocation loc) throws GameActionException {

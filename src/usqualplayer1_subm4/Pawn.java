@@ -1,7 +1,6 @@
-package usqualplayer1_subm1;
+package usqualplayer1_subm4;
 
 import battlecode.common.*;
-
 import java.util.*;
 
 abstract class Pawn extends Robot {
