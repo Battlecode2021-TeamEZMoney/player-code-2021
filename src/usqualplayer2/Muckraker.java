@@ -5,6 +5,7 @@ import common.*;
 
 class Muckraker extends Attacker {
 	private boolean wasEnemyHQMuckSaturated = false;
+	protected boolean defending = false;
 
 	Muckraker(RobotController rcin) throws GameActionException {
 		super(rcin);
