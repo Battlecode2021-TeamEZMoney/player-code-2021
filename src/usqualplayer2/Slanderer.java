@@ -5,7 +5,6 @@ import java.util.*;
 
 class Slanderer extends Pawn {
 	Politician successor;
-	private MapLocation slandCenter = null;
 
 	Slanderer(RobotController rcin) throws GameActionException {
 		super(rcin);
@@ -24,8 +23,7 @@ class Slanderer extends Pawn {
 				runSimpleCode();
 			}
 
-			// This was commented out, not sure why, but I'll leave it for now - Aidan
-			// setNearbyHQFlag();
+			setNearbyHQFlag();
 
 			Clock.yield();
 		}
@@ -55,7 +53,7 @@ class Slanderer extends Pawn {
 		}
 
 		if (!tryDirForward090180(awayFromEnemyMuckrakers())) {
-			if (distanceSquaredTo(slandCenter) > 8 && tryMove(pathingController.dirToTarget(slandCenter))) {
+			if (tryMove(pathingController.dirToTarget(slandCenter))) {
 				return;
 			} else {
 				if (Math.random() < 0.2) {
@@ -71,7 +69,7 @@ class Slanderer extends Pawn {
 		}
 
 		if (!tryDirForward090180(awayFromEnemyMuckrakers())) {
-			if (hqLocation != null && distanceSquaredTo(hqLocation) < 25) {
+			if (hqLocation != null && distanceSquaredTo(hqLocation) < 8) {
 				tryDirForward90(directionTo(hqLocation).opposite());
 			}
 		}

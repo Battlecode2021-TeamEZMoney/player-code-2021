@@ -17,7 +17,7 @@ class Muckraker extends Attacker {
 				parseHQFlag(rc.getFlag(hqID));
 				if (explorer && !defending) {
 					runSimpleCode();
-				} else if (mode == 2 || (enemyHQ != null && enemyHQIsCurrent())) {
+				} else if ((mode == 2 || (enemyHQ != null && enemyHQIsCurrent())) && !wasEnemyHQMuckSaturated) {
 					runAttackCode();
 				} else if (mode == 5 && defending) {
 					runDefendCode();
@@ -42,7 +42,7 @@ class Muckraker extends Attacker {
 		MapLocation tempLocation = Encoding.getLocationFromFlag(rc, flag);
 		switch (Encoding.getTypeFromFlag(flag)) {
 			case 2:
-				if (enemyHQ == null || !enemyHQ.equals(tempLocation)) {
+				if (enemyHQ == null) {
 					enemyHQ = tempLocation;
 					wasEnemyHQMuckSaturated = false;
 				} else if (minMovesLeft(rc.getLocation(), enemyHQ) > 20 && wasEnemyHQMuckSaturated) {
@@ -117,6 +117,7 @@ class Muckraker extends Attacker {
 			tryMove(pathingController.dirToTarget(enemyHQ));
 		} else if (isEnemyHQMuckSaturated(locHQ)) {
 			wasEnemyHQMuckSaturated = true;
+			dirTarget = DirectionUtils.randomDirection();
 			runSimpleCode();
 			return;
 		} else {
@@ -132,6 +133,9 @@ class Muckraker extends Attacker {
 	}
 
 	private void runAttackCode() throws GameActionException {
+		if (rc.canSenseLocation(enemyHQ) && !rc.senseRobotAtLocation(enemyHQ).getTeam().equals(enemyHQ)){
+			enemyHQ = null;
+		}
 		if (!rc.isReady()) {
 			return;
 		}

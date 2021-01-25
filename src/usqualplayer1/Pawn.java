@@ -15,7 +15,6 @@ abstract class Pawn extends Robot {
     Pawn(RobotController rcin) throws GameActionException {
         super(rcin);
         getHomeHQ();
-        this.pathingController = new Pathfinding();
     }
 
     static Pawn unitFromRobotController(RobotController rc) throws Exception {

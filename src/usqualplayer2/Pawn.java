@@ -126,6 +126,11 @@ abstract class Pawn extends Robot {
         return tryMove(dirForward90(dir));
     }
 
+        
+    protected boolean tryDirForward090(Direction dir) throws GameActionException {
+        return tryMove(dir) || tryDirForward90(dir);
+    }
+
     protected Direction dirForward180(Direction dir) throws GameActionException {
         if (dir.equals(Direction.CENTER)) {
             return dir;
@@ -237,6 +242,7 @@ abstract class Pawn extends Robot {
         private MapLocation oldOpM = null;
         private MapLocation oldOpR = null;
         private MapLocation oldOpRR = null;
+        private MapLocation lastPos = rc.getLocation();
 
         void resetPrevMovesAndDir() {
             lastDir = null;
@@ -265,14 +271,18 @@ abstract class Pawn extends Robot {
             if (pos == null) {
                 return Direction.CENTER;
             }
-            return bestDir180(rc.getLocation(), furthestSensibleTile(rc.getLocation(), pos));
+            return bestDir180(furthestSensibleTile(rc.getLocation(), pos));
         }
 
-        private Direction bestDir180(MapLocation from, MapLocation to) throws GameActionException {
+        private Direction bestDir180(MapLocation to) throws GameActionException {
+            MapLocation from = rc.getLocation();
+            if (from.equals(lastPos)){
+                resetPrevMovesAndDir();
+            }
             Direction dirM = from.directionTo(to);
-            boolean rcLocIsNotEqFrom = !rc.getLocation().equals(from);
+            //boolean rcLocIsNotEqFrom = !rc.getLocation().equals(from);
             if (from.isAdjacentTo(to)) {
-                Direction oppLastDir = lastDir.opposite();
+                Direction oppLastDir = (lastDir == null ? Direction.CENTER : lastDir.opposite());
                 double tempCost = Double.MAX_VALUE - 1;
                 Direction tempDir = dirM;
                 Direction dirL = dirM.rotateLeft();
@@ -285,17 +295,17 @@ abstract class Pawn extends Robot {
                 MapLocation posR = from.add(dirR);
                 MapLocation posRR = from.add(dirRR);
                 boolean diagonalMovesRemaining = diagonalMovesRemaining(from, to);
-                double costLL = rcLocIsNotEqFrom || rc.canMove(dirLL) ? cooldownAtTile(posLL) : Double.MAX_VALUE;
-                double costL = rcLocIsNotEqFrom || rc.canMove(dirL)
+                double costLL = rc.canMove(dirLL) ? cooldownAtTile(posLL) : Double.MAX_VALUE;
+                double costL =  rc.canMove(dirL)
                         ? (DirectionUtils.isDiagonal(dirL) && diagonalMovesRemaining ? .75 : 1) * cooldownAtTile(posL)
                         : Double.MAX_VALUE;
-                double costM = rcLocIsNotEqFrom || rc.canMove(dirM)
+                double costM = rc.canMove(dirM)
                         ? (DirectionUtils.isDiagonal(dirM) && diagonalMovesRemaining ? .6 : 1) * cooldownAtTile(posM)
                         : Double.MAX_VALUE;
-                double costR = rcLocIsNotEqFrom || rc.canMove(dirR)
+                double costR = rc.canMove(dirR)
                         ? (DirectionUtils.isDiagonal(dirR) && diagonalMovesRemaining ? .75 : 1) * cooldownAtTile(posR)
                         : Double.MAX_VALUE;
-                double costRR = rcLocIsNotEqFrom || rc.canMove(dirRR) ? cooldownAtTile(posRR) : Double.MAX_VALUE;
+                double costRR = rc.canMove(dirRR) ? cooldownAtTile(posRR) : Double.MAX_VALUE;
 
                 rc.setIndicatorDot(posLL, 0, 0, 0);
                 rc.setIndicatorDot(posL, 0, 0, 0);
@@ -329,6 +339,7 @@ abstract class Pawn extends Robot {
                 oldOpR = posR;
                 oldOpRR = posRR;
                 lastDir = tempDir;
+                lastPos = rc.getLocation();
                 return tempDir;
             } else {
                 return dirM;

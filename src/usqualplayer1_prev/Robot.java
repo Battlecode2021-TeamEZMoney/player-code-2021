@@ -187,7 +187,7 @@ abstract class Robot {
         return new MapLocation(2 * center.x - point.x, 2 * center.y - point.y);
     }
 
-    String printLoc(MapLocation loc) throws GameActionException {
+    String printLoc(MapLocation loc) {
         return "(" + loc.x + ", " + loc.y + ")";
     }
 }

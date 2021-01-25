@@ -15,6 +15,7 @@ abstract class Robot {
     protected final int sensorRadiusSquared;
     protected final double baseActionCooldown;
     protected int encoded = 0;
+    protected MapLocation slandCenter = null;
 
     Robot(RobotController rcin) {
         this.rc = rcin;
