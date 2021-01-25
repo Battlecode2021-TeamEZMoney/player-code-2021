@@ -81,10 +81,11 @@ class Muckraker extends Attacker {
 	private void runDefendCode() throws GameActionException {
 		if (!rc.isReady()) {
 			return;
-		} else if (hqLocation == null){
+		} else if (hqLocation == null) {
 			runSimpleCode();
 			return;
-		} else if (distanceSquaredTo(hqLocation) > actionRadiusSquared / 2 && tryMove(pathingController.dirToTarget(hqLocation))) {
+		} else if (distanceSquaredTo(hqLocation) > actionRadiusSquared / 2
+				&& tryMove(pathingController.dirToTarget(hqLocation))) {
 			return;
 		} else {
 			pathingController.resetPrevMovesAndDir();

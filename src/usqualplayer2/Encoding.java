@@ -20,7 +20,7 @@ class Encoding {
 		return encode(loc, type, explorer, 0);
 	}
 
-	static int encode(MapLocation loc, int type, int conv) throws GameActionException{
+	static int encode(MapLocation loc, int type, int conv) throws GameActionException {
 		return encode(loc, type, false, conv);
 	}
 

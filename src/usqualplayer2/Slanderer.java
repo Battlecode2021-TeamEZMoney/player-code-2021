@@ -16,8 +16,8 @@ class Slanderer extends Pawn {
 			turnCount++;
 			if (hasOrCanGetHomeHQ()) {
 				parseHQFlag(rc.getFlag(hqID));
-				
-			} 
+
+			}
 			if (slandCenter != null) {
 				runToSlandCenter();
 			} else {

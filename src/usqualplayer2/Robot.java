@@ -56,12 +56,12 @@ abstract class Robot {
         return Math.max(Math.abs(from.x - to.x), Math.abs(from.y - to.y));
     }
 
-    protected int flagCodeFromHQTeam(Team team){
-        if (team.equals(enemyTeam)){
+    protected int flagCodeFromHQTeam(Team team) {
+        if (team.equals(enemyTeam)) {
             return FlagCodes.enemyHQ;
-        } else if (team.equals(allyTeam)){
+        } else if (team.equals(allyTeam)) {
             return FlagCodes.friendlyHQ;
-        } else if (team.equals(Team.NEUTRAL)){
+        } else if (team.equals(Team.NEUTRAL)) {
             return FlagCodes.neutralHQ;
         }
         return 0;
