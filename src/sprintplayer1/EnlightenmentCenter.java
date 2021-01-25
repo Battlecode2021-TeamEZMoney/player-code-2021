@@ -1,8 +1,6 @@
 package sprintplayer1;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 import battlecode.common.*;
 import common.*;
