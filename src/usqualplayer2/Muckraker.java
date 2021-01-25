@@ -134,7 +134,7 @@ class Muckraker extends Attacker {
 	}
 
 	private void runAttackCode() throws GameActionException {
-		if (rc.canSenseLocation(enemyHQ) && !rc.senseRobotAtLocation(enemyHQ).getTeam().equals(enemyTeam)){
+		if (rc.canSenseLocation(enemyHQ) /* this is really stupid but it works && !rc.senseRobotAtLocation(enemyHQ).getTeam().equals(enemyTeam) */){
 			enemyHQ = null;
 		}
 		if (!rc.isReady()) {
