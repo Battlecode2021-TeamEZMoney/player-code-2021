@@ -4,7 +4,7 @@ import battlecode.common.*;
 
 public abstract class Attacker extends Pawn {
     protected MapLocation enemyHQ = null;
-
+    protected MapLocation neutralHQ = null;
     Attacker(RobotController rcin) throws GameActionException {
         super(rcin);
     }
@@ -22,7 +22,19 @@ public abstract class Attacker extends Pawn {
             RobotInfo tempHQ = rc.senseRobotAtLocation(enemyHQ);
             if (!tempHQ.getTeam().equals(enemyTeam)) {
                 enemyHQ = null;
-                encoded = Encoding.encode(tempHQ.getLocation(), FlagCodes.friendlyHQ, tempHQ.conviction);
+                encoded = Encoding.encode(tempHQ.getLocation(), flagCodeFromHQTeam(tempHQ.team), tempHQ.conviction);
+                return false;
+            }
+        }
+        return true;
+    }
+
+    protected boolean neutralHQIsCurrent() throws GameActionException {
+        if (neutralHQ != null && rc.canSenseLocation(neutralHQ)) {
+            RobotInfo tempHQ = rc.senseRobotAtLocation(neutralHQ);
+            if (!tempHQ.getTeam().equals(Team.NEUTRAL)) {
+                neutralHQ = null;
+                encoded = Encoding.encode(tempHQ.getLocation(), flagCodeFromHQTeam(tempHQ.team), tempHQ.conviction);
                 return false;
             }
         }

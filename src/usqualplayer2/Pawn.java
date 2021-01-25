@@ -10,7 +10,6 @@ abstract class Pawn extends Robot {
     protected int hqID;
     protected Direction dirTarget = Direction.CENTER;
     protected boolean explorer = false;
-    protected boolean defending = false;
     protected Pathfinding pathingController;
     protected int mode = -1;
 
