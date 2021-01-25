@@ -15,6 +15,7 @@ abstract class Robot {
     protected final int sensorRadiusSquared;
     protected final double baseActionCooldown;
     protected int encoded = 0;
+    protected MapLocation slandCenter;
 
     Robot(RobotController rcin) {
         this.rc = rcin;
@@ -74,6 +75,17 @@ abstract class Robot {
         trySetFlag(encoded);
         encoded = 0;
     }
+    
+	protected void parseHQFlagSland(int flag) throws GameActionException {
+		MapLocation tempLocation = Encoding.getLocationFromFlag(rc, flag);
+		switch (Encoding.getTypeFromFlag(flag)) {
+			case 6:
+				slandCenter = tempLocation;
+				break;
+			default:
+				break;
+		}
+	}
 
     static class FlagCodes {
         public static int simple = 1;

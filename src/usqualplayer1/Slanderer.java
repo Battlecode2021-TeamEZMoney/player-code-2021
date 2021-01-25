@@ -1,11 +1,11 @@
 package usqualplayer1;
 
 import battlecode.common.*;
+
 import java.util.*;
 
 class Slanderer extends Pawn {
 	Politician successor;
-	private MapLocation slandCenter = null;
 
 	Slanderer(RobotController rcin) throws GameActionException {
 		super(rcin);
@@ -14,6 +14,10 @@ class Slanderer extends Pawn {
 	void run() throws GameActionException {
 		while (rc.getType().equals(RobotType.SLANDERER)) {
 			turnCount++;
+			if (slandCenter != null && rc.canGetFlag(hqID)) {
+				parseHQFlagSland(rc.getFlag(hqID));
+			}
+			
 			if (rc.isReady()) {
 				if (slandCenter != null) {
 					runToSlandCenter();
@@ -29,7 +33,7 @@ class Slanderer extends Pawn {
 					parseHQFlag(rc.getFlag(hqID));
 				}
 			}
-			// setNearbyHQFlag();
+			setNearbyHQFlag();
 
 			Clock.yield();
 		}
@@ -58,7 +62,7 @@ class Slanderer extends Pawn {
 		}
 
 		if (!tryDirForward090180(awayFromEnemyMuckrakers())) {
-			if (distanceSquaredTo(slandCenter) > 8 && tryDirForward090180(directionTo(slandCenter))) {
+			if (distanceSquaredTo(slandCenter) > -1 && tryDirForward090180(directionTo(slandCenter))) {
 				return;
 			} else {
 				if (Math.random() < 0.2) {
@@ -78,7 +82,7 @@ class Slanderer extends Pawn {
 		}
 
 		if (!tryDirForward090180(awayFromEnemyMuckrakers())) {
-			if (distanceSquaredTo(hqLocation) < 25) {
+			if (distanceSquaredTo(hqLocation) < 8) {
 				tryDirForward90(directionTo(hqLocation).opposite());
 			}
 		}
