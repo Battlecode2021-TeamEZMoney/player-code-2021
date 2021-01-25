@@ -26,7 +26,7 @@ class Muckraker extends Attacker {
 					runSimpleCode();
 				}
 			} else {
-				if (enemyHQ != null && !wasEnemyHQMuckSaturated) {
+				if (enemyHQ != null && enemyHQIsCurrent() && !wasEnemyHQMuckSaturated) {
 					runAttackCode();
 				} else {
 					runSimpleCode();
@@ -134,7 +134,7 @@ class Muckraker extends Attacker {
 	}
 
 	private void runAttackCode() throws GameActionException {
-		if (rc.canSenseLocation(enemyHQ) && !rc.senseRobotAtLocation(enemyHQ).getTeam().equals(enemyHQ)){
+		if (rc.canSenseLocation(enemyHQ) && !rc.senseRobotAtLocation(enemyHQ).getTeam().equals(enemyTeam)){
 			enemyHQ = null;
 		}
 		if (!rc.isReady()) {
