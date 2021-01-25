@@ -63,44 +63,48 @@ abstract class Pawn extends Robot {
             Team tempTeam = null;
             RobotInfo tempBot = null;
             for (RobotInfo robot : nearby) {
-                int distFromHQ = minMovesLeft(robot.getLocation(), hqLocation);
+                int distFromHQOrSelf = minMovesLeft((hqLocation != null ? hqLocation : rc.getLocation()), robot.getLocation());
                 if (robot.getType().equals(RobotType.ENLIGHTENMENT_CENTER)) {
-                    if (distFromHQ < 15 && isEnemy(robot) && (!tempTeam.equals(enemyTeam) || tempDist > distFromHQ)) {
+                    if (tempTeam == null || (distFromHQOrSelf < 15 && isEnemy(robot) && (!tempTeam.equals(enemyTeam) || tempDist > distFromHQOrSelf))) {
                         tempTeam = robot.getTeam();
-                        tempDist = distFromHQ;
+                        tempDist = distFromHQOrSelf;
                         tempBot = robot;
                     }
 
                     if (tempDist < 15 && tempTeam.equals(enemyTeam)) {
                         continue;
                     } else {
-                        if (tempTeam.equals(allyTeam) && distFromHQ < tempDist) {
+                        if (tempTeam.equals(allyTeam) && distFromHQOrSelf < tempDist) {
                         } else if (tempTeam.equals(enemyTeam) && (robot.getTeam().equals(Team.NEUTRAL)
-                                || (distFromHQ < tempDist && robot.getTeam().equals(enemyTeam)))) {
-                        } else if (tempTeam.equals(Team.NEUTRAL) && distFromHQ < tempDist
+                                || (distFromHQOrSelf < tempDist && robot.getTeam().equals(enemyTeam)))) {
+                        } else if (tempTeam.equals(Team.NEUTRAL) && distFromHQOrSelf < tempDist
                                 && robot.getTeam().equals(Team.NEUTRAL)) {
                         } else if (Math.random() < .1) {
                         } else {
                             continue;
                         }
                         tempTeam = robot.getTeam();
-                        tempDist = distFromHQ;
+                        tempDist = distFromHQOrSelf;
                         tempBot = robot;
                     }
                 }
             }
-            encoded = Encoding.encode(tempBot.getLocation(), flagCodeFromHQTeam(tempTeam), tempBot.conviction);
+            encoded = (tempBot != null && tempTeam != null ? Encoding.encode(tempBot.getLocation(), flagCodeFromHQTeam(tempTeam), tempBot.conviction) : encoded);
         }
         trySetFlag(encoded);
         encoded = 0;
     }
 
     protected boolean tryMove(Direction dir) throws GameActionException {
-        if (!dir.equals(Direction.CENTER) && rc.canMove(dir)) {
-            rc.move(dir);
-            return true;
+        try {
+            if (!dir.equals(Direction.CENTER) && rc.canMove(dir)) {
+                rc.move(dir);
+                return true;
+            }
+            return false;
+        } catch (Exception e) {
+            return false;
         }
-        return false;
     }
 
     protected Direction dirForward90(Direction dir) throws GameActionException {
@@ -240,7 +244,7 @@ abstract class Pawn extends Robot {
         }
 
         private void setTarget(MapLocation target) {
-            if (pos.equals(target)) {
+            if (pos != null && pos.equals(target)) {
                 return;
             } else {
                 resetPrevMovesAndDir();

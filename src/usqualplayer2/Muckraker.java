@@ -31,6 +31,7 @@ class Muckraker extends Attacker {
 					runSimpleCode();
 				}
 			}
+			
 
 			setNearbyHQFlag();
 
@@ -54,7 +55,7 @@ class Muckraker extends Attacker {
 		MapLocation tempLocation = Encoding.getLocationFromFlag(rc, flag);
 		switch (Encoding.getTypeFromFlag(flag)) {
 			case 2:
-				if (!enemyHQ.equals(tempLocation)) {
+				if (enemyHQ == null || !enemyHQ.equals(tempLocation)) {
 					enemyHQ = tempLocation;
 					wasEnemyHQMuckSaturated = false;
 				} else if (minMovesLeft(rc.getLocation(), enemyHQ) > 20 && wasEnemyHQMuckSaturated) {
