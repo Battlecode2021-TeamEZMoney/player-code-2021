@@ -1,4 +1,4 @@
-package usqualplayer2_nopol;
+package usqualplayer1_muck;
 
 import battlecode.common.*;
 
@@ -18,10 +18,6 @@ class Encoding {
 
 	static int encode(MapLocation loc, int type, boolean explorer) throws GameActionException {
 		return encode(loc, type, explorer, 0);
-	}
-
-	static int encode(MapLocation loc, int type, int conv) throws GameActionException {
-		return encode(loc, type, false, conv);
 	}
 
 	static int encode(MapLocation loc, int type, boolean explorer, int conv) throws GameActionException {

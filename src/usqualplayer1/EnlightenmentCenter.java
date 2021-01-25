@@ -210,7 +210,7 @@ class EnlightenmentCenter extends Robot {
 //         } else if (rand > 0) {
 //         return RobotType.SLANDERER;
 //         }
-        else if (maxInf < Constants.minimumPolInf) {
+        else if (maxInf < Constants.minimumAttackPolInf) {
             return RobotType.MUCKRAKER;
         } else if (rc.getEmpowerFactor(allyTeam, 11) > 1.5 || crowdedByEnemy(rc.getLocation()) || !spawnLocs.isEmpty()) {
             return RobotType.POLITICIAN;
@@ -252,7 +252,7 @@ class EnlightenmentCenter extends Robot {
             case POLITICIAN:
                 if (rc.getEmpowerFactor(allyTeam, 11) > 1.5) {
                     // System.out.println(".a");
-                    return maxInf / 2;
+                	return Math.max(Constants.minimumAttackPolInf, maxInf / 2);
                 } else if (minNeutral != null && maxInf * rc.getEmpowerFactor(allyTeam, 20) >= minNeutral.getValue()) {
                     // System.out.println(".b");
                     unitFunction = 4;
@@ -269,7 +269,7 @@ class EnlightenmentCenter extends Robot {
                     return Constants.minimumPolInf;
                 } else {
                     // System.out.println(".d");
-                    return Math.max(Constants.minimumPolInf, maxInf / 2);
+                    return Math.max(Constants.minimumAttackPolInf, maxInf / 2);
                 }
             case MUCKRAKER:
                 return 1;

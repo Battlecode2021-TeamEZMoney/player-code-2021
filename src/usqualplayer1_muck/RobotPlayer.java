@@ -1,4 +1,4 @@
-package usqualplayer2_nopol;
+package usqualplayer1_muck;
 
 import battlecode.common.*;
 
@@ -12,7 +12,6 @@ public strictfp class RobotPlayer {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            Clock.yield();
         }
     }
 }

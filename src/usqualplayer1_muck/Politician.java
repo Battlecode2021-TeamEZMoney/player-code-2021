@@ -1,8 +1,7 @@
-package usqualplayer1;
+package usqualplayer1_muck;
 
 import battlecode.common.*;
 import common.*;
-import usqualplayer1_subm2.DirectionUtils;
 
 import java.util.*;
 
@@ -319,18 +318,18 @@ class Politician extends Attacker {
 		}
 	}
 
-	private void HQAttackRoutine(MapLocation locHQ, boolean isAttackRoutine) throws GameActionException {
+	private void HQAttackRoutine(MapLocation locHQ) throws GameActionException {
 		int numSurrounding1 = numSurrounding(1);
 		int numSurrounding2 = numSurrounding(2);
 		int convHQ = rc.canSenseLocation(locHQ) ? rc.senseRobotAtLocation(locHQ).conviction : -1;
 		if (rc.getLocation().isAdjacentTo(locHQ)) {
 			if (DirectionUtils.isCardinal(directionTo(locHQ))) {
-				if (damagePer(numSurrounding1) > convHQ || (isAttackRoutine && numSurrounding1 <= turnsWaited / 10 + 1)) {
+				if (damagePer(numSurrounding1) > convHQ || numSurrounding1 <= turnsWaited / 10 + 1) {
 					tryEmpower(1);
 				}
 			} else {
 				if (!tryDirForward90(directionTo(locHQ))) {
-					if (damagePer(numSurrounding2) > convHQ || (isAttackRoutine && numSurrounding2 <= turnsWaited / 10 + 1)) {
+					if (damagePer(numSurrounding2) > convHQ || numSurrounding2 <= turnsWaited / 10 + 1) {
 						tryEmpower(2);
 					}
 				} else {
@@ -338,17 +337,15 @@ class Politician extends Attacker {
 				}
 			}
 			turnsWaited++;
-		} else if (tryDirForward90(directionTo(locHQ))) {
-			turnsWaited = 0;
-		} else {
-			if (withinAttackRange(locHQ)) {
-				int numSurrounding = numSurrounding(distanceSquaredTo(locHQ));
-				if (damagePer(numSurrounding) > convHQ || (isAttackRoutine && turnsWaited > 30)) {
-					tryEmpower(distanceSquaredTo(locHQ));
-				}
+		} else if (!tryDirForward90(directionTo(locHQ))) {
+			if (withinAttackRange(locHQ) && turnsWaited > 30) {
+				tryEmpower(distanceSquaredTo(locHQ));
+			} else {
+				tryDirForward180(directionTo(locHQ));
 			}
-			tryDirForward180(directionTo(locHQ));
 			turnsWaited++;
+		} else {
+			turnsWaited = 0;
 		}
 	}
 	
@@ -361,7 +358,7 @@ class Politician extends Attacker {
 			return;
 		}
 		
-		HQAttackRoutine(neutralHQ, false);
+		HQAttackRoutine(neutralHQ);
 
 //		if (!waiting || (rc.canSenseLocation(neutralHQ) && rc.senseRobotAtLocation(neutralHQ).conviction < 25)) {
 //			HQAttackRoutine(neutralHQ);
@@ -378,7 +375,7 @@ class Politician extends Attacker {
 			return;
 		}
 
-		HQAttackRoutine(enemyHQ, true);
+		HQAttackRoutine(enemyHQ);
 	}
 
 	private void runSimpleCode() throws GameActionException {

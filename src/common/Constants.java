@@ -17,6 +17,7 @@ public class Constants {
         public static final TreeSet<Integer> optimalSlandInfSet = new TreeSet<Integer>(
                         Arrays.asList(optimalSlandInfArray));
         public static final int minimumPolInf = 16;
+        public static final int minimumAttackPolInf = 20;
         public static final RobotType[] spawnOrder = { RobotType.MUCKRAKER, RobotType.MUCKRAKER, RobotType.MUCKRAKER,
                         RobotType.MUCKRAKER, RobotType.MUCKRAKER, RobotType.POLITICIAN, RobotType.POLITICIAN,
                         RobotType.MUCKRAKER, RobotType.POLITICIAN, RobotType.POLITICIAN, RobotType.POLITICIAN,

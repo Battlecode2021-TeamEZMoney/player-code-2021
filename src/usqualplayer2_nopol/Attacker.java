@@ -1,4 +1,4 @@
-package usqualplayer2;
+package usqualplayer2_nopol;
 
 import battlecode.common.*;
 

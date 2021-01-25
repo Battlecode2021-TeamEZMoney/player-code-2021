@@ -1,6 +1,7 @@
-package usqualplayer2_nopol;
+package usqualplayer1_muck;
 
 import battlecode.common.*;
+
 import java.util.*;
 
 class Slanderer extends Pawn {
@@ -13,16 +14,25 @@ class Slanderer extends Pawn {
 	void run() throws GameActionException {
 		while (rc.getType().equals(RobotType.SLANDERER)) {
 			turnCount++;
-			if (hasOrCanGetHomeHQ()) {
-				parseHQFlag(rc.getFlag(hqID));
-
+			if (slandCenter != null && rc.canGetFlag(hqID)) {
+				parseHQFlagSland(rc.getFlag(hqID));
 			}
-			if (slandCenter != null) {
-				runToSlandCenter();
+			
+			if (rc.isReady()) {
+				if (slandCenter != null) {
+					runToSlandCenter();
+				} else {
+					if (rc.canGetFlag(hqID)) {
+						parseHQFlag(rc.getFlag(hqID));
+					} else {
+						runSimpleCode();
+					}
+				}
 			} else {
-				runSimpleCode();
+				if (slandCenter == null && rc.canGetFlag(hqID)) {
+					parseHQFlag(rc.getFlag(hqID));
+				}
 			}
-
 			setNearbyHQFlag();
 
 			Clock.yield();
@@ -38,22 +48,21 @@ class Slanderer extends Pawn {
 		switch (Encoding.getTypeFromFlag(flag)) {
 			case 6:
 				slandCenter = tempLocation;
+				runToSlandCenter();
 				break;
 			default:
+				runSimpleCode();
 				break;
 		}
 	}
 
 	private void runToSlandCenter() throws GameActionException {
-		if (!rc.isReady()) {
-			return;
-		} else if (slandCenter == null) {
-			runSimpleCode();
+		if (!rc.isReady() || slandCenter == null) {
 			return;
 		}
 
 		if (!tryDirForward090180(awayFromEnemyMuckrakers())) {
-			if ((hqLocation == null || !slandCenter.equals(hqLocation) || distanceSquaredTo(hqLocation) > 8) && tryMove(pathingController.dirToTarget(slandCenter))) {
+			if (distanceSquaredTo(slandCenter) > -1 && tryDirForward090180(directionTo(slandCenter))) {
 				return;
 			} else {
 				if (Math.random() < 0.2) {
@@ -61,15 +70,19 @@ class Slanderer extends Pawn {
 				}
 			}
 		}
+
+		// if (!tryDirForward90180(awayFromEnemyMuckrakers())) {
+		// tryDirForward90(directionTo(slandCenter));
+		// }
 	}
 
 	private void runSimpleCode() throws GameActionException {
-		if (!rc.isReady()) {
+		if (!rc.isReady() || hqLocation == null) {
 			return;
 		}
 
 		if (!tryDirForward090180(awayFromEnemyMuckrakers())) {
-			if (hqLocation != null && distanceSquaredTo(hqLocation) < 5) {
+			if (distanceSquaredTo(hqLocation) < 8) {
 				tryDirForward90(directionTo(hqLocation).opposite());
 			}
 		}

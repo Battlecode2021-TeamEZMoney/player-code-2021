@@ -1,6 +1,7 @@
-package usqualplayer1_subm2;
+package usqualplayer1_muck;
 
 import battlecode.common.*;
+import common.*;
 
 import java.util.*;
 
