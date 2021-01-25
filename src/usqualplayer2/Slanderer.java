@@ -53,7 +53,7 @@ class Slanderer extends Pawn {
 		}
 
 		if (!tryDirForward090180(awayFromEnemyMuckrakers())) {
-			if (tryMove(pathingController.dirToTarget(slandCenter))) {
+			if ((hqLocation == null || !slandCenter.equals(hqLocation) || distanceSquaredTo(hqLocation) > 8) && tryMove(pathingController.dirToTarget(slandCenter))) {
 				return;
 			} else {
 				if (Math.random() < 0.2) {
@@ -69,7 +69,7 @@ class Slanderer extends Pawn {
 		}
 
 		if (!tryDirForward090180(awayFromEnemyMuckrakers())) {
-			if (hqLocation != null && distanceSquaredTo(hqLocation) < 8) {
+			if (hqLocation != null && distanceSquaredTo(hqLocation) < 5) {
 				tryDirForward90(directionTo(hqLocation).opposite());
 			}
 		}
