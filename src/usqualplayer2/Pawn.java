@@ -266,7 +266,7 @@ abstract class Pawn extends Robot {
 
         private Direction bestDir180(MapLocation from, MapLocation to) throws GameActionException {
             Direction dirM = from.directionTo(to);
-            boolean rcLocIsNotEqFrom = rc.getLocation().equals(from);
+            boolean rcLocIsNotEqFrom = !rc.getLocation().equals(from);
             if (from.isAdjacentTo(to)) {
                 Direction oppLastDir = lastDir.opposite();
                 double tempCost = Double.MAX_VALUE - 1;
