@@ -31,24 +31,11 @@ class Muckraker extends Attacker {
 					runSimpleCode();
 				}
 			}
-			
 
 			setNearbyHQFlag();
 
 			Clock.yield();
 		}
-	}
-
-	private boolean enemyHQIsCurrent() throws GameActionException {
-		if (enemyHQ != null && rc.canSenseLocation(enemyHQ)) {
-			RobotInfo tempHQ = rc.senseRobotAtLocation(enemyHQ);
-			if (!tempHQ.getTeam().equals(enemyTeam)) {
-				enemyHQ = null;
-				encoded = Encoding.encode(tempHQ.getLocation(), FlagCodes.friendlyHQ, tempHQ.conviction);
-				return false;
-			}
-		}
-		return true;
 	}
 
 	private void parseHQFlag(int flag) throws GameActionException {

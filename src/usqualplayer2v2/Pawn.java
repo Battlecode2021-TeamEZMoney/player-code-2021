@@ -63,9 +63,11 @@ abstract class Pawn extends Robot {
             Team tempTeam = null;
             RobotInfo tempBot = null;
             for (RobotInfo robot : nearby) {
-                int distFromHQOrSelf = minMovesLeft((hqLocation != null ? hqLocation : rc.getLocation()), robot.getLocation());
+                int distFromHQOrSelf = minMovesLeft((hqLocation != null ? hqLocation : rc.getLocation()),
+                        robot.getLocation());
                 if (robot.getType().equals(RobotType.ENLIGHTENMENT_CENTER)) {
-                    if (tempTeam == null || (distFromHQOrSelf < 15 && isEnemy(robot) && (!tempTeam.equals(enemyTeam) || tempDist > distFromHQOrSelf))) {
+                    if (tempTeam == null || (distFromHQOrSelf < 15 && isEnemy(robot)
+                            && (!tempTeam.equals(enemyTeam) || tempDist > distFromHQOrSelf))) {
                         tempTeam = robot.getTeam();
                         tempDist = distFromHQOrSelf;
                         tempBot = robot;
@@ -89,7 +91,9 @@ abstract class Pawn extends Robot {
                     }
                 }
             }
-            encoded = (tempBot != null && tempTeam != null ? Encoding.encode(tempBot.getLocation(), flagCodeFromHQTeam(tempTeam), tempBot.conviction) : encoded);
+            encoded = (tempBot != null && tempTeam != null
+                    ? Encoding.encode(tempBot.getLocation(), flagCodeFromHQTeam(tempTeam), tempBot.conviction)
+                    : encoded);
         }
         trySetFlag(encoded);
         encoded = 0;
