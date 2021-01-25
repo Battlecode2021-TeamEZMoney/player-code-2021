@@ -1,4 +1,4 @@
-package usqualplayer2v2;
+package usqualplayer2;
 
 import battlecode.common.*;
 import common.*;
