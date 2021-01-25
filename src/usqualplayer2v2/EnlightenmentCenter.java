@@ -1,4 +1,4 @@
-package usqualplayer1_prev;
+package usqualplayer2v2;
 
 import battlecode.common.*;
 import common.*;
@@ -167,29 +167,25 @@ class EnlightenmentCenter extends Robot {
 
     private RobotType getUnitToBuild() throws GameActionException {
         double rand = Math.random();
-        int polsEmpowering = spawnLocs.isEmpty() ? 0 : 1;
         if (rc.getRoundNum() <= 2) {
             return RobotType.SLANDERER;
         }
-//         else if (rand > Math.min(0.4, 0.2 + 0.2 * rc.getRoundNum() / 100)) {
-//         return RobotType.POLITICIAN;
-//         } else if (rand > 0) {
-//         return RobotType.SLANDERER;
-//         }
+        // else if (rand > Math.min(0.4, 0.2 + 0.2 * rc.getRoundNum() / 100)) {
+        // return RobotType.POLITICIAN;
+        // } else if (rand > 0) {
+        // return RobotType.SLANDERER;
+        // }
         else if (rc.getInfluence() < Constants.minimumPolInf) {
             return RobotType.MUCKRAKER;
         } else if (rc.getEmpowerFactor(allyTeam, 11) > 1.5 || crowdedByEnemy(rc.getLocation())) {
             // System.out.println("a");
             return RobotType.POLITICIAN;
-        } else if (slandCenter != Constants.origin
-        		&& rand > Math.min(0.6, 0.4 + 0.2 * rc.getRoundNum() / 100) - 0.3 * polsEmpowering ) {
+        } else if (rand > Math.min(0.6, 0.4 + 0.2 * rc.getRoundNum() / 100)) {
             // System.out.println("a");
-        	nextEncoding = Encoding.encode(slandCenter, FlagCodes.slandCenter, false);
+            nextEncoding = Encoding.encode(slandCenter, FlagCodes.slandCenter, false);
             influence = rc.getInfluence() > 100 ? Constants.minimumPolInf * 2 : Constants.minimumPolInf;
             return RobotType.POLITICIAN;
-        } else if (canSenseEnemyPolitician()) {
-        	return RobotType.MUCKRAKER;
-        }else if (rand > 0.5 && ((!neutralHQs.isEmpty()
+        } else if (rand > 0.5 && ((!neutralHQs.isEmpty()
                 && maxInf * rc.getEmpowerFactor(allyTeam, 20) >= minNeutral.getValue())
                 || (!enemyHQs.isEmpty() && maxInf * rc.getEmpowerFactor(allyTeam, 20) >= minEnemy.getValue()))) {
             // System.out.println("b");

@@ -1,4 +1,4 @@
-package usqualplayer1_prev;
+package usqualplayer1_alt;
 
 import battlecode.common.*;
 import common.*;
@@ -11,10 +11,12 @@ abstract class Pawn extends Robot {
     protected Direction dirTarget = Direction.CENTER;
     protected boolean explorer = false;
     protected boolean defending = false;
+    protected Pathfinding pathingController;
 
     Pawn(RobotController rcin) throws GameActionException {
         super(rcin);
         getHomeHQ();
+        this.pathingController = new Pathfinding();
     }
 
     static Pawn unitFromRobotController(RobotController rc) throws Exception {
@@ -171,6 +173,149 @@ abstract class Pawn extends Robot {
                         dirTarget = dir;
                 }
             }
+        }
+    }
+
+    protected class Pathfinding {
+        private Direction lastDir = null;
+        private MapLocation pos = null;
+        private MapLocation oldOpLL = null;
+        private MapLocation oldOpL = null;
+        private MapLocation oldOpM = null;
+        private MapLocation oldOpR = null;
+        private MapLocation oldOpRR = null;
+
+        void resetPrevMovesAndDir() {
+            lastDir = null;
+            oldOpLL = null;
+            oldOpL = null;
+            oldOpM = null;
+            oldOpR = null;
+            oldOpRR = null;
+        }
+
+        void setTarget(MapLocation target) {
+            if (pos.equals(target)) {
+                return;
+            } else {
+                resetPrevMovesAndDir();
+                pos = target;
+            }
+        }
+
+        MapLocation getTarget() {
+            return pos;
+        }
+
+        Direction dirToTarget() throws GameActionException {
+            return bestDir180(rc.getLocation(), furthestSensibleTile(rc.getLocation(), pos));
+        }
+
+        private Direction bestDir180(MapLocation from, MapLocation to) throws GameActionException {
+            Direction dirM = from.directionTo(to);
+            boolean rcLocIsNotEqFrom = rc.getLocation().equals(from);
+            if (from.isAdjacentTo(to)) {
+                Direction oppLastDir = lastDir.opposite();
+                double tempCost = Double.MAX_VALUE - 1;
+                Direction tempDir = dirM;
+                Direction dirL = dirM.rotateLeft();
+                Direction dirLL = dirL.rotateLeft();
+                Direction dirR = dirM.rotateRight();
+                Direction dirRR = dirR.rotateRight();
+                MapLocation posLL = from.add(dirLL);
+                MapLocation posL = from.add(dirL);
+                MapLocation posM = from.add(dirM);
+                MapLocation posR = from.add(dirR);
+                MapLocation posRR = from.add(dirRR);
+                boolean diagonalMovesRemaining = diagonalMovesRemaining(from, to);
+                double costLL = rcLocIsNotEqFrom || rc.canMove(dirLL) ? cooldownAtTile(posLL) : Double.MAX_VALUE;
+                double costL = rcLocIsNotEqFrom || rc.canMove(dirL)
+                        ? (DirectionUtils.isDiagonal(dirL) && diagonalMovesRemaining ? .75 : 1) * cooldownAtTile(posL)
+                        : Double.MAX_VALUE;
+                double costM = rcLocIsNotEqFrom || rc.canMove(dirM)
+                        ? (DirectionUtils.isDiagonal(dirM) && diagonalMovesRemaining ? .6 : 1) * cooldownAtTile(posM)
+                        : Double.MAX_VALUE;
+                double costR = rcLocIsNotEqFrom || rc.canMove(dirR)
+                        ? (DirectionUtils.isDiagonal(dirR) && diagonalMovesRemaining ? .75 : 1) * cooldownAtTile(posR)
+                        : Double.MAX_VALUE;
+                double costRR = rcLocIsNotEqFrom || rc.canMove(dirRR) ? cooldownAtTile(posRR) : Double.MAX_VALUE;
+
+                rc.setIndicatorDot(posLL, 0, 0, 0);
+                rc.setIndicatorDot(posL, 0, 0, 0);
+                rc.setIndicatorDot(posM, 0, 0, 0);
+                rc.setIndicatorDot(posR, 0, 0, 0);
+                rc.setIndicatorDot(posRR, 0, 0, 0);
+
+                if (costLL < tempCost && !dirLL.equals(oppLastDir) && notLastMoveOption(posLL)) {
+                    tempCost = costLL;
+                    tempDir = dirLL;
+                }
+                if (costRR < tempCost && !dirRR.equals(oppLastDir) && notLastMoveOption(posRR)) {
+                    tempCost = costRR;
+                    tempDir = dirRR;
+                }
+                if (costL <= tempCost && !dirL.equals(oppLastDir) && notLastMoveOption(posL)) {
+                    tempCost = costL;
+                    tempDir = dirL;
+                }
+                if (costR <= tempCost && !dirR.equals(oppLastDir) && notLastMoveOption(posR)) {
+                    tempCost = costR;
+                    tempDir = dirR;
+                }
+                if (costM <= tempCost && !dirM.equals(oppLastDir) && notLastMoveOption(posM)) {
+                    tempCost = costM;
+                    tempDir = dirM;
+                }
+                oldOpLL = posLL;
+                oldOpL = posL;
+                oldOpM = posM;
+                oldOpR = posR;
+                oldOpRR = posRR;
+                lastDir = tempDir;
+                return tempDir;
+            } else {
+                return dirM;
+            }
+        }
+
+        private boolean notLastMoveOption(MapLocation pos) {
+            if (pos.equals(oldOpLL)) {
+                return false;
+            } else if (pos.equals(oldOpL)) {
+                return false;
+            } else if (pos.equals(oldOpM)) {
+                return false;
+            } else if (pos.equals(oldOpR)) {
+                return false;
+            } else if (pos.equals(oldOpRR)) {
+                return false;
+            }
+            return true;
+        }
+
+        private MapLocation furthestSensibleTile(MapLocation from, MapLocation to) {
+            if (from.equals(to)) {
+                return to;
+            }
+            MapLocation nextTile = from.add(from.directionTo(to));
+            if (rc.canSenseLocation(nextTile)) {
+                return furthestSensibleTile(nextTile, to);
+            } else {
+                return from;
+            }
+
+        }
+
+        private boolean diagonalMovesRemaining(MapLocation from, MapLocation to) {
+            return Math.abs(from.x - to.x) != 0 && Math.abs(from.y - to.y) != 0;
+        }
+
+        private double cooldownAtTile(MapLocation tile) throws GameActionException {
+            return cooldownFromPassability(rc.sensePassability(tile));
+        }
+
+        private double cooldownFromPassability(double speed) {
+            return baseActionCooldown / speed;
         }
     }
 }
