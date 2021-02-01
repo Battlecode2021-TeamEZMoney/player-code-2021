@@ -1,4 +1,4 @@
-package usqualplayer1_subm1;
+package usqualplayer1_subm;
 
 import battlecode.common.Direction;
 
@@ -169,6 +169,18 @@ public class DirectionUtils {
             case EAST:
             case SOUTH:
             case WEST:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    public static boolean isDiagonal(Direction dir) {
+        switch (dir) {
+            case NORTHEAST:
+            case SOUTHEAST:
+            case SOUTHWEST:
+            case NORTHWEST:
                 return true;
             default:
                 return false;

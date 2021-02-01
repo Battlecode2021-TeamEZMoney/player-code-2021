@@ -2,7 +2,7 @@ package usqualplayer1;
 
 import battlecode.common.*;
 import common.*;
-import usqualplayer1_subm2.DirectionUtils;
+import usqualplayer1_subm.DirectionUtils;
 
 import java.util.*;
 

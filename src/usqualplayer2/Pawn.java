@@ -90,9 +90,9 @@ abstract class Pawn extends Robot {
                     }
                 }
             }
-            encoded = (tempBot != null && tempTeam != null
-                    ? Encoding.encode(tempBot.getLocation(), flagCodeFromHQTeam(tempTeam), tempBot.conviction)
-                    : encoded);
+            if (tempBot != null && tempTeam != null) {
+            	encoded = Encoding.encode(tempBot.getLocation(), flagCodeFromHQTeam(tempTeam), tempBot.conviction);
+            }
         }
         trySetFlag(encoded);
         encoded = 0;

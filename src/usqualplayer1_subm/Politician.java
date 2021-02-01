@@ -1,14 +1,14 @@
-package usqualplayer1_subm1;
+package usqualplayer1_subm;
 
 import battlecode.common.*;
-//import java.util.*;
-//import simpleplayer4.Robot.FlagCodes;
+
+import java.util.*;
 
 class Politician extends Attacker {
 	private MapLocation enemyHQ = null;
 	private MapLocation neutralHQ = null;
-	private boolean waiting = Math.random() < 0.1;
-	private MapLocation slandCenter = null;
+	// private boolean inDefenseRing = false;
+	// private MapLocation tempTarget = null;
 	private int turnsWaited = 0;
 
 	Politician(RobotController rcin) throws GameActionException {
@@ -29,16 +29,20 @@ class Politician extends Attacker {
 	void run() throws GameActionException {
 		while (true) {
 			turnCount++;
+			// int start = 0;
+			if (slandCenter != null && rc.canGetFlag(hqID)) {
+				parseHQFlagSland(rc.getFlag(hqID));
+			}
+			
 			if (rc.isReady()) {
 				updateHQs();
 				if (Math.random() < 0.8 && neutralHQ == null && enemyHQ == null) {
-					tryOptimalSelfEmpower();
 					// int start = Clock.getBytecodesLeft();
 					tryOptimalEmpower();
 					// System.out.println(Clock.getBytecodesLeft()-start);
 				}
-				endOfMatchEmpower();
 				// start = Clock.getBytecodesLeft();
+				endOfMatchEmpower();
 				if (Clock.getBytecodesLeft() > 10000) {
 					if (explorer) {
 						runSimpleCode();
@@ -62,18 +66,18 @@ class Politician extends Attacker {
 				}
 			}
 			setNearbyHQFlag();
-			// if (Clock.getBytecodesLeft()-start < -4000) System.out.println("Used " +
-			// (Clock.getBytecodesLeft()-start));
-
-			// System.out.println("N: " + (neutralHQ == null ? "null" :
-			// printLoc(neutralHQ)));
-			// System.out.println("E: " + (enemyHQ == null ? "null" : printLoc(enemyHQ)));
-			// System.out.println("LOC: " + printLoc(rc.getLocation()));
+			/*
+			 * if (Clock.getBytecodesLeft()-start < -10000) System.out.println("Used " +
+			 * (Clock.getBytecodesLeft()-start));
+			 * 
+			 * System.out.println("N: " + (neutralHQ == null ? "null" :
+			 * printLoc(neutralHQ))); System.out.println("E: " + (enemyHQ == null ? "null" :
+			 * printLoc(enemyHQ))); System.out.println("S: " + (slandCenter == null ? "null"
+			 * : printLoc(slandCenter))); System.out.println("LOC: " +
+			 * printLoc(rc.getLocation()));
+			 */
 			Clock.yield();
 		}
-
-		// TODO: Implement differentiation for formerly slanderer units as well as
-		// converted units.
 	}
 
 	private void updateHQs() throws GameActionException {
@@ -132,29 +136,94 @@ class Politician extends Attacker {
 			return;
 		}
 
-		boolean exitDefendSlandCenter = false;
+		ArrayList<RobotInfo> allySlands = new ArrayList<RobotInfo>();
+		ArrayList<RobotInfo> allyPols = new ArrayList<RobotInfo>();
+		ArrayList<RobotInfo> enemyMucks = new ArrayList<RobotInfo>();
+		for (RobotInfo robot : rc.senseNearbyRobots()) {
+			if (robot.team == allyTeam && robot.type == RobotType.POLITICIAN) {
+				// includes Slanderers
+				double angle = angleBetween(rc.getLocation(), slandCenter, robot.location);
+				if (Constants.optimalSlandInfSet.contains(robot.influence)) {
+					allySlands.add(robot);
+				} else if (!Constants.optimalSlandInfSet.contains(robot.influence) && 60 <= angle && angle <= 120) {
+					allyPols.add(robot);
+				}
+//				else {
+//					 System.out.println(printLoc(robot.location) + " " + angle);
+//				}
 
-		if (distanceSquaredTo(slandCenter) <= actionRadiusSquared) {
-			empowerIfMuckNearby();
+			} else if (robot.team == enemyTeam && robot.type == RobotType.MUCKRAKER) {
+				enemyMucks.add(robot);
+			}
 		}
-		if (distanceSquaredTo(slandCenter) > actionRadiusSquared && tryDirForward90(directionTo(slandCenter))) {
-			return;
+		// int start = Clock.getBytecodesLeft();
+		tryOptimalEmpower(0.7, 3);
+		// if (Clock.getBytecodesLeft()-start < -11000)
+		// System.out.println(Clock.getBytecodesLeft()-start);
+		empowerIfMuckNearby();
+		empowerIfMuckNearSlanderer(enemyMucks, allySlands);
+		if (distanceSquaredTo(slandCenter) < sensorRadiusSquared) {
+			if (tryDirForward090180(directionTo(slandCenter).opposite())) {
+				return;
+			}
 		}
-		if (distanceSquaredTo(slandCenter) > actionRadiusSquared * 2) {
-			exitDefendSlandCenter = true;
+
+		// System.out.println("SLANDS");
+		// for (RobotInfo sland : slands) {
+		// System.out.println(printLoc(sland.location));
+		// }
+		// System.out.println("POLS");
+		// for (RobotInfo pol : pols) {
+		// System.out.println(printLoc(pol.location));
+		// }
+		if (Math.random() < 0.4) {
+			if (allySlands.isEmpty()) {
+				tryDirForward090180(directionTo(slandCenter));
+			} else if (allySlands.size() > 3) {
+				tryDirForward090180(directionTo(slandCenter).opposite());
+			}
 		}
-		tryDirForward90180(directionTo(slandCenter).opposite());
-		if (exitDefendSlandCenter) {
-			slandCenter = null;
-		}
+		tryDirForward090180(awayFromRobots(allyPols));
 	}
 
 	private void empowerIfMuckNearby() throws GameActionException {
-		for (RobotInfo robot : rc.senseNearbyRobots(sensorRadiusSquared, enemyTeam)) {
+		for (RobotInfo robot : rc.senseNearbyRobots(2, enemyTeam)) {
 			if (robot.type.equals(RobotType.MUCKRAKER)) {
-				tryEmpower(distanceSquaredTo(robot));
+				// tryEmpower(distanceSquaredTo(robot));
+				tryEmpower(actionRadiusSquared);
 			}
 		}
+	}
+
+	private void empowerIfMuckNearSlanderer(ArrayList<RobotInfo> enemyMucks, ArrayList<RobotInfo> allySlands)
+			throws GameActionException {
+		// System.out.println("MUCK");
+		// for (RobotInfo enemyMuck : enemyMucks) {
+		// System.out.println(printLoc(enemyMuck.location));
+		// }
+		// System.out.println("SLAND");
+		// for (RobotInfo allySland : allySlands) {
+		// System.out.println(printLoc(allySland.location));
+		// }
+		if (enemyMucks.isEmpty() || allySlands.isEmpty()) {
+			return;
+		}
+		int minDist = Integer.MAX_VALUE;
+		RobotInfo minMuck = null;
+		for (RobotInfo enemyMuck : enemyMucks) {
+			RobotInfo closestSland = Collections.min(allySlands,
+					Comparator.comparing(sland -> enemyMuck.location.distanceSquaredTo(sland.location)));
+			int possDist = enemyMuck.location.distanceSquaredTo(closestSland.location);
+			if (possDist < minDist) {
+				minDist = possDist;
+				minMuck = enemyMuck;
+			}
+		}
+	
+		if (minDist <= 25) {
+			tryEmpower(distanceSquaredTo(minMuck));
+		}
+		tryDirForward090(directionTo(minMuck));
 	}
 
 	private int maxIncrease(RobotInfo robot) throws GameActionException {
@@ -175,7 +244,24 @@ class Politician extends Attacker {
 		}
 	}
 
+	private double changeWithBuff(double conv, double buff, RobotInfo robot) {
+		if (robot.type == RobotType.ENLIGHTENMENT_CENTER && robot.team == rc.getTeam()) {
+			;
+		} else if (robot.type == RobotType.ENLIGHTENMENT_CENTER) {
+			double convNeededToConvert = robot.conviction / buff;
+			if (conv <= convNeededToConvert) {
+				conv *= buff;
+			} else {
+				conv = robot.conviction + (conv - convNeededToConvert);
+			}
+		} else {
+			conv *= buff;
+		}
+		return conv;
+	}
+
 	private int[] optimalEmpowerRadiusAndInfo() throws GameActionException {
+		// int start = Clock.getBytecodesLeft();
 		if (rc.getConviction() <= 10) {
 			return new int[] { 0, 0, 0, 0 };
 		}
@@ -191,11 +277,13 @@ class Politician extends Attacker {
 			if (numAffected == 0) {
 				continue;
 			}
-			int change = (int) (rc.getConviction() * rc.getEmpowerFactor(allyTeam, 0) - 10) / numAffected;
-			// TODO: factor in remaining undivided conviction, given to later creations
+			double buff = rc.getEmpowerFactor(allyTeam, 0);
+			double change = (int) (rc.getConviction() - 10) / numAffected;
 			for (RobotInfo robot : nearby) {
 				if (distanceSquaredTo(robot) <= empRadius) {
-					increase += Math.min(change, maxIncrease(robot));
+					// int start = Clock.getBytecodesLeft();
+					increase += Math.min((int) changeWithBuff(change, buff, robot), maxIncrease(robot));
+					// System.out.println("a " + (Clock.getBytecodesLeft()-start));
 					if (isEnemy(robot) && robot.conviction < change) {
 						numDestroyed++;
 					}
@@ -208,17 +296,9 @@ class Politician extends Attacker {
 			}
 		}
 
+		// if (Clock.getBytecodesLeft()-start < -8000) System.out.println("a " +
+		// (Clock.getBytecodesLeft()-start));
 		return new int[] { optimalIncRadius, maxTotalIncrease, optimalDestroyed };
-	}
-
-	private void tryOptimalSelfEmpower() throws GameActionException {
-		if (hqLocation == null) {
-			return;
-		}
-
-		if (rc.getEmpowerFactor(allyTeam, 0) > 4 && distanceSquaredTo(hqLocation) <= actionRadiusSquared) {
-			HQAttackRoutine(hqLocation);
-		}
 	}
 
 	private void tryOptimalEmpower() throws GameActionException {
@@ -237,17 +317,18 @@ class Politician extends Attacker {
 		}
 	}
 
-	private void HQAttackRoutine(MapLocation locHQ) throws GameActionException {
+	private void HQAttackRoutine(MapLocation locHQ, boolean isAttackRoutine) throws GameActionException {
 		int numSurrounding1 = numSurrounding(1);
 		int numSurrounding2 = numSurrounding(2);
+		int convHQ = rc.canSenseLocation(locHQ) ? rc.senseRobotAtLocation(locHQ).conviction : -1;
 		if (rc.getLocation().isAdjacentTo(locHQ)) {
 			if (DirectionUtils.isCardinal(directionTo(locHQ))) {
-				if (numSurrounding1 <= turnsWaited / 10 + 1) {
+				if (damagePer(numSurrounding1) > convHQ || (isAttackRoutine && numSurrounding1 <= turnsWaited / 10 + 1)) {
 					tryEmpower(1);
 				}
 			} else {
 				if (!tryDirForward90(directionTo(locHQ))) {
-					if (numSurrounding2 <= turnsWaited / 10 + 1) {
+					if (damagePer(numSurrounding2) > convHQ || (isAttackRoutine && numSurrounding2 <= turnsWaited / 10 + 1)) {
 						tryEmpower(2);
 					}
 				} else {
@@ -255,31 +336,39 @@ class Politician extends Attacker {
 				}
 			}
 			turnsWaited++;
-		} else if (!tryDirForward90(directionTo(locHQ))) {
-			if (withinAttackRange(locHQ) && turnsWaited > 20) {
-				tryEmpower(distanceSquaredTo(locHQ));
-			} else {
-				tryDirForward180(directionTo(locHQ));
-			}
-			turnsWaited++;
-		} else {
+		} else if (tryDirForward90(directionTo(locHQ))) {
 			turnsWaited = 0;
+		} else {
+			if (withinAttackRange(locHQ)) {
+				int numSurrounding = numSurrounding(distanceSquaredTo(locHQ));
+				if (damagePer(numSurrounding) > convHQ || (isAttackRoutine && turnsWaited > 30)) {
+					tryEmpower(distanceSquaredTo(locHQ));
+				}
+			}
+			tryDirForward180(directionTo(locHQ));
+			turnsWaited++;
 		}
+	}
+	
+	private int damagePer(int numSurrounding) {
+		return (int) ((rc.getConviction() - 10) * rc.getEmpowerFactor(allyTeam, 0) / numSurrounding);
 	}
 
 	private void runNeutralCode() throws GameActionException {
 		if (!rc.isReady() || neutralHQ == null) {
 			return;
 		}
+		
+		HQAttackRoutine(neutralHQ, false);
 
-		if (!waiting || (rc.canSenseLocation(neutralHQ) && rc.senseRobotAtLocation(neutralHQ).conviction < 25)) {
-			HQAttackRoutine(neutralHQ);
-		} else {
-			if (distanceSquaredTo(neutralHQ) > actionRadiusSquared && tryDirForward90(directionTo(neutralHQ))) {
-				return;
-			}
-			tryDirForward90180(directionTo(neutralHQ).opposite());
-		}
+//		if (!waiting || (rc.canSenseLocation(neutralHQ) && rc.senseRobotAtLocation(neutralHQ).conviction < 25)) {
+//			HQAttackRoutine(neutralHQ);
+//		} else {
+//			if (distanceSquaredTo(neutralHQ) > actionRadiusSquared && tryDirForward90(directionTo(neutralHQ))) {
+//				return;
+//			}
+//			tryDirForward90180(directionTo(neutralHQ).opposite());
+//		}
 	}
 
 	private void runAttackCode() throws GameActionException {
@@ -287,7 +376,7 @@ class Politician extends Attacker {
 			return;
 		}
 
-		HQAttackRoutine(enemyHQ);
+		HQAttackRoutine(enemyHQ, true);
 	}
 
 	private void runSimpleCode() throws GameActionException {
@@ -308,6 +397,9 @@ class Politician extends Attacker {
 
 	private void tryEmpower(int radius) throws GameActionException {
 		if (rc.canEmpower(radius)) {
+			if (slandCenter != null) {
+				encoded = Encoding.encode(rc.getLocation(), FlagCodes.empowering);
+			}
 			rc.empower(radius);
 		}
 	}

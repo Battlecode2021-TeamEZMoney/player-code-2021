@@ -18,9 +18,9 @@ class Muckraker extends Attacker {
 				parseHQFlag(rc.getFlag(hqID));
 				if (explorer && !defending) {
 					runSimpleCode();
-				} else if ((mode == 2 || (enemyHQ != null && enemyHQIsCurrent())) && !wasEnemyHQMuckSaturated) {
+				} else if ((mode == FlagCodes.enemyHQ || (enemyHQ != null && enemyHQIsCurrent())) && !wasEnemyHQMuckSaturated) {
 					runAttackCode();
-				} else if (mode == 5 && defending) {
+				} else if (mode == FlagCodes.patrol && defending) {
 					runDefendCode();
 				} else {
 					runSimpleCode();
@@ -42,7 +42,7 @@ class Muckraker extends Attacker {
 	private void parseHQFlag(int flag) throws GameActionException {
 		MapLocation tempLocation = Encoding.getLocationFromFlag(rc, flag);
 		switch (Encoding.getTypeFromFlag(flag)) {
-			case 2:
+			case FlagCodes.enemyHQ:
 				if (enemyHQ == null) {
 					enemyHQ = tempLocation;
 					wasEnemyHQMuckSaturated = false;
@@ -50,19 +50,19 @@ class Muckraker extends Attacker {
 					wasEnemyHQMuckSaturated = Math.random() > .01;
 				}
 				defending = false;
-				mode = 2;
+				mode = FlagCodes.enemyHQ;
 				break;
-			case 5:
-				if (mode != 5) {
+			case FlagCodes.patrol:
+				if (mode != FlagCodes.patrol) {
 					if (distanceSquaredTo(hqLocation) < actionRadiusSquared) {
 						defending = Math.random() < .8;
 					}
-					mode = 5;
+					mode = FlagCodes.patrol;
 				}
 				break;
 			default:
 				defending = false;
-				mode = 1;
+				mode = FlagCodes.simple;
 				break;
 		}
 	}
@@ -134,7 +134,7 @@ class Muckraker extends Attacker {
 	}
 
 	private void runAttackCode() throws GameActionException {
-		if (rc.canSenseLocation(enemyHQ) /* this is really stupid but it works && !rc.senseRobotAtLocation(enemyHQ).getTeam().equals(enemyTeam) */){
+		if (rc.canSenseLocation(enemyHQ) && !rc.senseRobotAtLocation(enemyHQ).getTeam().equals(enemyTeam)){
 			enemyHQ = null;
 		}
 		if (!rc.isReady()) {
@@ -155,8 +155,8 @@ class Muckraker extends Attacker {
 		pathingController.resetPrevMovesAndDir();
 		updateDirIfOnBorder();
 
-		if (!huntOrExposeSlanderer() && !tryDirForward90180(dirTarget) && !tryDirForward90180(awayFromAllies())) {
-			tryDirForward90180(awayFromAllies().opposite());
+		if (!huntOrExposeSlanderer() && !tryDirForward90(dirTarget)) {
+			tryDirForward90180(awayFromAllies());
 		}
 
 	}

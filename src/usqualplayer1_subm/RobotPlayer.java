@@ -1,4 +1,4 @@
-package usqualplayer1_muck;
+package usqualplayer1_subm;
 
 import battlecode.common.*;
 

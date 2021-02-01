@@ -69,13 +69,13 @@ abstract class Robot {
     }
 
     static class FlagCodes {
-        public static int simple = 1;
-        public static int enemyHQ = 2;
-        public static int friendlyHQ = 3;
-        public static int neutralHQ = 4;
-        public static int patrol = 5;
-        public static int slandCenter = 6;
-        public static int empowering = 7;
+        public final static int simple = 1;
+        public final static int enemyHQ = 2;
+        public final static int friendlyHQ = 3;
+        public final static int neutralHQ = 4;
+        public final static int patrol = 5;
+        public final static int slandCenter = 6;
+        public final static int empowering = 7;
     }
 
     protected boolean canSenseEnemy() throws GameActionException {

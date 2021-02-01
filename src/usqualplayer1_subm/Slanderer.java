@@ -1,11 +1,11 @@
-package usqualplayer1_subm1;
+package usqualplayer1_subm;
 
 import battlecode.common.*;
+
 import java.util.*;
 
 class Slanderer extends Pawn {
 	Politician successor;
-	private MapLocation slandCenter = null;
 
 	Slanderer(RobotController rcin) throws GameActionException {
 		super(rcin);
@@ -14,8 +14,12 @@ class Slanderer extends Pawn {
 	void run() throws GameActionException {
 		while (rc.getType().equals(RobotType.SLANDERER)) {
 			turnCount++;
+			if (slandCenter != null && rc.canGetFlag(hqID)) {
+				parseHQFlagSland(rc.getFlag(hqID));
+			}
+			
 			if (rc.isReady()) {
-				if (slandCenter != null && hqLocation != null) {
+				if (slandCenter != null) {
 					runToSlandCenter();
 				} else {
 					if (rc.canGetFlag(hqID)) {
@@ -29,7 +33,7 @@ class Slanderer extends Pawn {
 					parseHQFlag(rc.getFlag(hqID));
 				}
 			}
-			// setNearbyHQFlag();
+			setNearbyHQFlag();
 
 			Clock.yield();
 		}
@@ -53,22 +57,32 @@ class Slanderer extends Pawn {
 	}
 
 	private void runToSlandCenter() throws GameActionException {
-		if (!rc.isReady() || slandCenter == null || hqLocation == null) {
+		if (!rc.isReady() || slandCenter == null) {
 			return;
 		}
 
-		if (!tryDirForward90180(awayFromEnemyMuckrakers())) {
-			tryDirForward90(directionTo(slandCenter));
+		if (!tryDirForward090180(awayFromEnemyMuckrakers())) {
+			if (distanceSquaredTo(slandCenter) > -1 && tryDirForward090180(directionTo(slandCenter))) {
+				return;
+			} else {
+				if (Math.random() < 0.2) {
+					tryDirForward090180(directionTo(slandCenter).opposite());
+				}
+			}
 		}
+
+		// if (!tryDirForward90180(awayFromEnemyMuckrakers())) {
+		// tryDirForward90(directionTo(slandCenter));
+		// }
 	}
 
 	private void runSimpleCode() throws GameActionException {
-		if (!rc.isReady()) {
+		if (!rc.isReady() || hqLocation == null) {
 			return;
 		}
 
-		if (!tryDirForward90180(awayFromEnemyMuckrakers())) {
-			if (distanceSquaredTo(hqLocation) < 25) {
+		if (!tryDirForward090180(awayFromEnemyMuckrakers())) {
+			if (distanceSquaredTo(hqLocation) < 8) {
 				tryDirForward90(directionTo(hqLocation).opposite());
 			}
 		}

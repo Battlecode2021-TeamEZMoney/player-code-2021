@@ -118,11 +118,16 @@ class Muckraker extends Attacker {
 	private void HQAttackRoutine(MapLocation locHQ) throws GameActionException {
 		if (huntOrExposeSlanderer()) {
 			return;
-		} else if (distanceSquaredTo(locHQ) > actionRadiusSquared && tryDirForward90180(directionTo(locHQ))) {
-			return;
 		} else {
-			tryDirForward90180(directionTo(locHQ).opposite());
+			tryDirForward90180(directionTo(locHQ));
 		}
+//		if (huntOrExposeSlanderer()) {
+//			return;
+//		} else if (distanceSquaredTo(locHQ) > actionRadiusSquared && tryDirForward90180(directionTo(locHQ))) {
+//			return;
+//		} else {
+//			tryDirForward90180(directionTo(locHQ).opposite());
+//		}
 	}
 
 	private void runAttackCode() throws GameActionException {
@@ -143,24 +148,6 @@ class Muckraker extends Attacker {
 		if (!huntOrExposeSlanderer() && !tryDirForward90(dirTarget)) {
 			tryDirForward90180(awayFromAllies());
 		}
-
-		// Other attempts to prevent muckraker cramming
-		// return huntOrExposeSlanderer() || tryDirForward90(dirTarget =
-		// awayFromAllies())
-		// || tryDirForward90180(dirTarget = DirectionUtils.randomDirection());
-
-		// return huntOrExposeSlanderer() || tryDirForward90(dirTarget)
-		// || tryDirForward90(dirTarget = awayFromAllies())
-		// || tryDirForward90180(dirTarget = DirectionUtils.randomDirection());
-
-		// if (rc.getRoundNum() < Constants.MAX_ROUNDS) {
-		// return huntOrExposeSlanderer() || tryDirForward90(dirTarget)
-		// || tryDirForward90180(dirTarget = DirectionUtils.randomDirection());
-		// } else {
-		// return huntOrExposeSlanderer() || tryDirForward90(dirTarget) ||
-		// tryDirForward90180(awayFromAllies())
-		// || tryDirForward90180(dirTarget = DirectionUtils.randomDirection());
-		// }
 
 	}
 
