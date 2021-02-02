@@ -8,7 +8,6 @@ class EnlightenmentCenter extends Robot {
     private int turnCount = 0;
     private int unitsBuilt = 0;
     private int unitsIndex = 0;
-    private int spawnIndex = 0;
     private RobotType unitToBuild;
     private int infToSpend;
     private Direction dirTarget, buildDirection;
@@ -49,10 +48,6 @@ class EnlightenmentCenter extends Robot {
     void run() throws GameActionException {
         while (true) {
             turnCount++;
-            // TODO: Implement smart handling of other units and other HQs
-            // gatherIntel();
-
-//             printStoredECs();
 
             encoding = nextEncoding;
             nextEncoding = 0;
@@ -60,7 +55,6 @@ class EnlightenmentCenter extends Robot {
             unitFunction = 0;
             updateECs(8000);
 
-            // int start = Clock.getBytecodesLeft();
             minNeutral = minEntryHQ(neutralHQs);
             minEnemy = minEntryHQ(enemyHQs);
             minAllNeutral = entryWithMinVal(neutralHQs);
@@ -71,11 +65,9 @@ class EnlightenmentCenter extends Robot {
             if (rc.isReady() && !fullySurrounded()) {
                 unitToBuild = getUnitToBuild();
                 if (unitToBuild != RobotType.ENLIGHTENMENT_CENTER) {
-                    // if (unitToBuild != RobotType.SLANDERER && rc.getInfluence() - 20 >
-                    // Constants.minimumPolInf) unitToBuild = RobotType.POLITICIAN;
                     infToSpend = getNewUnitInfluence();
                     if (!unitToBuild.equals(RobotType.SLANDERER) && Constants.optimalSlandInfSet.contains(infToSpend)) {
-                        // allows politicians to distinguish slanderers by their influence
+                        // Allows politicians to distinguish slanderers by their influence, even though they don't have "true sense"
                         infToSpend--;
                     }
                     if (unitToBuild == RobotType.POLITICIAN && !spawnLocs.isEmpty()) {
@@ -85,7 +77,6 @@ class EnlightenmentCenter extends Robot {
                     }
                     buildDirection = getBuildDirection(unitToBuild, dirTarget, infToSpend);
                     explorer = (unitToBuild == RobotType.MUCKRAKER && Math.random() < 0.5);
-                    // || (unitToBuild == RobotType.POLITICIAN && Math.random() < 0.2);
                     if (rc.canBuildRobot(unitToBuild, buildDirection, infToSpend)) {
                         rc.buildRobot(unitToBuild, buildDirection, infToSpend);
                         unitsBuilt++;
@@ -95,11 +86,8 @@ class EnlightenmentCenter extends Robot {
                         if (unitFunction == 4) {
                         	polSentID.put(minNeutral.getKey(), builtID);
                         } else if (unitFunction == 2) {
-                        	//polSentID.put(minEnemy.getKey(), builtID);
+                        	// polSentID.put(minEnemy.getKey(), builtID);
                         }
-
-                        // TODO: Implement flag based orders
-                        // trySetFlag(getOrdersForUnit(unitToBuild));
                     }
                 }
             }
@@ -112,9 +100,6 @@ class EnlightenmentCenter extends Robot {
             } else {
                 bidLastRound = false;
             }
-            // int numBytecodes = Clock.getBytecodesLeft() - start;
-            // if (numBytecodes < -8000) System.out.println(numBytecodes);
-            // System.out.println(rc.getEmpowerFactor(allyTeam, 0));
 
             updateECs(1000);
 
@@ -187,10 +172,8 @@ class EnlightenmentCenter extends Robot {
     }
 
     MapLocation slandCenter() {
-//        return rc.getLocation();
          if (enemyHQs.size() == 0) {
         	 return rc.getLocation();
-        	 //return Constants.origin;
          }
          MapLocation avgEnemyHQ = avgLoc(enemyHQs.keySet());
          Direction awayFromEnemyHQs = rc.getLocation().directionTo(avgEnemyHQ).opposite();
@@ -200,23 +183,13 @@ class EnlightenmentCenter extends Robot {
 
     private RobotType getUnitToBuild() throws GameActionException {
         double rand = Math.random();
-        //int polsEmpowering = spawnLocs.isEmpty() ? 0 : 1;
         if (rc.getRoundNum() <= 2) {
             return RobotType.SLANDERER;
-        }
-//         else if (rand > Math.min(0.4, 0.2 + 0.2 * rc.getRoundNum() / 100)) {
-//         return RobotType.POLITICIAN;
-//         } else if (rand > 0) {
-//         return RobotType.SLANDERER;
-//         }
-        else if (maxInf < Constants.minimumAttackPolInf) {
+        } else if (maxInf < Constants.minimumAttackPolInf) {
             return RobotType.MUCKRAKER;
         } else if (rc.getEmpowerFactor(allyTeam, 11) > 1.5 || crowdedByEnemy(rc.getLocation())) {
             return RobotType.POLITICIAN;
-        }
-//        else if (slandCenter != Constants.origin
-//        		&& rand > Math.min(0.9, 0.9 + 0. * turnCount / 50) - 0.3 * polsEmpowering ) {
-        else if (canSenseEnemyPolitician()) {
+        } else if (canSenseEnemyPolitician()) {
             return RobotType.MUCKRAKER;
         } else if ((slandCenter != Constants.origin && rand > 0.85) || !spawnLocs.isEmpty()) {
         	nextEncoding = Encoding.encode(slandCenter, FlagCodes.slandCenter, false);
@@ -225,7 +198,6 @@ class EnlightenmentCenter extends Robot {
         }
         else if (rand > 0.7 && ( (minNeutral != null && maxInf * rc.getEmpowerFactor(allyTeam, 20) >= minNeutral.getValue())
                 || (minEnemy != null && maxInf * rc.getEmpowerFactor(allyTeam, 20) >= minEnemy.getValue() ) )) {
-            //System.out.println("I AM SENT");
             return RobotType.POLITICIAN;
         } else if (rand > (0.4 + 0.2 * rc.getRoundNum() / Constants.MAX_ROUNDS)) {
         	if (Math.random() < 0.1) {
@@ -253,24 +225,19 @@ class EnlightenmentCenter extends Robot {
                 return maxOptimalSlandInf != null ? maxOptimalSlandInf : 0;
             case POLITICIAN:
                 if (rc.getEmpowerFactor(allyTeam, 11) > 1.5) {
-                    // System.out.println(".a");
                 	return Math.max(Constants.minimumAttackPolInf, maxInf / 2);
                 } else if (minNeutral != null && maxInf * rc.getEmpowerFactor(allyTeam, 20) >= minNeutral.getValue()) {
-                    // System.out.println(".b");
                     unitFunction = 4;
                     nextEncoding = Encoding.encode(minNeutral.getKey(), FlagCodes.neutralHQ, false);
                     return minNeutral.getValue();
                 } else if (minEnemy != null && maxInf * rc.getEmpowerFactor(allyTeam, 20) >= minEnemy.getValue()) {
-                    // System.out.println(".c");
                     unitFunction = 2;
                     nextEncoding = Encoding.encode(minEnemy.getKey(), FlagCodes.enemyHQ, false);
                     return (minEnemy.getValue() + 100 < maxInf) ? minEnemy.getValue() + 100: minEnemy.getValue();
                 } else if (Math.random() < 1 && slandCenter != Constants.origin) {
-                    // System.out.println(".b");
                     nextEncoding = Encoding.encode(slandCenter, FlagCodes.slandCenter, false);
                     return Constants.minimumPolInf;
                 } else {
-                    // System.out.println(".d");
                     return Math.max(Constants.minimumAttackPolInf, maxInf / 2);
                 }
             case MUCKRAKER:
@@ -366,10 +333,8 @@ class EnlightenmentCenter extends Robot {
             final int lowerVote = Math.max(VOTES_TO_WIN - MAX_ROUNDS + rc.getRoundNum(), 0);
             final int upperVote = Math.min(rc.getRoundNum(), VOTES_TO_WIN);
             if (rc.getTeamVotes() < lowerVote || rc.getTeamVotes() > upperVote) {
-                // System.out.println("Error, vote count out of expected bounds.... ????");
-                // TODO: Not necessarily ^, the opponent often does not get all the votes we
-                // didn't,
-                // so we potentially could still win more votes with less than 751 total.
+            	/* Even if we cannot secure 751 votes, we can still potentially win more votes than the opponent
+            	 * since it is possible for neither player to win a vote in a given round. */
                 return 1;
             }
             return ((1 + .5 * (.05 * (Math.log(rc.getTeamVotes() + 30 - lowerVote) / Math.log(1.5))))

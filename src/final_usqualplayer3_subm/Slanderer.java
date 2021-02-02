@@ -38,7 +38,7 @@ class Slanderer extends Pawn {
 			Clock.yield();
 		}
 		if (successor == null) {
-			successor = new Politician(this, slandCenter);
+			successor = new Politician(this);
 		}
 		successor.run();
 	}
@@ -70,10 +70,6 @@ class Slanderer extends Pawn {
 				}
 			}
 		}
-
-		// if (!tryDirForward90180(awayFromEnemyMuckrakers())) {
-		// tryDirForward90(directionTo(slandCenter));
-		// }
 	}
 
 	private void runSimpleCode() throws GameActionException {

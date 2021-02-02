@@ -115,7 +115,7 @@ abstract class Pawn extends Robot {
     protected Direction awayFromRobots(List<RobotInfo> robots) throws GameActionException {
         MapLocation location = new MapLocation(0, 0);
         if (robots.size() == 0) {
-            return Direction.CENTER; // return dirTarget;
+            return Direction.CENTER;
         }
         for (RobotInfo robot : robots) {
             location = location.translate(robot.location.x, robot.location.y);
@@ -123,27 +123,7 @@ abstract class Pawn extends Robot {
 
         location = new MapLocation(location.x / robots.size(), location.y / robots.size());
         return directionTo(location).opposite();
-        // return awayFromRobots1AndTowardsRobots2(robots, Collections.emptyList());
     }
-
-    // protected Direction awayFromRobots1AndTowardsRobots2(List<RobotInfo> robots1,
-    // List<RobotInfo> robots2) throws GameActionException {
-    // MapLocation location = new MapLocation(0, 0);
-    // if (robots1.isEmpty() && robots2.isEmpty()) {
-    // return Direction.CENTER; //return dirTarget;
-    // }
-    // for (RobotInfo robot : robots1) {
-    // location = location.translate(robot.location.x, robot.location.y);
-    // }
-    // for (RobotInfo robot : robots2) {
-    // MapLocation oppositeLoc = oppositePoint(rc.getLocation(), robot.location);
-    // location = location.translate(oppositeLoc.x, oppositeLoc.y);
-    // }
-    //
-    // int size = robots1.size() + robots2.size();
-    // location = new MapLocation(location.x / size, location.y / size);
-    // return directionTo(location).opposite();
-    // }
 
     protected Direction awayFromAllies() throws GameActionException {
         return awayFromRobots(Arrays.asList(rc.senseNearbyRobots(sensorRadiusSquared, allyTeam)));
@@ -151,7 +131,6 @@ abstract class Pawn extends Robot {
 
     protected Direction towardsRobots(List<RobotInfo> robots) throws GameActionException {
         return awayFromRobots(robots).opposite();
-        // return awayFromRobots1AndTowardsRobots2(Collections.emptyList(), robots);
     }
 
     protected void updateDirIfOnBorder() throws GameActionException {

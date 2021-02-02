@@ -123,7 +123,6 @@ class Muckraker extends Attacker {
 		} else {
 			tryDirForward90180(directionTo(locHQ).opposite());
 		}
-//		tryDirForward90180(directionTo(locHQ));
 	}
 
 	private void runAttackCode() throws GameActionException {
