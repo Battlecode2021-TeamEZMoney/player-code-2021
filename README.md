@@ -1,6 +1,7 @@
 # Battlecode 2021, Team EZ Money
 
-Team EZ Money's repository for Battlecode 2021.
+Consists of an AI player in Java which strategically creates and controls a virtual robot army.
+The final code is located in `src/final_usqualplayer3_subm`.
 
 ### Project Structure
 
@@ -31,5 +32,5 @@ Team EZ Money's repository for Battlecode 2021.
 - `./gradlew run`
     Runs a game with the settings in gradle.properties
 - `./gradlew update`
-    Update to the newest version! Run every so often
+    Updates to the newest version (Run every so often)
 
