@@ -11,13 +11,17 @@ class Slanderer extends Pawn {
 		super(rcin);
 	}
 
+	/**
+	 * Searches for a nearby HQ and receives its task from the stored HQ.
+	 * Accordingly runs to the slandCenter or performs a default (simple) routine.
+	 */
 	void run() throws GameActionException {
 		while (rc.getType().equals(RobotType.SLANDERER)) {
 			turnCount++;
 			if (slandCenter != null && rc.canGetFlag(hqID)) {
 				parseHQFlagSland(rc.getFlag(hqID));
 			}
-			
+
 			if (rc.isReady()) {
 				if (slandCenter != null) {
 					runToSlandCenter();
@@ -46,13 +50,13 @@ class Slanderer extends Pawn {
 	private void parseHQFlag(int flag) throws GameActionException {
 		MapLocation tempLocation = Encoding.getLocationFromFlag(rc, flag);
 		switch (Encoding.getTypeFromFlag(flag)) {
-			case 6:
-				slandCenter = tempLocation;
-				runToSlandCenter();
-				break;
-			default:
-				runSimpleCode();
-				break;
+		case 6:
+			slandCenter = tempLocation;
+			runToSlandCenter();
+			break;
+		default:
+			runSimpleCode();
+			break;
 		}
 	}
 

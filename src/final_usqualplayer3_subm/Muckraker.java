@@ -9,6 +9,10 @@ class Muckraker extends Attacker {
 		super(rcin);
 	}
 
+	/**
+	 * Searches for a nearby HQ and receives its task from the stored HQ.
+	 * Accordingly performs an attack, defend, or default (simple) routine.
+	 */
 	void run() throws GameActionException {
 		while (true) {
 			turnCount++;
@@ -58,17 +62,17 @@ class Muckraker extends Attacker {
 	private void parseHQFlag(int flag) throws GameActionException {
 		MapLocation tempLocation = Encoding.getLocationFromFlag(rc, flag);
 		switch (Encoding.getTypeFromFlag(flag)) {
-			case 2:
-				enemyHQ = tempLocation;
-				runAttackCode();
-				break;
-			case 5:
-				defending = true;
-				runDefendCode();
-				break;
-			default:
-				runSimpleCode();
-				break;
+		case 2:
+			enemyHQ = tempLocation;
+			runAttackCode();
+			break;
+		case 5:
+			defending = true;
+			runDefendCode();
+			break;
+		default:
+			runSimpleCode();
+			break;
 		}
 	}
 
@@ -117,8 +121,7 @@ class Muckraker extends Attacker {
 	private void HQAttackRoutine(MapLocation locHQ) throws GameActionException {
 		if (huntOrExposeSlanderer()) {
 			return;
-		}
-		else if (distanceSquaredTo(locHQ) > actionRadiusSquared && tryDirForward90180(directionTo(locHQ))) {
+		} else if (distanceSquaredTo(locHQ) > actionRadiusSquared && tryDirForward90180(directionTo(locHQ))) {
 			return;
 		} else {
 			tryDirForward90180(directionTo(locHQ).opposite());
